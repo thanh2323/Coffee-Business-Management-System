@@ -30,13 +30,7 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet.Where(u => u.Role == role).ToListAsync();
         }
 
-        public async Task<bool> ValidateCredentialsAsync(string username, string password)
-        {
-            // Placeholder: replace with proper hashed password check once available
-            var user = await _dbSet.FirstOrDefaultAsync(u => u.Username == username);
-            return user != null && user.PasswordHash == password;
-        }
-
+     
     }
 }
 
