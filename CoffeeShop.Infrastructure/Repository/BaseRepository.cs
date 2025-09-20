@@ -23,46 +23,23 @@ namespace CoffeeShop.Infrastructure.Repository
 
         public void Add(T entity) => _dbSet.Add(entity);
 
-
-        public void AddRange(IEnumerable<T> entities) => _dbSet.AddRange(entities);
-
-        public async Task<int> CountAsync() => await _dbSet.CountAsync();
-
-        public virtual async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null)
-        {
-            if (predicate == null)
-                return await _dbSet.CountAsync();
-
-            return await _dbSet.CountAsync(predicate);
-        }
-
+       
         public void Delete(T entity) => _dbSet.Remove(entity);
 
-        public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate) => await _dbSet.AnyAsync(predicate);
+        public bool Exists(Expression<Func<T, bool>> predicate) => _dbSet.Any(predicate);
 
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) => await _dbSet.Where(predicate).ToListAsync();
-
-        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate) => await _dbSet.FirstOrDefaultAsync(predicate);
+        public IEnumerable<T> GetAll()
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
-
-        public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
-
-        public void SoftDelete(T entity)
+        public Task<T?> GetByIdAsync(int id)
         {
-            entity.MarkAsDeleted();
-            _dbSet.Update(entity);
+            throw new NotImplementedException();
         }
 
-        public void SoftDeleteRange(IEnumerable<T> entities)
-        {
-            foreach (var entity in entities)
-            {
-                entity.MarkAsDeleted();
-            }
-            _dbSet.UpdateRange(entities);
-        }
         public void Update(T entity) => _dbSet.Update(entity);
     }
 }

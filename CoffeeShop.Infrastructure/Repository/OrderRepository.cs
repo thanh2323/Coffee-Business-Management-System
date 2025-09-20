@@ -40,6 +40,75 @@ namespace CoffeeShop.Infrastructure.Repository
         {
             return await _dbSet.Where(o => o.PaymentMethod == paymentMethod).ToListAsync();
         }
+
+        // Order with OrderItems (include related data)
+        public async Task<Order?> GetOrderWithItemsAsync(int orderId)
+        {
+            return await _dbSet
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.Customer)
+                .Include(o => o.CafeTable)
+                .Include(o => o.Branch)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersWithItemsByCustomerIdAsync(int customerId)
+        {
+            return await _dbSet
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.Customer)
+                .Include(o => o.CafeTable)
+                .Include(o => o.Branch)
+                .Include(o => o.User)
+                .Where(o => o.CustomerId == customerId)
+                .ToListAsync();
+        }
+
+        // OrderItem CRUD methods (since OrderItem is part of Order aggregate)
+        public async Task<IEnumerable<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
+        {
+            return await _context.OrderItems
+                .Include(oi => oi.MenuItem)
+                .Where(oi => oi.OrderId == orderId)
+                .ToListAsync();
+        }
+
+        public async Task<OrderItem?> GetOrderItemByIdAsync(int orderItemId)
+        {
+            return await _context.OrderItems
+                .Include(oi => oi.MenuItem)
+                .FirstOrDefaultAsync(oi => oi.OrderItemId == orderItemId);
+        }
+
+        public void AddOrderItem(OrderItem orderItem)
+        {
+            _context.OrderItems.Add(orderItem);
+        }
+
+        public void UpdateOrderItem(OrderItem orderItem)
+        {
+            _context.OrderItems.Update(orderItem);
+        }
+
+        public void DeleteOrderItem(OrderItem orderItem)
+        {
+            _context.OrderItems.Remove(orderItem);
+        }
+
+        public void DeleteOrderItemsByOrderId(int orderId)
+        {
+            var orderItems = _context.OrderItems
+                .Where(oi => oi.OrderId == orderId)
+                .ToList();
+
+            if (orderItems.Any())
+            {
+                _context.OrderItems.RemoveRange(orderItems);
+            }
+        }
     }
 }
 

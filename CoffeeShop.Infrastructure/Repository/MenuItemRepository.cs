@@ -44,6 +44,61 @@ namespace CoffeeShop.Infrastructure.Repository
         {
             return await _dbSet.Where(m => m.IsAvailable == IsAvailable).ToListAsync();
         }
+
+        // MenuItem with Recipes (include related data)
+        public async Task<MenuItem?> GetMenuItemWithRecipesAsync(int menuItemId)
+        {
+            return await _dbSet
+                .Include(m => m.MenuItemRecipes)
+                    .ThenInclude(r => r.Ingredient)
+                .Include(m => m.Branch)
+                .FirstOrDefaultAsync(m => m.MenuItemId == menuItemId);
+        }
+
+        // MenuItemRecipe CRUD methods (since MenuItemRecipe is part of MenuItem aggregate)
+        public async Task<IEnumerable<MenuItemRecipe>> GetRecipesByMenuItemIdAsync(int menuItemId)
+        {
+            return await _context.MenuItemRecipes
+                .Include(r => r.Ingredient)
+                .Include(r => r.MenuItem)
+                .Where(r => r.MenuItemId == menuItemId)
+                .ToListAsync();
+        }
+
+        public async Task<MenuItemRecipe?> GetRecipeByIdAsync(int recipeId)
+        {
+            return await _context.MenuItemRecipes
+                .Include(r => r.Ingredient)
+                .Include(r => r.MenuItem)
+                .FirstOrDefaultAsync(r => r.Id == recipeId);
+        }
+
+        public void AddRecipe(MenuItemRecipe recipe)
+        {
+            _context.MenuItemRecipes.Add(recipe);
+        }
+
+        public void UpdateRecipe(MenuItemRecipe recipe)
+        {
+            _context.MenuItemRecipes.Update(recipe);
+        }
+
+        public void DeleteRecipe(MenuItemRecipe recipe)
+        {
+            _context.MenuItemRecipes.Remove(recipe);
+        }
+
+        public void DeleteRecipesByMenuItemId(int menuItemId)
+        {
+            var recipes = _context.MenuItemRecipes
+                .Where(r => r.MenuItemId == menuItemId)
+                .ToList();
+
+            if (recipes.Any())
+            {
+                _context.MenuItemRecipes.RemoveRange(recipes);
+            }
+        }
     }
 }
 

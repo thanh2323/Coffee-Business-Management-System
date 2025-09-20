@@ -36,6 +36,7 @@ namespace CoffeeShop.Infrastructure.Repository
             var user = await _dbSet.FirstOrDefaultAsync(u => u.Username == username);
             return user != null && user.PasswordHash == password;
         }
+
     }
 }
 

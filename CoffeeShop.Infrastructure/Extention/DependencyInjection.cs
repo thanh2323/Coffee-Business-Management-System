@@ -25,16 +25,10 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IBranchRepository, BranchRepository>();
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IStaffProfileRepository, StaffProfileRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
-            services.AddScoped<ICafeTableRepository, CafeTableRepository>();
             services.AddScoped<IMenuItemRepository, MenuItemRepository>();
             services.AddScoped<IIngredientRepository, IngredientRepository>();
-            services.AddScoped<IMenuItemRecipeRepository, MenuItemRecipeRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-            services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();
-            services.AddScoped<ILoyaltyTransactionRepository, LoyaltyTransactionRepository>();
 
             return services;
         }

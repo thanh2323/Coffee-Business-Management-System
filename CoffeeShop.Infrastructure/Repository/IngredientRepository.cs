@@ -24,11 +24,40 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet.Where(i => i.Quantity <= threshold).ToListAsync();
         }
 
-     /*   public async Task<IEnumerable<Ingredient>> GetExpiringSoonAsync(int days)
+        public async Task<IEnumerable<Ingredient>> GetIngredientsByBranchAsync(int branchId)
         {
-            // Placeholder: there is no expiry field; keeping method for interface parity
-            return await _dbSet.ToListAsync();
-        }*/
+            return await _dbSet
+                .Include(i => i.Branch)
+                .Where(i => i.BranchId == branchId)
+                .ToListAsync();
+        }
+
+        // InventoryTransaction CRUD methods (since InventoryTransaction is part of Ingredient aggregate)
+        public async Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsByIngredientIdAsync(int ingredientId)
+        {
+            return await _context.InventoryTransactions
+                .Include(t => t.Ingredient)
+                .Where(t => t.IngredientId == ingredientId)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<InventoryTransaction?> GetInventoryTransactionByIdAsync(int transactionId)
+        {
+            return await _context.InventoryTransactions
+                .Include(t => t.Ingredient)
+                .FirstOrDefaultAsync(t => t.InventoryTxnId == transactionId);
+        }
+
+        public void AddInventoryTransaction(InventoryTransaction transaction)
+        {
+            _context.InventoryTransactions.Add(transaction);
+        }
+
+        public void DeleteInventoryTransaction(InventoryTransaction transaction)
+        {
+            _context.InventoryTransactions.Remove(transaction);
+        }
     }
 }
 
