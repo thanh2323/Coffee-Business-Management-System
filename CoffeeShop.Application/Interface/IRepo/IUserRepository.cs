@@ -5,10 +5,11 @@ namespace CoffeeShop.Application.Interface.IRepo
 {
     public interface IUserRepository : IBaseRepository<User>
     {
-        // User-specific methods can be added here
+        // User-specific methods
+        Task<User?> GetByIdAsync(int id);
         Task<User?> GetByUsernameAsync(string username);
         Task<User?> GetByEmailAsync(string email);
         Task<IEnumerable<User>> GetByRoleAsync(UserRole role);
-        Task<bool> ValidateCredentialsAsync(string username, string password);
+
     }
 }

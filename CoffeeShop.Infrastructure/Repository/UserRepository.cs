@@ -30,7 +30,10 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet.Where(u => u.Role == role).ToListAsync();
         }
 
-     
+        public async Task<User?> GetByIdAsync(int id)
+        {
+            return await _dbSet.FirstOrDefaultAsync(u => u.UserId == id);
+        }
     }
 }
 

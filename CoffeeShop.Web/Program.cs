@@ -1,5 +1,8 @@
-
+﻿
+using CoffeeShop.Domain.Enums;
 using CoffeeShop.Infrastructure.Extention;
+using CoffeeShop.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace CoffeeShop.Web
 {
@@ -12,9 +15,60 @@ namespace CoffeeShop.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection")!);
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(options =>
+                    {
+                        options.LoginPath = "/Auth/Login";          
+                        options.LogoutPath = "/Auth/Logout";        
+                        options.AccessDeniedPath = "/Forbidden";    
 
+                        options.Cookie.Name = "CoffeeShopAuth";     
+                        options.Cookie.HttpOnly = true;             
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+                        options.Cookie.SameSite = SameSiteMode.Strict; 
+
+                        options.ExpireTimeSpan = TimeSpan.FromHours(8); 
+                        options.SlidingExpiration = true;
+                    });
+            builder.Services.AddAuthorization(options =>
+            {
+
+                // Admin - chỉ có quyền hệ thống
+                options.AddPolicy("RequireAdmin", policy =>
+                    policy.RequireRole("Admin"));
+
+                // Owner - quản lý business của chính họ
+                options.AddPolicy("RequireOwner", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.IsInRole("Owner") &&
+                        context.User.HasClaim(c => c.Type == "BusinessId")));
+
+                // Manager - quản lý trong branch
+                options.AddPolicy("RequireManager", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.IsInRole("Staff") &&
+                        context.User.HasClaim(c => c.Type == "Position" && c.Value == "Manager") &&
+                        context.User.HasClaim(c => c.Type == "BranchId")));
+
+                // Staff tác nghiệp
+                options.AddPolicy("RequireFrontline", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.IsInRole("Staff") &&
+                        context.User.HasClaim(c => c.Type == "Position" &&
+                                                  (c.Value == "Barista" || c.Value == "Cashier"))));
+            });
 
             var app = builder.Build();
+
+            // Initialize database with seed data
+          /*  using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await DbInitializer.InitializeAsync(context);
+                
+                // Uncomment the line below to seed sample data
+                // await DbInitializer.SeedSampleDataAsync(context);
+            }*/
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -27,6 +81,7 @@ namespace CoffeeShop.Web
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

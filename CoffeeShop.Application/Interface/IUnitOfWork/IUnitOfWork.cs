@@ -14,14 +14,9 @@ namespace CoffeeShop.Application.Interface.IUnitOfWork
         IUserRepository Users { get; }
         IStaffProfileRepository StaffProfiles { get; }
         ICustomerRepository Customers { get; }
-        ICafeTableRepository CafeTables { get; }
         IMenuItemRepository MenuItems { get; }
         IIngredientRepository Ingredients { get; }
-        IMenuItemRecipeRepository MenuItemRecipes { get; }
         IOrderRepository Orders { get; }
-        IOrderItemRepository OrderItems { get; }
-        IInventoryTransactionRepository InventoryTransactions { get; }
-        ILoyaltyTransactionRepository LoyaltyTransactions { get; }
 
         Task<int> SaveChangesAsync();
         int SaveChanges();
