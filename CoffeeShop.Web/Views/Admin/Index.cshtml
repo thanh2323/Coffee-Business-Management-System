@@ -1,0 +1,58 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.Business>
+@{
+    ViewData["Title"] = "Businesses";
+}
+
+<div class="container mt-4">
+    <h3>Businesses</h3>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Active</th>
+                <th>SubscriptionEnd</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.BusinessId</td>
+                <td>@b.Name</td>
+                <td>@b.IsActive</td>
+                <td>@(b.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>
+                    @if (!b.IsActive)
+                    {
+                        <form method="post" asp-action="Activate" asp-controller="Admin" class="d-inline">
+                            <input type="hidden" name="id" value="@b.BusinessId" />
+                            <button class="btn btn-sm btn-success" type="submit">Activate</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="Deactivate" asp-controller="Admin" class="d-inline">
+                            <input type="hidden" name="id" value="@b.BusinessId" />
+                            <button class="btn btn-sm btn-warning" type="submit">Deactivate</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+
