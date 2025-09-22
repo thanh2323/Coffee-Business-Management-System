@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Business Created";
+}
+
+<div class="container mt-5 text-center">
+    <div class="alert alert-info">
+        <h4>Your business has been created.</h4>
+        <p>Please proceed to payment to activate your business.</p>
+    </div>
+    <form method="post" asp-controller="Business" asp-action="Pay" class="d-inline">
+        <input type="hidden" name="businessId" value="@ViewBag.BusinessId" />
+        <select name="gateway" class="form-select d-inline w-auto me-2">
+            <option value="VNPay">VNPay</option>
+            <option value="MoMo">MoMo</option>
+        </select>
+        <button type="submit" class="btn btn-success">Pay Now</button>
+    </form>
+    <a class="btn btn-secondary ms-2" href="/">Back to Home</a>
+    
+</div>
+
+
