@@ -1,0 +1,39 @@
+@model CoffeeShop.Domain.Entities.Business
+@{
+    ViewData["Title"] = "My Business";
+}
+
+<div class="container mt-4">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <h3>@Model.Name</h3>
+    <p><strong>Status:</strong> @(Model.IsActive ? "Active" : "Inactive")</p>
+    <p><strong>Subscription End:</strong> @(Model.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+
+    @if (!Model.IsActive)
+    {
+        <form method="post" asp-controller="Business" asp-action="Pay" class="mt-3">
+            <input type="hidden" name="businessId" value="@Model.BusinessId" />
+            <div class="input-group">
+                <select name="gateway" class="form-select w-auto">
+                    <option value="VNPay">VNPay</option>
+                    <option value="MoMo">MoMo</option>
+                </select>
+                <button type="submit" class="btn btn-success">Pay Now</button>
+            </div>
+        </form>
+    }
+
+    <div class="mt-3">
+        <a class="btn btn-secondary" href="/">Back to Home</a>
+    </div>
+</div>
+
+
