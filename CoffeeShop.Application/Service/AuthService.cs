@@ -22,11 +22,11 @@ namespace CoffeeShop.Application.Service
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<AuthResult> LoginAsync(string username, string password)
+        public async Task<AuthResult> LoginAsync(string email, string password)
         {
             try
             {
-                var user = await _unitOfWork.Users.GetByUsernameAsync(username);
+                var user = await _unitOfWork.Users.GetByEmailAsync(email);
                 if (user == null)
                     return AuthResult.Failed("User not found");
 
@@ -76,8 +76,8 @@ namespace CoffeeShop.Application.Service
             }
         }
 
-        // Register a new business owner and their business (Staff will be added by the owner)
-        public async Task<AuthResult> RegisterOwnerAsync(string username, string email, string password, string businessName)
+        // Register a new business owner (only create User, not Business)
+        public async Task<AuthResult> RegisterOwnerAsync(string username, string email, string password)
         {
             try
             {
@@ -91,16 +91,6 @@ namespace CoffeeShop.Application.Service
                 if (existingEmail != null)
                     return AuthResult.Failed("Email already exists");
 
-             
-                var business = new Business
-                {
-                    Name = businessName,
-                    CreatedAt = DateTime.UtcNow,
-                    IsActive = true
-                };
-                _unitOfWork.Businesses.Add(business);
-                await _unitOfWork.SaveChangesAsync();
-
                 // Hash password
                 var passwordHasher = new PasswordHasher<User>();
 
@@ -110,7 +100,7 @@ namespace CoffeeShop.Application.Service
                     Email = email,
                     PasswordHash = passwordHasher.HashPassword(null!, password),
                     Role = UserRole.Owner,
-                    BusinessId = business.BusinessId
+                    BusinessId = null // Chưa có business, sẽ tạo sau
                 };
 
                 _unitOfWork.Users.Add(user);
