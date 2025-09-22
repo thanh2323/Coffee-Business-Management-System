@@ -5,8 +5,8 @@ namespace CoffeeShop.Application.Interface.IService
 {
     public interface IAuthService
     {
-        Task<AuthResult> LoginAsync(string username, string password);
-        Task<AuthResult> RegisterOwnerAsync(string username, string email, string password, string businessName);
+        Task<AuthResult> LoginAsync(string email, string password);
+        Task<AuthResult> RegisterOwnerAsync(string username, string email, string password);
         Task LogoutAsync();
       
         Task<User?> GetCurrentUserAsync();

@@ -35,6 +35,11 @@ namespace CoffeeShop.Infrastructure.Extention
 
             // Register services
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IBusinessService, BusinessService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.VNPayGateway>();
+            services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.MoMoGateway>();
             services.AddHttpContextAccessor();
 
             return services;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,13 @@ namespace CoffeeShop.Domain.Entities
         public string? Phone { get; set; }
         [DefaultValue(false)]
         public bool IsActive { get; set; }
+
+        // Subscription fields
+        public DateTime? SubscriptionEndDate { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal MonthlyFee { get; set; } = 500000; // 500k VND
+        [StringLength(100)]
+        public string? PaymentReference { get; set; }
 
         // Navigation properties
         public  ICollection<Branch> Branches { get; set; } = new List<Branch>();
