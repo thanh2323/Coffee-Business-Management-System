@@ -1,0 +1,66 @@
+@model CoffeeShop.Domain.Entities.User
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>User Profile</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">User ID:</dt>
+                        <dd class="col-sm-9">@Model.UserId</dd>
+
+                        <dt class="col-sm-3">Username:</dt>
+                        <dd class="col-sm-9">@Model.Username</dd>
+
+                        <dt class="col-sm-3">Email:</dt>
+                        <dd class="col-sm-9">@Model.Email</dd>
+
+                        <dt class="col-sm-3">Role:</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge bg-primary">@Model.Role</span>
+                        </dd>
+
+                        @if (Model.BusinessId.HasValue)
+                        {
+                            <dt class="col-sm-3">Business ID:</dt>
+                            <dd class="col-sm-9">@Model.BusinessId</dd>
+                        }
+
+                        @if (Model.BranchId.HasValue)
+                        {
+                            <dt class="col-sm-3">Branch ID:</dt>
+                            <dd class="col-sm-9">@Model.BranchId</dd>
+                        }
+
+                        <dt class="col-sm-3">Created At:</dt>
+                        <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <dt class="col-sm-3">Updated At:</dt>
+                            <dd class="col-sm-9">@Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Actions</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="@Url.Action("Logout")">
+                        <button type="submit" class="btn btn-danger w-100">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

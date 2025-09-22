@@ -50,3 +50,4 @@ namespace CoffeeShop.Infrastructure.Repository
         }
     }
 }
+

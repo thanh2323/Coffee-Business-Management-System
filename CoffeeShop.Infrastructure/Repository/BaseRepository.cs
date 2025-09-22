@@ -35,11 +35,6 @@ namespace CoffeeShop.Infrastructure.Repository
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
-        public Task<T?> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Update(T entity) => _dbSet.Update(entity);
     }
 }

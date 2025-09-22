@@ -9,7 +9,7 @@ using CoffeeShop.Infrastructure.Repository;
 namespace CoffeeShop.Infrastructure.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
-    {
+    {   
         private readonly ApplicationDbContext _context;
         private IDbContextTransaction? _transaction;
 

@@ -1,12 +1,19 @@
 ﻿using CoffeeShop.Domain.Entities;
+using CoffeeShop.Domain.Enums;
 
 namespace CoffeeShop.Application.Interface.IRepo
 {
     public interface IIngredientRepository : IBaseRepository<Ingredient>
     {
-        // Ingredient-specific methods can be added here
+        // Ingredient-specific methods
         Task<Ingredient?> GetByNameAsync(string name);
         Task<IEnumerable<Ingredient>> GetLowStockIngredientsAsync(int threshold);
-      //  Task<IEnumerable<Ingredient>> GetExpiringSoonAsync(DateTime days);
+        Task<IEnumerable<Ingredient>> GetIngredientsByBranchAsync(int branchId);
+        
+        // InventoryTransaction CRUD methods (since InventoryTransaction is part of Ingredient aggregate)
+        Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsByIngredientIdAsync(int ingredientId);
+        Task<InventoryTransaction?> GetInventoryTransactionByIdAsync(int transactionId);
+        void AddInventoryTransaction(InventoryTransaction transaction);
+        void DeleteInventoryTransaction(InventoryTransaction transaction);
     }
 }
