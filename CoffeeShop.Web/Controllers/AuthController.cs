@@ -26,15 +26,15 @@ namespace CoffeeShop.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                TempData["Error"] = "Username and password are required.";
+                TempData["Error"] = "Email and password are required.";
                 return View();
             }
 
-            var result = await _authService.LoginAsync(username, password);
+            var result = await _authService.LoginAsync(email, password);
             
             if (result.IsSuccess)
             {
@@ -56,10 +56,10 @@ namespace CoffeeShop.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string username, string email, string password, string confirmPassword, string businessName)
+        public async Task<IActionResult> Register(string username, string email, string password, string confirmPassword)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || 
-                string.IsNullOrEmpty(password) || string.IsNullOrEmpty(businessName))
+                string.IsNullOrEmpty(password))
             {
                 TempData["Error"] = "All fields are required.";
                 return View();
@@ -71,7 +71,7 @@ namespace CoffeeShop.Web.Controllers
                 return View();
             }
 
-            var result = await _authService.RegisterOwnerAsync(username, email, password, businessName);
+            var result = await _authService.RegisterOwnerAsync(username, email, password);
             
             if (result.IsSuccess)
             {

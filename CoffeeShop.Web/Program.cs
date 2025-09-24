@@ -20,7 +20,7 @@ namespace CoffeeShop.Web
                     {
                         options.LoginPath = "/Auth/Login";          
                         options.LogoutPath = "/Auth/Logout";        
-                        options.AccessDeniedPath = "/Forbidden";    
+                        options.AccessDeniedPath = "/Auth/Forbidden";    
 
                         options.Cookie.Name = "CoffeeShopAuth";     
                         options.Cookie.HttpOnly = true;             
