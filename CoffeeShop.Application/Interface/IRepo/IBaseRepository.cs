@@ -13,6 +13,7 @@ namespace CoffeeShop.Application.Interface.IRepo
         void Add(T entity);
         void Update(T entity);
         void Delete(T entity);
+        void SoftDelete(T entity);
         bool Exists(Expression<Func<T, bool>> predicate);
     }
 }

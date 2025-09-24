@@ -26,6 +26,7 @@ namespace CoffeeShop.Infrastructure.UnitOfWork
             Ingredients = new IngredientRepository(_context);
             Orders = new OrderRepository(_context);
             StaffProfiles = new StaffProfileRepository(_context);
+            CafeTables = new CafeTableRepository(_context);
         }
 
         // Repository properties
@@ -36,7 +37,7 @@ namespace CoffeeShop.Infrastructure.UnitOfWork
         public IMenuItemRepository MenuItems { get; }
         public IIngredientRepository Ingredients { get; }
         public IOrderRepository Orders { get; }
-
+        public ICafeTableRepository CafeTables { get; }
         public IStaffProfileRepository StaffProfiles { get; }
 
         // Save changes

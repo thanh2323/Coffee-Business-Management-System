@@ -29,12 +29,22 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IMenuItemRepository, MenuItemRepository>();
             services.AddScoped<IIngredientRepository, IngredientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ICafeTableRepository, CafeTableRepository>();
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
             // Register services
             services.AddScoped<IAuthService, AuthService>();
+<<<<<<< Updated upstream
+=======
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IBusinessService, BusinessService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IBranchService, BranchService>();
+            services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.VNPayGateway>();
+            services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.MoMoGateway>();
+>>>>>>> Stashed changes
             services.AddHttpContextAccessor();
 
             return services;

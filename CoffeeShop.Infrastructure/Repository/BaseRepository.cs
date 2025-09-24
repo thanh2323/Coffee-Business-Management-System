@@ -26,6 +26,13 @@ namespace CoffeeShop.Infrastructure.Repository
        
         public void Delete(T entity) => _dbSet.Remove(entity);
 
+        public void SoftDelete(T entity)
+        {
+            entity.MarkAsDeleted();
+            Update(entity);
+        }
+
+
         public bool Exists(Expression<Func<T, bool>> predicate) => _dbSet.Any(predicate);
 
         public IEnumerable<T> GetAll()
