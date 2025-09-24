@@ -25,5 +25,20 @@ namespace CoffeeShop.Infrastructure.Repository
             // Global query filter excludes deleted entities
             return await _dbSet.ToListAsync();
         }
+
+        public async Task<IEnumerable<Branch>> GetByBusinessIdAsync(int businessId)
+        {
+            return await _dbSet.Where(b => b.BusinessId == businessId).ToListAsync();
+        }
+
+        public async Task<bool> ExistsByNameAsync(int businessId, string name)
+        {
+            return await _dbSet.AnyAsync(b => b.BusinessId == businessId && b.Name == name);
+        }
+
+        public async Task<Branch?> GetByIdAsync(int branchId)
+        {
+           return await _dbSet.FirstOrDefaultAsync(b => b.BranchId == branchId);
+        }
     }
 }

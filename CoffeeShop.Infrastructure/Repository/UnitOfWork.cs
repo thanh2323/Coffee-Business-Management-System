@@ -25,6 +25,7 @@ namespace CoffeeShop.Infrastructure.Repository
             MenuItems = new MenuItemRepository(_context);
             Ingredients = new IngredientRepository(_context);
             Orders = new OrderRepository(_context);
+            CafeTables = new CafeTableRepository(_context);
         }
 
         // Repository properties
@@ -36,6 +37,7 @@ namespace CoffeeShop.Infrastructure.Repository
         public IMenuItemRepository MenuItems { get; }
         public IIngredientRepository Ingredients { get; }
         public IOrderRepository Orders { get; }
+        public ICafeTableRepository CafeTables { get; }
 
         // Save changes
         public async Task<int> SaveChangesAsync()
