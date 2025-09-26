@@ -35,6 +35,9 @@
         <div class="d-flex gap-2">
             <button class="btn btn-primary" type="submit">Save</button>
             <a class="btn btn-secondary" asp-action="Index">Back</a>
+            <a class="btn btn-success" asp-controller="Tables" asp-action="Create" asp-route-branchId="@Model.BranchId">
+                Add Table
+            </a>
         </div>
     </form>
 </div>

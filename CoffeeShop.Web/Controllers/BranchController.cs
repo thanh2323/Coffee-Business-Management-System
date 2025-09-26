@@ -26,8 +26,8 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var ownerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (ownerIdClaim == null || !int.TryParse(ownerIdClaim, out var ownerId))
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
             {
                 TempData["Error"] = "Invalid user.";
                 return RedirectToAction("My", "Business");
@@ -43,8 +43,8 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var ownerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (ownerIdClaim == null || !int.TryParse(ownerIdClaim, out var ownerId))
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
             {
                 TempData["Error"] = "Invalid user.";
                 return View();
@@ -58,8 +58,8 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string name, string? address, TimeSpan openTime, TimeSpan closeTime)
         {
-            var ownerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (ownerIdClaim == null || !int.TryParse(ownerIdClaim, out var ownerId))
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
             {
                 TempData["Error"] = "Invalid user.";
                 return View();

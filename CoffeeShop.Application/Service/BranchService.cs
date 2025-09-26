@@ -13,22 +13,22 @@ namespace CoffeeShop.Application.Service
             _uow = uow;
         }
 
-        public async Task<IEnumerable<Branch>> GetBranchesForOwnerAsync(int ownerUserId)
+        public async Task<IEnumerable<Branch>> GetBranchesForOwnerAsync(int userId)
         {
-            var owner = await _uow.Users.GetByIdAsync(ownerUserId);
+            var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null || !owner.BusinessId.HasValue)
                 return Enumerable.Empty<Branch>();
             return await _uow.Branches.GetByBusinessIdAsync(owner.BusinessId.Value);
         }
 
-        public async Task<BranchResult> CreateBranchAsync(int ownerUserId, string name, string? address, TimeSpan openTime, TimeSpan closeTime)
+        public async Task<BranchResult> CreateBranchAsync(int userId, string name, string? address, TimeSpan openTime, TimeSpan closeTime)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return BranchResult.Failed("Branch name is required");
             if (openTime >= closeTime)
                 return BranchResult.Failed("Open time must be earlier than close time");
 
-            var owner = await _uow.Users.GetByIdAsync(ownerUserId);
+            var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null || !owner.BusinessId.HasValue)
                 return BranchResult.Failed("Owner has no business");
             // Ensure business is active before allowing branch creation
@@ -55,14 +55,14 @@ namespace CoffeeShop.Application.Service
             return BranchResult.Success(branch, "Branch created");
         }
 
-        public async Task<BranchResult> UpdateBranchAsync(int ownerUserId, int branchId, string name, string? address, TimeSpan openTime, TimeSpan closeTime)
+        public async Task<BranchResult> UpdateBranchAsync(int userId, int branchId, string name, string? address, TimeSpan openTime, TimeSpan closeTime)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return BranchResult.Failed("Branch name is required");
             if (openTime >= closeTime)
                 return BranchResult.Failed("Open time must be earlier than close time");
 
-            var owner = await _uow.Users.GetByIdAsync(ownerUserId);
+            var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null || !owner.BusinessId.HasValue)
                 return BranchResult.Failed("Owner has no business");
 
@@ -81,9 +81,9 @@ namespace CoffeeShop.Application.Service
             return BranchResult.Success(branch, "Branch updated");
         }
 
-        public async Task<(string businessName, string ownerName)> GetOwnerContextAsync(int ownerUserId)
+        public async Task<(string businessName, string ownerName)> GetOwnerContextAsync(int userId)
         {
-            var owner = await _uow.Users.GetByIdAsync(ownerUserId);
+            var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null)
                 return (string.Empty, string.Empty);
             var businessName = string.Empty;
@@ -95,9 +95,9 @@ namespace CoffeeShop.Application.Service
             return (businessName, owner.Username);
         }
 
-        public async Task<BranchResult> DeleteBranchAsync(int ownerUserId, int branchId)
+        public async Task<BranchResult> DeleteBranchAsync(int userId, int branchId)
         {
-            var owner = await _uow.Users.GetByIdAsync(ownerUserId);
+            var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null || !owner.BusinessId.HasValue)
                 return BranchResult.Failed("Owner has no business");
 
