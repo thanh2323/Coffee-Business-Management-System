@@ -6,6 +6,7 @@ using CoffeeShop.Application.Service;
 using CoffeeShop.Application.Service.Gateways;
 using CoffeeShop.Infrastructure.Data;
 using CoffeeShop.Infrastructure.Repository;
+using CoffeeShop.Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore; 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,7 +31,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IMenuItemRepository, MenuItemRepository>();
             services.AddScoped<IIngredientRepository, IngredientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-    //        services.AddScoped<ICafeTableRepository, CafeTableRepository>();
+           services.AddScoped<ICafeTableRepository, CafeTableRepository>();
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
