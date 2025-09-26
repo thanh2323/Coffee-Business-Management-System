@@ -18,19 +18,10 @@ namespace CoffeeShop.Web
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddCookie(options =>
                     {
-<<<<<<< Updated upstream
-                        options.LoginPath = "/Auth/Login";          
-                        options.LogoutPath = "/Auth/Logout";        
-<<<<<<< HEAD
-                        options.AccessDeniedPath = "/Forbidden";    
-=======
+
                         options.LoginPath = "/Auth/Login";
                         options.LogoutPath = "/Auth/Logout";
                         options.AccessDeniedPath = "/Auth/Forbidden";
->>>>>>> Stashed changes
-=======
-                        options.AccessDeniedPath = "/Auth/Forbidden";    
->>>>>>> 6e321f646e8ed7cc09487bff935ecc26385a6307
 
                         options.Cookie.Name = "CoffeeShopAuth";
                         options.Cookie.HttpOnly = true;

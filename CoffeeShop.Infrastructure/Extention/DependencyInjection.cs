@@ -42,22 +42,12 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IBusinessService, BusinessService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IBranchService, BranchService>();
-<<<<<<< Updated upstream
-            services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.VNPayGateway>();
-            services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.MoMoGateway>();
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
+
             services.AddScoped<ITableService, TableService>();
             services.AddScoped<IPaymentGateway, VNPayGateway>();
             services.AddScoped<IPaymentGateway, MoMoGateway>();
 
 
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> 6e321f646e8ed7cc09487bff935ecc26385a6307
             services.AddHttpContextAccessor();
 
             return services;
