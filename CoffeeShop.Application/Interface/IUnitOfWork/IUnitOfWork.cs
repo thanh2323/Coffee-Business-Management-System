@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeShop.Application.Interface.IRepo;
+using CoffeeShop.Infrastructure.UnitOfWork;
 
 namespace CoffeeShop.Application.Interface.IUnitOfWork
 {

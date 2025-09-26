@@ -1,0 +1,59 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.CafeTable>
+@{
+    ViewData["Title"] = "Tables";
+}
+
+<div class="container mt-4">
+    <h3>Tables</h3>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="mb-3">
+        <a class="btn btn-primary" asp-action="Create" asp-route-branchId="@ViewBag.BranchId">Add Table</a>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Table #</th>
+            <th>Active</th>
+            <th>QR</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.TableNumber</td>
+                <td>@t.IsActive</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(t.QRCode))
+                    {
+                        <a href="@t.QRCode" target="_blank">Open</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">-</span>
+                    }
+                </td>
+                <td>
+                    <form method="post" asp-action="GenerateQr" class="d-inline">
+                        <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+                        <input type="hidden" name="tableId" value="@t.TableId" />
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Generate QR</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+

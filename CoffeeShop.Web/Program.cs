@@ -18,16 +18,26 @@ namespace CoffeeShop.Web
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddCookie(options =>
                     {
+<<<<<<< Updated upstream
                         options.LoginPath = "/Auth/Login";          
                         options.LogoutPath = "/Auth/Logout";        
+<<<<<<< HEAD
+                        options.AccessDeniedPath = "/Forbidden";    
+=======
+                        options.LoginPath = "/Auth/Login";
+                        options.LogoutPath = "/Auth/Logout";
+                        options.AccessDeniedPath = "/Auth/Forbidden";
+>>>>>>> Stashed changes
+=======
                         options.AccessDeniedPath = "/Auth/Forbidden";    
+>>>>>>> 6e321f646e8ed7cc09487bff935ecc26385a6307
 
-                        options.Cookie.Name = "CoffeeShopAuth";     
-                        options.Cookie.HttpOnly = true;             
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
-                        options.Cookie.SameSite = SameSiteMode.Strict; 
+                        options.Cookie.Name = "CoffeeShopAuth";
+                        options.Cookie.HttpOnly = true;
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        options.Cookie.SameSite = SameSiteMode.Strict;
 
-                        options.ExpireTimeSpan = TimeSpan.FromHours(8); 
+                        options.ExpireTimeSpan = TimeSpan.FromHours(8);
                         options.SlidingExpiration = true;
                     });
             builder.Services.AddAuthorization(options =>
@@ -56,19 +66,27 @@ namespace CoffeeShop.Web
                         context.User.IsInRole("Staff") &&
                         context.User.HasClaim(c => c.Type == "Position" &&
                                                   (c.Value == "Barista" || c.Value == "Cashier"))));
+
+                // Owner or Manager (branch-level management)
+                options.AddPolicy("RequireOwnerOrManager", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.IsInRole("Owner") ||
+                        (context.User.IsInRole("Staff") &&
+                         context.User.HasClaim(c => c.Type == "Position" && c.Value == "Manager") &&
+                        context.User.HasClaim(c => c.Type == "BranchId"))));
             });
 
             var app = builder.Build();
 
             // Initialize database with seed data
-          /*  using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await DbInitializer.InitializeAsync(context);
-                
-                // Uncomment the line below to seed sample data
-                // await DbInitializer.SeedSampleDataAsync(context);
-            }*/
+            /*  using (var scope = app.Services.CreateScope())
+              {
+                  var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                  await DbInitializer.InitializeAsync(context);
+
+                  // Uncomment the line below to seed sample data
+                  // await DbInitializer.SeedSampleDataAsync(context);
+              }*/
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

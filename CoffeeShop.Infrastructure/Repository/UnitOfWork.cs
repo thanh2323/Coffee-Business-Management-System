@@ -4,6 +4,7 @@ using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using CoffeeShop.Infrastructure.UnitOfWork;
 
 namespace CoffeeShop.Infrastructure.Repository
 {
@@ -38,6 +39,8 @@ namespace CoffeeShop.Infrastructure.Repository
         public IIngredientRepository Ingredients { get; }
         public IOrderRepository Orders { get; }
         public ICafeTableRepository CafeTables { get; }
+
+  
 
         // Save changes
         public async Task<int> SaveChangesAsync()

@@ -4,11 +4,11 @@ namespace CoffeeShop.Application.Interface.IService
 {
     public interface IBranchService
     {
-        Task<IEnumerable<Branch>> GetBranchesForOwnerAsync(int ownerUserId);
-        Task<BranchResult> CreateBranchAsync(int ownerUserId, string name, string? address, TimeSpan openTime, TimeSpan closeTime);
-        Task<BranchResult> UpdateBranchAsync(int ownerUserId, int branchId, string name, string? address, TimeSpan openTime, TimeSpan closeTime);
-        Task<(string businessName, string ownerName)> GetOwnerContextAsync(int ownerUserId);
-        Task<BranchResult> DeleteBranchAsync(int ownerUserId, int branchId);
+        Task<IEnumerable<Branch>> GetBranchesForOwnerAsync(int userId);
+        Task<BranchResult> CreateBranchAsync(int userId, string name, string? address, TimeSpan openTime, TimeSpan closeTime);
+        Task<BranchResult> UpdateBranchAsync(int userId, int branchId, string name, string? address, TimeSpan openTime, TimeSpan closeTime);
+        Task<(string businessName, string ownerName)> GetOwnerContextAsync(int userId);
+        Task<BranchResult> DeleteBranchAsync(int userId, int branchId);
     }
 
     public class BranchResult
