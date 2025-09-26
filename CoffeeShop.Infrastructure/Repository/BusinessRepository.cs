@@ -24,6 +24,11 @@ namespace CoffeeShop.Infrastructure.Repository
         {
             return await _dbSet.Where(b => b.IsActive).ToListAsync();
         }
+
+        public async Task<Business?> GetByIdAsync(int businessId)
+        {
+            return await _dbSet.FirstOrDefaultAsync(b => b.BusinessId == businessId);
+        }
     }
 }
 

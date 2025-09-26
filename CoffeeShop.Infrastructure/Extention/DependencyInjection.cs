@@ -37,8 +37,7 @@ namespace CoffeeShop.Infrastructure.Extention
 
             // Register services
             services.AddScoped<IAuthService, AuthService>();
-<<<<<<< Updated upstream
-=======
+
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IBusinessService, BusinessService>();
             services.AddScoped<IPaymentService, PaymentService>();
@@ -46,6 +45,7 @@ namespace CoffeeShop.Infrastructure.Extention
 <<<<<<< Updated upstream
             services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.VNPayGateway>();
             services.AddScoped<IPaymentGateway, CoffeeShop.Application.Service.Gateways.MoMoGateway>();
+<<<<<<< HEAD
 >>>>>>> Stashed changes
 =======
             services.AddScoped<ITableService, TableService>();
@@ -54,6 +54,10 @@ namespace CoffeeShop.Infrastructure.Extention
 
 
 >>>>>>> Stashed changes
+=======
+
+
+>>>>>>> 6e321f646e8ed7cc09487bff935ecc26385a6307
             services.AddHttpContextAccessor();
 
             return services;
