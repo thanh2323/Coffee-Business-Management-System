@@ -20,7 +20,7 @@ namespace CoffeeShop.Domain.Entities
         public int CustomerId { get; set; }
 
         [ForeignKey(nameof(CafeTable))]
-        public int? TableId { get; set; } // nullable, nếu IsTakeAway = true thì sẽ null
+        public int? TableId { get; set; } // nullable,  IsTakeAway = true will be null
 
         [ForeignKey(nameof(Branch))]
         public int BranchId { get; set; }

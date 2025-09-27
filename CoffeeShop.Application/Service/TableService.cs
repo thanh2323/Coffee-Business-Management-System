@@ -1,7 +1,10 @@
-using CoffeeShop.Application.Interface.IService;
+﻿using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
+using QRCoder;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace CoffeeShop.Application.Service
 {
@@ -16,16 +19,16 @@ namespace CoffeeShop.Application.Service
 
         public async Task<IEnumerable<CafeTable>> GetByBranchAsync(int userId, int branchId)
         {
-            var owner = await _uow.Users.GetByIdAsync(userId);
-            if (owner == null)
+            var user = await _uow.Users.GetByIdAsync(userId);
+            if (user == null)
                 return Enumerable.Empty<CafeTable>();
 
             var branch = await _uow.Branches.GetByIdAsync(branchId);
             if (branch == null)
                 return Enumerable.Empty<CafeTable>();
 
-            var isOwnerManaging = owner.BusinessId.HasValue && branch.BusinessId == owner.BusinessId.Value && owner.Role == UserRole.Owner;
-            var isManagerManaging = owner.Role == UserRole.Staff && owner.BranchId.HasValue && owner.BranchId.Value == branchId && owner.StaffProfile?.Position == StaffRole.Manager;
+            var isOwnerManaging = user.BusinessId.HasValue && branch.BusinessId == user.BusinessId.Value && user.Role == UserRole.Owner;
+            var isManagerManaging = user.Role == UserRole.Staff && user.BranchId.HasValue && user.BranchId.Value == branchId && user.StaffProfile?.Position == StaffRole.Manager;
             if (!isOwnerManaging && !isManagerManaging)
                 return Enumerable.Empty<CafeTable>();
 
@@ -90,8 +93,8 @@ namespace CoffeeShop.Application.Service
             if (string.IsNullOrWhiteSpace(baseUrl))
                 return TableResult.Failed("BaseUrl required");
 
-            var owner = await _uow.Users.GetByIdAsync(userId);
-            if (owner == null)
+            var user = await _uow.Users.GetByIdAsync(userId);
+            if (user == null)
                 return TableResult.Failed("User not found");
 
             // Load table and verify ownership via branch
@@ -102,19 +105,68 @@ namespace CoffeeShop.Application.Service
             if (branch == null)
                 return TableResult.Failed("Branch not found");
 
-            var isOwnerManaging = owner.BusinessId.HasValue && branch.BusinessId == owner.BusinessId.Value && owner.Role == Domain.Enums.UserRole.Owner;
-            var isManagerManaging = owner.Role == Domain.Enums.UserRole.Staff && owner.BranchId.HasValue && owner.BranchId.Value == branch.BranchId && owner.StaffProfile?.Position == Domain.Enums.StaffRole.Manager;
+            // Authorization: Owner of business or Manager of this branch
+            var isOwnerManaging = user.BusinessId.HasValue
+                && branch.BusinessId == user.BusinessId.Value
+                && user.Role == UserRole.Owner;
+
+            var isManagerManaging = user.Role == UserRole.Staff
+                && user.BranchId.HasValue
+                && user.BranchId.Value == branch.BranchId
+                && user.StaffProfile?.Position == StaffRole.Manager;
             if (!isOwnerManaging && !isManagerManaging)
                 return TableResult.Failed("Not authorized to manage this branch");
 
             // Simple QR link template; tokenization can be added later
-            var link = $"{baseUrl.TrimEnd('/')}/order?tableId={table.TableId}";
-            table.QRCode = link;
-            table.MarkAsUpdated();
-            _uow.CafeTables.Update(table);
+            if (string.IsNullOrEmpty(table.QRCode))
+            {
+                table.QRCode = Guid.NewGuid().ToString();
+                table.MarkAsUpdated();
+                _uow.CafeTables.Update(table);
+                await _uow.SaveChangesAsync();
+            }
+            var qrUrl = $"{baseUrl.TrimEnd('/')}/qr/resolve?t={table.QRCode}";
+
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrData = qrGenerator.CreateQrCode(qrUrl, QRCodeGenerator.ECCLevel.Q);
+            using var qrPng = new PngByteQRCode(qrData);
+            byte[] qrBytes = qrPng.GetGraphic(20); 
+
+            string qrBase64 = Convert.ToBase64String(qrBytes);
+
+            return TableResult.Success(table, qrBase64, qrUrl, "QR generated");
+        }
+
+        public async Task<TableResult> DeleteAsync(int userId, int tableId)
+        {
+            var user = await _uow.Users.GetByIdAsync(userId);
+            if (user == null)
+                return TableResult.Failed("User not found");
+
+            // Load table and verify ownership via branch
+            var table = await _uow.CafeTables.GetByIdAsync(tableId);
+            if (table == null)
+                return TableResult.Failed("Table not found");
+            var branch = await _uow.Branches.GetByIdAsync(table.BranchId);
+            if (branch == null)
+                return TableResult.Failed("Branch not found");
+
+            // Authorization: Owner of business or Manager of this branch
+            var isOwnerManaging = user.BusinessId.HasValue
+                && branch.BusinessId == user.BusinessId.Value
+                && user.Role == UserRole.Owner;
+
+            var isManagerManaging = user.Role == UserRole.Staff
+                && user.BranchId.HasValue
+                && user.BranchId.Value == branch.BranchId
+                && user.StaffProfile?.Position == StaffRole.Manager;
+            if (!isOwnerManaging && !isManagerManaging)
+                return TableResult.Failed("Not authorized to manage this branch");
+
+            _uow.CafeTables.SoftDelete(table);
             await _uow.SaveChangesAsync();
 
-            return TableResult.Success(table, "QR generated");
+            return TableResult.Success(table, "Table deleted successfully");
         }
     }
 }

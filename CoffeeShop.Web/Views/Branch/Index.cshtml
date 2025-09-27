@@ -37,10 +37,22 @@
                 <td>@(b.Address ?? "-")</td>
                 <td>@b.OpenTime.ToString(@"hh\:mm") - @b.CloseTime.ToString(@"hh\:mm")</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@b.BranchId">Edit</a>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a class="btn btn-outline-primary" asp-controller="MenuItems" asp-action="Index" asp-route-branchId="@b.BranchId" title="Menu Items">
+                            <i class="fas fa-utensils"></i> Menu
+                        </a>
+                        <a class="btn btn-outline-info" asp-controller="Tables" asp-action="Index" asp-route-branchId="@b.BranchId" title="Tables">
+                            <i class="fas fa-table"></i> Tables
+                        </a>
+                        <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@b.BranchId" title="Edit Branch">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
                         <form method="post" asp-action="Delete" asp-route-id="@b.BranchId" class="d-inline" onsubmit="return confirm('Delete this branch?');">
-                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                    </form>
+                            <button class="btn btn-outline-danger" type="submit" title="Delete Branch">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }

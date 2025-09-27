@@ -1,0 +1,129 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.MenuItem>
+
+@{
+    ViewData["Title"] = "Menu Items";
+    var branchId = ViewBag.BranchId as int?;
+    var categories = ViewBag.Categories as IEnumerable<string> ?? new List<string>();
+    var selectedCategory = ViewBag.SelectedCategory as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Menu Items</h2>
+    <a href="@Url.Action("Create", new { branchId })" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Menu Item
+    </a>
+</div>
+
+<!-- Category Filter -->
+@if (categories.Any())
+{
+    <div class="mb-3">
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("Index", new { branchId })" 
+               class="btn @(string.IsNullOrEmpty(selectedCategory) ? "btn-primary" : "btn-outline-primary")">
+                All Categories
+            </a>
+            @foreach (var category in categories)
+            {
+                <a href="@Url.Action("Index", new { branchId, category })" 
+                   class="btn @(selectedCategory == category ? "btn-primary" : "btn-outline-primary")">
+                    @category
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<!-- Menu Items Table -->
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.Name</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">@(item.Category ?? "No Category")</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success">@item.Price.ToString("N0") VND</span>
+                        </td>
+                        <td>
+                            @if (item.IsAvailable)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Unavailable</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="@Url.Action("Edit", new { id = item.MenuItemId })" 
+                                   class="btn btn-outline-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <form method="post" action="@Url.Action("ToggleAvailability", new { id = item.MenuItemId })" 
+                                      class="d-inline">
+                                    <button type="submit" 
+                                            class="btn @(item.IsAvailable ? "btn-outline-warning" : "btn-outline-success")" 
+                                            title="@(item.IsAvailable ? "Mark Unavailable" : "Mark Available")"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="fas @(item.IsAvailable ? "fa-eye-slash" : "fa-eye")"></i>
+                                    </button>
+                                </form>
+                                
+                                <form method="post" action="@Url.Action("Delete", new { id = item.MenuItemId })" 
+                                      class="d-inline">
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger" 
+                                            title="Delete"
+                                            onclick="return confirm('Are you sure you want to delete this menu item?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="fas fa-utensils fa-3x mb-3"></i>
+                        <br>
+                        No menu items found.
+                        <br>
+                        <a href="@Url.Action("Create", new { branchId })" class="btn btn-primary mt-2">
+                            Add your first menu item
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Back to Branch -->
+<div class="mt-4">
+    <a href="@Url.Action("Index", "Branch")" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Branches
+    </a>
+</div>
+

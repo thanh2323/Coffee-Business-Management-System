@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Infrastructure.Data;
-using CoffeeShop.Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeShop.Infrastructure.Repository

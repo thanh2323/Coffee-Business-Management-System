@@ -34,9 +34,17 @@
                 <td>@t.TableNumber</td>
                 <td>@t.IsActive</td>
                 <td>
-                    @if (!string.IsNullOrEmpty(t.QRCode))
+                    @if (!string.IsNullOrEmpty(t.QRCode))   
                     {
-                        <a href="@t.QRCode" target="_blank">Open</a>
+                        <div class="text-center">
+                            <img src="@Url.Action("QrCode", new { tableId = t.TableId })" 
+                                 alt="QR Code" 
+                                 width="100" 
+                                 height="100" 
+                                 class="img-thumbnail" />
+                            <br>
+                            <small class="text-muted">QR Code Generated</small>
+                        </div>
                     }
                     else
                     {
@@ -44,11 +52,23 @@
                     }
                 </td>
                 <td>
-                    <form method="post" asp-action="GenerateQr" class="d-inline">
-                        <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-                        <input type="hidden" name="tableId" value="@t.TableId" />
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Generate QR</button>
-                    </form>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <form method="post" asp-action="GenerateQr" class="d-inline">
+                            <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+                            <input type="hidden" name="tableId" value="@t.TableId" />
+                            <button type="submit" class="btn btn-outline-secondary" title="Generate QR">
+                                <i class="fas fa-qrcode"></i> QR
+                            </button>
+                        </form>
+                        
+                        <form method="post" asp-action="Delete" class="d-inline" 
+                              onsubmit="return confirm('Are you sure you want to delete table @t.TableNumber?')">
+                            <input type="hidden" name="tableId" value="@t.TableId" />
+                            <button type="submit" class="btn btn-outline-danger" title="Delete Table">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }
