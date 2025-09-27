@@ -1,7 +1,7 @@
 ﻿using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Domain.Entities;
 
-namespace CoffeeShop.Infrastructure.UnitOfWork
+namespace CoffeeShop.Application.Interface.IRepo
 {
     public interface ICafeTableRepository : IBaseRepository<CafeTable>
     {
