@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using CoffeeShop.Application.Interface.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,20 +13,11 @@ namespace CoffeeShop.Web.Controllers
         {
             _menuItemService = menuItemService;
         }
-        private bool TryGetUserId(out int userId)
-        {
-            userId = 0;
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return claim != null && int.TryParse(claim, out userId);
-        }
+
         [HttpGet]
         public async Task<IActionResult> Index(int branchId, string? category = null)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
             var menuItems = await _menuItemService.GetByCategoryAsync(userId, branchId, category);
             var categories = await _menuItemService.GetCategoriesAsync(userId, branchId);
 
@@ -49,11 +39,7 @@ namespace CoffeeShop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int branchId, string name, decimal price, string? category, bool isAvailable = true)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
             var result = await _menuItemService.CreateAsync(userId, branchId, name, price, category, isAvailable);
 
             if (result.IsSuccess)
@@ -70,11 +56,7 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
             var result = await _menuItemService.GetByIdAsync(userId, id);
 
             if (!result.IsSuccess)
@@ -90,11 +72,7 @@ namespace CoffeeShop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int menuItemId, string name, decimal price, string? category, bool isAvailable)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
             var result = await _menuItemService.UpdateAsync(userId, menuItemId, name, price, category, isAvailable);
 
             if (result.IsSuccess)
@@ -111,11 +89,7 @@ namespace CoffeeShop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
             var result = await _menuItemService.DeleteAsync(userId, id);
 
             if (result.IsSuccess)
@@ -134,11 +108,7 @@ namespace CoffeeShop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleAvailability(int id)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
             var result = await _menuItemService.ToggleAvailabilityAsync(userId, id);
 
             if (result.IsSuccess)

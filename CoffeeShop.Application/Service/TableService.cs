@@ -19,16 +19,16 @@ namespace CoffeeShop.Application.Service
 
         public async Task<IEnumerable<CafeTable>> GetByBranchAsync(int userId, int branchId)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null)
+            var owner = await _uow.Users.GetByIdAsync(userId);
+            if (owner == null)
                 return Enumerable.Empty<CafeTable>();
 
             var branch = await _uow.Branches.GetByIdAsync(branchId);
             if (branch == null)
                 return Enumerable.Empty<CafeTable>();
 
-            var isOwnerManaging = user.BusinessId.HasValue && branch.BusinessId == user.BusinessId.Value && user.Role == UserRole.Owner;
-            var isManagerManaging = user.Role == UserRole.Staff && user.BranchId.HasValue && user.BranchId.Value == branchId && user.StaffProfile?.Position == StaffRole.Manager;
+            var isOwnerManaging = owner.BusinessId.HasValue && branch.BusinessId == owner.BusinessId.Value && owner.Role == UserRole.Owner;
+            var isManagerManaging = owner.Role == UserRole.Staff && owner.BranchId.HasValue && owner.BranchId.Value == branchId && owner.StaffProfile?.Position == StaffRole.Manager;
             if (!isOwnerManaging && !isManagerManaging)
                 return Enumerable.Empty<CafeTable>();
 
@@ -93,8 +93,8 @@ namespace CoffeeShop.Application.Service
             if (string.IsNullOrWhiteSpace(baseUrl))
                 return TableResult.Failed("BaseUrl required");
 
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null)
+            var owner = await _uow.Users.GetByIdAsync(userId);
+            if (owner == null)
                 return TableResult.Failed("User not found");
 
             // Load table and verify ownership via branch
@@ -106,14 +106,14 @@ namespace CoffeeShop.Application.Service
                 return TableResult.Failed("Branch not found");
 
             // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.BusinessId.HasValue
-                && branch.BusinessId == user.BusinessId.Value
-                && user.Role == UserRole.Owner;
+            var isOwnerManaging = owner.BusinessId.HasValue
+                && branch.BusinessId == owner.BusinessId.Value
+                && owner.Role == UserRole.Owner;
 
-            var isManagerManaging = user.Role == UserRole.Staff
-                && user.BranchId.HasValue
-                && user.BranchId.Value == branch.BranchId
-                && user.StaffProfile?.Position == StaffRole.Manager;
+            var isManagerManaging = owner.Role == UserRole.Staff
+                && owner.BranchId.HasValue
+                && owner.BranchId.Value == branch.BranchId
+                && owner.StaffProfile?.Position == StaffRole.Manager;
             if (!isOwnerManaging && !isManagerManaging)
                 return TableResult.Failed("Not authorized to manage this branch");
 
@@ -139,8 +139,8 @@ namespace CoffeeShop.Application.Service
 
         public async Task<TableResult> DeleteAsync(int userId, int tableId)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null)
+            var owner = await _uow.Users.GetByIdAsync(userId);
+            if (owner == null)
                 return TableResult.Failed("User not found");
 
             // Load table and verify ownership via branch
@@ -152,14 +152,14 @@ namespace CoffeeShop.Application.Service
                 return TableResult.Failed("Branch not found");
 
             // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.BusinessId.HasValue
-                && branch.BusinessId == user.BusinessId.Value
-                && user.Role == UserRole.Owner;
+            var isOwnerManaging = owner.BusinessId.HasValue
+                && branch.BusinessId == owner.BusinessId.Value
+                && owner.Role == UserRole.Owner;
 
-            var isManagerManaging = user.Role == UserRole.Staff
-                && user.BranchId.HasValue
-                && user.BranchId.Value == branch.BranchId
-                && user.StaffProfile?.Position == StaffRole.Manager;
+            var isManagerManaging = owner.Role == UserRole.Staff
+                && owner.BranchId.HasValue
+                && owner.BranchId.Value == branch.BranchId
+                && owner.StaffProfile?.Position == StaffRole.Manager;
             if (!isOwnerManaging && !isManagerManaging)
                 return TableResult.Failed("Not authorized to manage this branch");
 

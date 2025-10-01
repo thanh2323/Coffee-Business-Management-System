@@ -1,0 +1,57 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.Ingredient>
+@{
+    ViewData["Title"] = "Ingredients";
+}
+
+<div class="container mt-4">
+    <h3>Ingredients</h3>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="mb-3">
+        <a class="btn btn-primary" asp-action="Create" asp-route-branchId="@ViewBag.BranchId">Add Ingredient</a>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>UnitCost</th>
+            <th>Package Size</th>
+            <th>Stored Base Unit</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in Model)
+        {
+            <tr>
+                <td>@i.Name</td>
+                <td>@i.Quantity</td>
+                <td>@i.UnitCost</td>
+                <td>@i.DisplayUnit</td>
+                <td>@i.BaseUnit</td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-branchId="@ViewBag.BranchId" asp-route-ingredientName="@i.Name">Edit</a>
+                        <form method="post" asp-action="Delete" class="d-inline" onsubmit="return confirm('Delete @i.Name?')">
+                            <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+                            <input type="hidden" name="ingredientName" value="@i.Name" />
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+
