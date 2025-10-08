@@ -73,6 +73,11 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
+                                <a href="@Url.Action("Index", "Recipes", new { menuItemId = item.MenuItemId })" 
+                                   class="btn btn-outline-info" title="Manage Recipe">
+                                    <i class="fas fa-utensils"></i>
+                                </a>
+                                
                                 <a href="@Url.Action("Edit", new { id = item.MenuItemId })" 
                                    class="btn btn-outline-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
@@ -80,6 +85,7 @@
                                 
                                 <form method="post" action="@Url.Action("ToggleAvailability", new { id = item.MenuItemId })" 
                                       class="d-inline">
+                                    @Html.AntiForgeryToken()
                                     <button type="submit" 
                                             class="btn @(item.IsAvailable ? "btn-outline-warning" : "btn-outline-success")" 
                                             title="@(item.IsAvailable ? "Mark Unavailable" : "Mark Available")"
