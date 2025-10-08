@@ -1,3 +1,5 @@
+
+
 ﻿using System.Security.Claims;
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
@@ -109,15 +111,24 @@ namespace CoffeeShop.Web.Controllers
                 TempData["Error"] = "Invalid user.";
                 return RedirectToAction("Index", "Home");
             }
+            var table = await _uow.CafeTables.GetByIdAsync(tableId);
+            if (table == null)
+            {
+                TempData["Error"] = "Table not found.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var branchId = table.BranchId;
 
             var result = await _tableService.DeleteAsync(userId, tableId);
             TempData[result.IsSuccess ? "Success" : "Error"] = result.Message;
-            
-            // Redirect back to the branch's table list
-            var table = await _uow.CafeTables.GetByIdAsync(tableId);
-            return RedirectToAction("Index", new { branchId = table?.BranchId });
+
+            // Redirect về danh sách table của branch
+            return RedirectToAction("Index", new { branchId });
+
         }
     }
 }
+
 
 
