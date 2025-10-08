@@ -32,6 +32,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IIngredientRepository, IngredientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
            services.AddScoped<ICafeTableRepository, CafeTableRepository>();
+            services.AddScoped<IMenuItemRecipeRepository, MenuItemRecipeRepository>();
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
@@ -47,6 +48,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<ITableService, TableService>();
             services.AddScoped<IMenuItemService, MenuItemService>();
             services.AddScoped<IIngredientService, IngredientService>();
+            //services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<IPaymentGateway, VNPayGateway>();
             services.AddScoped<IPaymentGateway, MoMoGateway>();
 

@@ -1,4 +1,9 @@
 <<<<<<< HEAD
+
+
+=======
+<<<<<<< HEAD
+>>>>>>> c3438d65ad94d034b77da0b3df13aa38b8b1440c
 ﻿using System.Security.Claims;
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
@@ -130,6 +135,9 @@ namespace CoffeeShop.Web.Controllers
 }
 
 
+<<<<<<< HEAD
+
+=======
 =======
 ﻿using System.Security.Claims;
 using CoffeeShop.Application.Interface.IService;
@@ -255,3 +263,4 @@ namespace CoffeeShop.Web.Controllers
 
 
 >>>>>>> e44c5aafb73fe0774b8a1ae72e635938342e45ce
+>>>>>>> c3438d65ad94d034b77da0b3df13aa38b8b1440c
