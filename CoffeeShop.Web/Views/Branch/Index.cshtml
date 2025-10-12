@@ -47,6 +47,11 @@
                         <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@b.BranchId" title="Edit Branch">
                             <i class="fas fa-edit"></i> Edit
                         </a>
+                            <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Ingredients" asp-route-branchId="@b.BranchId" title="Inventory Ingredients">
+                                <i class="fas fa-edit"></i> Ingredients
+                            </a>
+                         
+                         
                         <form method="post" asp-action="Delete" asp-route-id="@b.BranchId" class="d-inline" onsubmit="return confirm('Delete this branch?');">
                             <button class="btn btn-outline-danger" type="submit" title="Delete Branch">
                                 <i class="fas fa-trash"></i> Delete

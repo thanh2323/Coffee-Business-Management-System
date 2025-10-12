@@ -3,6 +3,7 @@ using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
+using CoffeeShop.Domain.Rules;
 
 namespace CoffeeShop.Application.Service
 {
@@ -10,35 +11,33 @@ namespace CoffeeShop.Application.Service
     public class IngredientService : IIngredientService
     {
         private readonly IUnitOfWork _uow;
-        public IngredientService(IUnitOfWork uow)
+        private readonly IAuthService _authService;
+        public IngredientService(IUnitOfWork uow, IAuthService authService)
         {
             _uow = uow;
+            _authService = authService;
         }
 
-        public async Task<IEnumerable<Ingredient>> GetByBranchAsync(int userId, int branchId)
+        public async Task<IEnumerable<Ingredient>> GetByBranchAsync(int? branchId = null)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null) return Enumerable.Empty<Ingredient>();
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
+                throw new Exception("User not found");
 
-           
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
-            if (branch == null)
-                return Enumerable.Empty<Ingredient>();
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
+            int targetBranchId;
+            if (branchId.HasValue)
+                if (branchId.Value <= 0)
+                    throw new ArgumentException("Invalid branch ID.");
+                else
+                    targetBranchId = branchId.Value;
+            else if (user.BranchId.HasValue)
+                targetBranchId = user.BranchId.Value;
+            else
+                throw new Exception("No branch specified");
 
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == branchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-            if (!isOwnerManaging && !isManagerManaging)
-                return Enumerable.Empty<Ingredient>();
-
-
-            return await _uow.Ingredients.GetIngredientsByBranchAsync(branchId);
+            return await _uow.Ingredients.GetIngredientsByBranchAsync(targetBranchId);
         }
+
 
         private static (BaseUnit baseUnit, decimal baseUnitsPerPackage) InferBaseUnitAndConversion(string? displayUnit)
         {
@@ -80,29 +79,22 @@ namespace CoffeeShop.Application.Service
         }
 
         public async Task<IngredientResult> CreateAsync(
-            int userId,
             int branchId,
             string name,
             decimal quantity,
             decimal unitCost,
             string? displayUnit)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null) return IngredientResult.Failed("User not found");
+            var user = await _authService.GetCurrentUserAsync();
+           
+            if (user == null) 
+                return IngredientResult.Failed("User not found");
 
             var branch = await _uow.Branches.GetByIdAsync(branchId);
-            if (branch == null) return IngredientResult.Failed("Branch not found");
-
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
-
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == branchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-            if (!isOwnerManaging && !isManagerManaging)
+            if (branch == null) 
+                return IngredientResult.Failed("Branch not found");
+            var userCanManage = _authService.CanManageBranch(user, branch);
+            if (!userCanManage)
                 return IngredientResult.Failed("Not authorized");
 
             // Validation
@@ -133,42 +125,39 @@ namespace CoffeeShop.Application.Service
         }
 
         public async Task<IngredientResult> UpdateAsync(
-            int userId,
+            int branchId,
             string ingredientName,
             string name,
             decimal quantity,
             decimal unitCost,
             string? displayUnit)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null) return IngredientResult.Failed("User not found");
+
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
+                return IngredientResult.Failed("User not found");
+         
 
             var ing = await _uow.Ingredients.GetByNameAsync(ingredientName);
             if (ing == null) return IngredientResult.Failed("Ingredient not found");
-            var branch = await _uow.Branches.GetByIdAsync(ing.BranchId);
+
+            var branch = await _uow.Branches.GetByIdAsync(branchId);
             if (branch == null) return IngredientResult.Failed("Branch not found");
 
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
-
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == ing.BranchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-            if (!isOwnerManaging && !isManagerManaging)
+            var userCanManage = _authService.CanManageBranch(user, branch);
+            if (!userCanManage)
                 return IngredientResult.Failed("Not authorized");
+           
 
             if (string.IsNullOrWhiteSpace(name)) return IngredientResult.Failed("Name is required");
             if (quantity < 0) return IngredientResult.Failed("Quantity must be >= 0");
             if (unitCost < 0) return IngredientResult.Failed("Unit cost must be >= 0");
             var (baseUnit, conversionFactorToBase) = InferBaseUnitAndConversion(displayUnit);
 
-            var existsName = (await _uow.Ingredients.GetIngredientsByBranchAsync(ing.BranchId))
-                .Any(i => i.Name == name);
+            var existsName = await _uow.Ingredients.ExistsByNameInBranchAsync(branchId, name, ing.IngredientId);
             if (existsName) return IngredientResult.Failed("Ingredient name already exists in this branch");
 
+            ing.BranchId = branchId;
             ing.Name = name.Trim();
             ing.Quantity = quantity;
             ing.UnitCost = unitCost;
@@ -181,10 +170,11 @@ namespace CoffeeShop.Application.Service
             return IngredientResult.Success(ing, "Ingredient updated");
         }
 
-        public async Task<IngredientResult> DeleteAsync(int userId, string ingredientName)
+        public async Task<IngredientResult> DeleteAsync(string ingredientName)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null) return IngredientResult.Failed("User not found");
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
+                return IngredientResult.Failed("User not found");
 
             var ing = await _uow.Ingredients.GetByNameAsync(ingredientName);
             if (ing == null) return IngredientResult.Failed("Ingredient not found");

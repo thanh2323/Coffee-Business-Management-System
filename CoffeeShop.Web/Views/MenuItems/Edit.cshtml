@@ -3,6 +3,15 @@
 @{
     ViewData["Title"] = "Edit Menu Item";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
 
 <div class="row justify-content-center">
     <div class="col-md-8">
@@ -14,6 +23,8 @@
             </div>
             <div class="card-body">
                 <form method="post" asp-action="Edit">
+                
+                    <input type="hidden" name="branchId" value="@Model.BranchId" />
                     <input type="hidden" name="menuItemId" value="@Model.MenuItemId" />
                     
                     <div class="mb-3">

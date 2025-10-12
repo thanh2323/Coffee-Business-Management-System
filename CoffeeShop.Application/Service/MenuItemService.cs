@@ -9,65 +9,53 @@ namespace CoffeeShop.Application.Service
     public class MenuItemService : IMenuItemService
     {
         private readonly IUnitOfWork _uow;
-
-        public MenuItemService(IUnitOfWork uow)
+        private readonly IAuthService _authService;
+        public MenuItemService(IUnitOfWork uow, IAuthService authService)
         {
             _uow = uow;
+            _authService = authService;
         }
 
-        public async Task<IEnumerable<MenuItem>> GetByBranchAsync(int userId, int branchId)
+
+        private async Task<MenuItemResult> ValidateMenuItemUpdateAsync(string name, decimal price, int branchId, int? currentItemId = null)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
+            if (string.IsNullOrWhiteSpace(name))
+                return MenuItemResult.Failed("Name is required.");
+
+            if (!MenuItemRules.IsValidPrice(price))
+                return MenuItemResult.Failed("Invalid price.");
+
+            // Check duplicate (ignore current item)
+            var exists = await _uow.MenuItems.ExistsByNameInBranchAsync(branchId, name, currentItemId);
+            if (exists)
+                return MenuItemResult.Failed("A menu item with this name already exists in this branch.", branchId);
+
+            return MenuItemResult.Success(new List<string>(),"Validation passed");
+        }
+        public async Task<IEnumerable<MenuItem>> GetByCategoryAsync(int? branchId, string? category)
+        {
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
-                return Enumerable.Empty<MenuItem>();
+                throw new Exception("User not found");
 
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
-            if (branch == null)
-                return Enumerable.Empty<MenuItem>();
+            int targetBranchId;
+            if (branchId.HasValue)
+                if (branchId.Value <= 0)
+                    throw new ArgumentException("Invalid branch ID.");
+                else
+                    targetBranchId = branchId.Value;
+            else if (user.BranchId.HasValue)
+                targetBranchId = user.BranchId.Value;
+            else
+                throw new Exception("No branch specified");
 
-            // Authorization: Owner of business or Staff of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
 
-            var isStaffManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == branchId;
-
-            if (!isOwnerManaging && !isStaffManaging)
-                return Enumerable.Empty<MenuItem>();
-
-            return await _uow.MenuItems.GetByBranchIdAsync(branchId);
+            return await _uow.MenuItems.GetByBranchAndCategoryAsync(targetBranchId, category);
         }
 
-        public async Task<IEnumerable<MenuItem>> GetByCategoryAsync(int userId, int branchId, string? category)
+        public async Task<MenuItemResult> GetByIdAsync(int menuItemId)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
-            if (user == null)
-                return Enumerable.Empty<MenuItem>();
-
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
-            if (branch == null)
-                return Enumerable.Empty<MenuItem>();
-
-            // Authorization: Owner of business or Staff of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
-
-            var isStaffManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == branchId;
-
-            if (!isOwnerManaging && !isStaffManaging)
-                return Enumerable.Empty<MenuItem>();
-
-            return await _uow.MenuItems.GetByBranchAndCategoryAsync(branchId, category);
-        }
-
-        public async Task<MenuItemResult> GetByIdAsync(int userId, int menuItemId)
-        {
-            var user = await _uow.Users.GetByIdAsync(userId);
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
                 return MenuItemResult.Failed("User not found");
 
@@ -75,31 +63,18 @@ namespace CoffeeShop.Application.Service
             if (menuItem == null)
                 return MenuItemResult.Failed("Menu item not found");
 
-            // Authorization: Owner of business or Staff of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && menuItem.Branch.BusinessId == user.BusinessId.Value;
-
-            var isStaffManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == menuItem.BranchId;
-
-            if (!isOwnerManaging && !isStaffManaging)
+            var userCanManage = _authService.CanManageBranch(user, menuItem.Branch);
+            if (!userCanManage)
                 return MenuItemResult.Failed("Not authorized to access this menu item");
 
             return MenuItemResult.Success(menuItem);
         }
 
-        public async Task<MenuItemResult> CreateAsync(int userId, int branchId, string name, decimal price, string? category, bool isAvailable = true)
+        public async Task<MenuItemResult> CreateAsync(int branchId, string name, decimal price, string? category, bool isAvailable = true)
         {
-            // Validation
-            if (string.IsNullOrWhiteSpace(name))
-                return MenuItemResult.Failed("Name is required");
 
-            if (!MenuItemRules.IsValidPrice(price))
-                return MenuItemResult.Failed($"Price must be between {DomainRules.MIN_PRICE:N0} and {DomainRules.MAX_PRICE:N0} VND");
 
-            var user = await _uow.Users.GetByIdAsync(userId);
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
                 return MenuItemResult.Failed("User not found");
 
@@ -107,33 +82,13 @@ namespace CoffeeShop.Application.Service
             if (branch == null)
                 return MenuItemResult.Failed("Branch not found");
 
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
+            var userCanManage = _authService.CanManageBranch(user, branch);
+            if (!userCanManage)
+                return MenuItemResult.Failed("Not authorized to access");
 
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == branchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-
-            if (!isOwnerManaging && !isManagerManaging)
-                return MenuItemResult.Failed("Not authorized to manage this branch");
-
-            // Business active check only for owner path
-            if (isOwnerManaging)
-            {
-                var business = await _uow.Businesses.GetByIdAsync(branch.BusinessId);
-                if (business == null)
-                    return MenuItemResult.Failed("Business not found");
-                if (!business.IsActive)
-                    return MenuItemResult.Failed("Business is not active");
-            }
-
-            // Check if name already exists in this branch
-            var exists = await _uow.MenuItems.ExistsByNameInBranchAsync(branchId, name);
-            if (exists)
-                return MenuItemResult.Failed("Menu item name already exists in this branch");
+            var validationResult = await ValidateMenuItemUpdateAsync(name, price, branchId);
+            if (!validationResult.IsSuccess)
+                return MenuItemResult.Failed("A menu item with this name already exists in this branch.", branchId);
 
             var menuItem = new MenuItem
             {
@@ -151,40 +106,26 @@ namespace CoffeeShop.Application.Service
             return MenuItemResult.Success(menuItem, "Menu item created successfully");
         }
 
-        public async Task<MenuItemResult> UpdateAsync(int userId, int menuItemId, string name, decimal price, string? category, bool isAvailable)
+        public async Task<MenuItemResult> UpdateAsync(int menuItemId, string name, decimal price, string? category, bool isAvailable, int branchId)
         {
-            // Validation
-            if (string.IsNullOrWhiteSpace(name))
-                return MenuItemResult.Failed("Name is required");
-
-            if (!MenuItemRules.IsValidPrice(price))
-                return MenuItemResult.Failed($"Price must be between {DomainRules.MIN_PRICE:N0} and {DomainRules.MAX_PRICE:N0} VND");
-
-            var user = await _uow.Users.GetByIdAsync(userId);
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
                 return MenuItemResult.Failed("User not found");
+            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            if (branch == null)
+                return MenuItemResult.Failed("Branch not found");
 
             var menuItem = await _uow.MenuItems.GetByIdWithRecipesAsync(menuItemId);
             if (menuItem == null)
                 return MenuItemResult.Failed("Menu item not found");
 
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && menuItem.Branch.BusinessId == user.BusinessId.Value;
-
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == menuItem.BranchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-
-            if (!isOwnerManaging && !isManagerManaging)
+            var userCanManage = _authService.CanManageBranch(user, branch);
+            if (!userCanManage)
                 return MenuItemResult.Failed("Not authorized to manage this menu item");
 
-            // Check if name already exists in this branch (excluding current item)
-            var exists = await _uow.MenuItems.ExistsByNameInBranchAsync(menuItem.BranchId, name, menuItemId);
-            if (exists)
-                return MenuItemResult.Failed("Menu item name already exists in this branch");
+            var validationResult = await ValidateMenuItemUpdateAsync(name, price, branchId, menuItemId);
+            if (!validationResult.IsSuccess)
+                return MenuItemResult.Failed("A menu item with this name already exists in this branch.", branchId);
 
             menuItem.Name = name.Trim();
             menuItem.Price = price;
@@ -198,28 +139,20 @@ namespace CoffeeShop.Application.Service
             return MenuItemResult.Success(menuItem, "Menu item updated successfully");
         }
 
-        public async Task<MenuItemResult> DeleteAsync(int userId, int menuItemId)
+        public async Task<MenuItemResult> DeleteAsync(int menuItemId)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
+
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
                 return MenuItemResult.Failed("User not found");
-
             var menuItem = await _uow.MenuItems.GetByIdWithRecipesAsync(menuItemId);
             if (menuItem == null)
                 return MenuItemResult.Failed("Menu item not found");
 
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && menuItem.Branch.BusinessId == user.BusinessId.Value;
-
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == menuItem.BranchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-
-            if (!isOwnerManaging && !isManagerManaging)
+            var userCanManage = _authService.CanManageBranch(user, menuItem.Branch);
+            if (!userCanManage)
                 return MenuItemResult.Failed("Not authorized to manage this menu item");
+
 
             _uow.MenuItems.SoftDelete(menuItem);
             await _uow.SaveChangesAsync();
@@ -227,9 +160,9 @@ namespace CoffeeShop.Application.Service
             return MenuItemResult.Success(menuItem, "Menu item deleted successfully");
         }
 
-        public async Task<MenuItemResult> ToggleAvailabilityAsync(int userId, int menuItemId)
+        public async Task<MenuItemResult> ToggleAvailabilityAsync(int menuItemId)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
                 return MenuItemResult.Failed("User not found");
 
@@ -237,18 +170,10 @@ namespace CoffeeShop.Application.Service
             if (menuItem == null)
                 return MenuItemResult.Failed("Menu item not found");
 
-            // Authorization: Owner of business or Manager of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && menuItem.Branch.BusinessId == user.BusinessId.Value;
-
-            var isManagerManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == menuItem.BranchId
-                        && user.StaffProfile?.Position == StaffRole.Manager;
-
-            if (!isOwnerManaging && !isManagerManaging)
+            var userCanManage = _authService.CanManageBranch(user, menuItem.Branch);
+            if (!userCanManage)
                 return MenuItemResult.Failed("Not authorized to manage this menu item");
+
 
             menuItem.IsAvailable = !menuItem.IsAvailable;
             menuItem.MarkAsUpdated();
@@ -260,29 +185,23 @@ namespace CoffeeShop.Application.Service
             return MenuItemResult.Success(menuItem, $"Menu item marked as {status}");
         }
 
-        public async Task<IEnumerable<string>> GetCategoriesAsync(int userId, int branchId)
+        public async Task<IEnumerable<string>> GetCategoriesAsync(int? branchId)
         {
-            var user = await _uow.Users.GetByIdAsync(userId);
+            var user = await _authService.GetCurrentUserAsync();
             if (user == null)
-                return Enumerable.Empty<string>();
+                throw new Exception("User not found");
 
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
-            if (branch == null)
-                return Enumerable.Empty<string>();
+            int targetBranchId;
+            if (branchId.HasValue)
+                targetBranchId = branchId.Value;
+            else if (user.BranchId.HasValue)
+                targetBranchId = user.BranchId.Value;
+            else
+                throw new Exception("No branch specified");
 
-            // Authorization: Owner of business or Staff of this branch
-            var isOwnerManaging = user.Role == UserRole.Owner
-                        && user.BusinessId.HasValue
-                        && branch.BusinessId == user.BusinessId.Value;
 
-            var isStaffManaging = user.Role == UserRole.Staff
-                        && user.BranchId.HasValue
-                        && user.BranchId.Value == branchId;
 
-            if (!isOwnerManaging && !isStaffManaging)
-                return Enumerable.Empty<string>();
-
-            var menuItems = await _uow.MenuItems.GetByBranchIdAsync(branchId);
+            var menuItems = await _uow.MenuItems.GetByBranchIdAsync(targetBranchId);
             return menuItems
                 .Where(m => !string.IsNullOrEmpty(m.Category))
                 .Select(m => m.Category!)

@@ -1,4 +1,5 @@
-﻿using CoffeeShop.Domain.Entities;
+﻿using System.Threading.Tasks;
+using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
 
 namespace CoffeeShop.Application.Interface.IRepo
@@ -9,7 +10,8 @@ namespace CoffeeShop.Application.Interface.IRepo
         Task<Ingredient?> GetByNameAsync(string name);
         Task<IEnumerable<Ingredient>> GetLowStockIngredientsAsync(int threshold);
         Task<IEnumerable<Ingredient>> GetIngredientsByBranchAsync(int branchId);
-        
+
+        Task<bool> ExistsByNameInBranchAsync(int branchId, string name, int? excludeId = null);
         // InventoryTransaction CRUD methods (since InventoryTransaction is part of Ingredient aggregate)
         Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsByIngredientIdAsync(int ingredientId);
         Task<InventoryTransaction?> GetInventoryTransactionByIdAsync(int transactionId);

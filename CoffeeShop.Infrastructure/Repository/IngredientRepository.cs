@@ -31,6 +31,18 @@ namespace CoffeeShop.Infrastructure.Repository
                 .Where(i => i.BranchId == branchId)
                 .ToListAsync();
         }
+        public async Task<bool> ExistsByNameInBranchAsync(int branchId, string name, int? excludeId = null)
+        {
+            var query = _context.Ingredients
+                .Where(i => i.BranchId == branchId && !i.IsDeleted && i.Name == name);
+
+            if (excludeId.HasValue)
+            {
+                query = query.Where(i => i.IngredientId != excludeId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
 
         // InventoryTransaction CRUD methods (since InventoryTransaction is part of Ingredient aggregate)
         public async Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsByIngredientIdAsync(int ingredientId)

@@ -4,10 +4,10 @@ namespace CoffeeShop.Application.Interface.IService
 {
     public interface IIngredientService
     {
-        Task<IEnumerable<Ingredient>> GetByBranchAsync(int userId, int branchId);
-        Task<IngredientResult> CreateAsync(int userId, int branchId, string name, decimal quantity, decimal unitCost, string? displayUnit);
-        Task<IngredientResult> UpdateAsync(int userId, string ingredientName, string name, decimal quantity, decimal unitCost, string? displayUnit);
-        Task<IngredientResult> DeleteAsync(int userId, string ingredientName);
+        Task<IEnumerable<Ingredient>> GetByBranchAsync(int? branchId);
+        Task<IngredientResult> CreateAsync(int branchId, string name, decimal quantity, decimal unitCost, string? displayUnit);
+        Task<IngredientResult> UpdateAsync(int branchId, string ingredientName, string name, decimal quantity, decimal unitCost, string? displayUnit);
+        Task<IngredientResult> DeleteAsync(string ingredientName);
     }
 
     public class IngredientResult
