@@ -5,6 +5,7 @@ using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
 using CoffeeShop.Infrastructure.Data;
+using CoffeeShop.Infrastructure.Extention;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeShop.Infrastructure.Repository
@@ -32,7 +33,13 @@ namespace CoffeeShop.Infrastructure.Repository
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await _dbSet
+                             .Include(u => u.Business)
+                             .Include(u => u.Branch)
+                             .FirstOrDefaultAsync(u => u.UserId == id);
+
+           
+            return user;
         }
     }
 }

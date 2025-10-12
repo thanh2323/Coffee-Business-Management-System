@@ -156,5 +156,27 @@ namespace CoffeeShop.Application.Service
                 return false;
             }
         }
+
+        public bool CanManageBranch(User user, Branch branch)
+        {
+            if (user == null || branch == null)
+                return false;
+
+            switch (user.Role)
+            {
+                case UserRole.Owner:
+                   
+                    return user.BusinessId == branch.BusinessId;
+
+                case UserRole.Staff:
+                   
+                    return user.BranchId == branch.BranchId
+                        && user.StaffProfile?.Position == StaffRole.Manager;
+
+                default:
+                    return false;
+            }
+        }
+
     }
 }

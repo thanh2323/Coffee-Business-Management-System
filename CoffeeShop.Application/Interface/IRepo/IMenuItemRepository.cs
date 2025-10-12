@@ -8,7 +8,6 @@ namespace CoffeeShop.Application.Interface.IRepo
         Task<IEnumerable<MenuItem>> GetByBranchAndCategoryAsync(int branchId, string? category);
         Task<MenuItem?> GetByIdWithRecipesAsync(int menuItemId);
         Task<bool> ExistsByNameInBranchAsync(int branchId, string name, int? excludeId = null);
-        Task<IEnumerable<MenuItem>> GetAvailableByBranchAsync(int branchId);
-        Task<IEnumerable<MenuItem>> GetByCategoryAsync(int branchId, string category);
+   
     }
 }

@@ -10,31 +10,29 @@ namespace CoffeeShop.Web.Controllers
     public class BranchController : Controller
     {
         private readonly IBranchService _branchService;
+        private readonly IAuthService _authService;
 
-        public BranchController(IBranchService branchService)
+        public BranchController(IBranchService branchService, IAuthService authService)
         {
             _branchService = branchService;
+            _authService = authService;
+
         }
 
-        private bool TryGetOwnerBusinessId(out int businessId)
-        {
-            businessId = 0;
-            var claim = User.FindFirst("BusinessId")?.Value;
-            return claim != null && int.TryParse(claim, out businessId);
-        }
+        
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
             {
                 TempData["Error"] = "Invalid user.";
                 return RedirectToAction("My", "Business");
             }
 
-            var branches = await _branchService.GetBranchesForOwnerAsync(ownerId);
-            var ctx = await _branchService.GetOwnerContextAsync(ownerId);
+            var branches = await _branchService.GetBranchesForOwnerAsync(currentUser.UserId);
+            var ctx = await _branchService.GetOwnerContextAsync(currentUser.UserId);
             ViewBag.BusinessName = ctx.businessName;
             ViewBag.OwnerName = ctx.ownerName;
             return View(branches);
@@ -43,13 +41,13 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
             {
                 TempData["Error"] = "Invalid user.";
-                return View();
+                return RedirectToAction("My", "Business");
             }
-            var ctx = await _branchService.GetOwnerContextAsync(ownerId);
+            var ctx = await _branchService.GetOwnerContextAsync(currentUser.UserId);
             ViewBag.BusinessName = ctx.businessName;
             ViewBag.OwnerName = ctx.ownerName;
             return View();
@@ -58,14 +56,14 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string name, string? address, TimeSpan openTime, TimeSpan closeTime)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
+            var currentUser =  await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
             {
                 TempData["Error"] = "Invalid user.";
-                return View();
+                return RedirectToAction("My", "Business");
             }
 
-            var result = await _branchService.CreateBranchAsync(ownerId, name, address, openTime, closeTime);
+            var result = await _branchService.CreateBranchAsync(currentUser.UserId, name, address, openTime, closeTime);
             if (!result.IsSuccess)
             {
                 TempData["Error"] = result.Message;
@@ -78,16 +76,15 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var ownerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (ownerIdClaim == null || !int.TryParse(ownerIdClaim, out var ownerId))
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
             {
                 TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index");
+                return RedirectToAction("My", "Business");
             }
-
             // Load via owner list to ensure ownership
-            var branches = await _branchService.GetBranchesForOwnerAsync(ownerId);
-            var ctx = await _branchService.GetOwnerContextAsync(ownerId);
+            var branches = await _branchService.GetBranchesForOwnerAsync(currentUser.UserId);
+            var ctx = await _branchService.GetOwnerContextAsync(currentUser.UserId);
             ViewBag.BusinessName = ctx.businessName;
             ViewBag.OwnerName = ctx.ownerName;
             var branch = branches.FirstOrDefault(b => b.BranchId == id);
@@ -102,19 +99,19 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, string name, string? address, TimeSpan openTime, TimeSpan closeTime)
         {
-            var ownerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (ownerIdClaim == null || !int.TryParse(ownerIdClaim, out var ownerId))
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
             {
                 TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index");
+                return RedirectToAction("My", "Business");
             }
 
-            var result = await _branchService.UpdateBranchAsync(ownerId, id, name, address, openTime, closeTime);
+            var result = await _branchService.UpdateBranchAsync(currentUser.UserId, id, name, address, openTime, closeTime);
             if (!result.IsSuccess)
             {
                 TempData["Error"] = result.Message;
                 // best-effort: reload branch for view
-                var branches = await _branchService.GetBranchesForOwnerAsync(ownerId);
+                var branches = await _branchService.GetBranchesForOwnerAsync(currentUser.UserId);
                 var branch = branches.FirstOrDefault(b => b.BranchId == id) ?? new Branch();
                 return View(branch);
             }
@@ -125,14 +122,15 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var ownerIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (ownerIdClaim == null || !int.TryParse(ownerIdClaim, out var ownerId))
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
             {
                 TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index");
+                return RedirectToAction("My", "Business");
             }
 
-            var result = await _branchService.DeleteBranchAsync(ownerId, id);
+
+            var result = await _branchService.DeleteBranchAsync(currentUser.UserId, id);
             TempData[result.IsSuccess ? "Success" : "Error"] = result.Message;
             return RedirectToAction("Index");
         }

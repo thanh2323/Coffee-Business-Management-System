@@ -57,21 +57,7 @@ namespace CoffeeShop.Infrastructure.Repository
             return await query.AnyAsync();
         }
 
-        public async Task<IEnumerable<MenuItem>> GetAvailableByBranchAsync(int branchId)
-        {
-            return await _context.MenuItems
-                .Where(m => m.BranchId == branchId && !m.IsDeleted && m.IsAvailable)
-                .OrderBy(m => m.Category)
-                .ThenBy(m => m.Name)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<MenuItem>> GetByCategoryAsync(int branchId, string category)
-        {
-            return await _context.MenuItems
-                .Where(m => m.BranchId == branchId && !m.IsDeleted && m.Category == category)
-                .OrderBy(m => m.Name)
-                .ToListAsync();
-        }
+      
+       
     }
 }

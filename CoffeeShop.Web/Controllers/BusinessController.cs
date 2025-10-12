@@ -31,21 +31,15 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> My()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Create");
-            }
 
-            var user = await _authService.GetCurrentUserAsync();
-            if (user == null || user.BusinessId == null)
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null || currentUser.BusinessId == null)
             {
                 TempData["Error"] = "You don't have a business yet.";
                 return RedirectToAction("Create");
             }
 
-            var business = await _adminService.GetBusinessByIdAsync(user.BusinessId.Value);
+            var business = await _adminService.GetBusinessByIdAsync(currentUser.BusinessId.Value);
             if (business == null)
             {
                 TempData["Error"] = "Business not found.";
@@ -58,20 +52,20 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string name, string address, string? phone)
         {
+
+            var currentUser = await _authService.GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                TempData["Error"] = "Invalid user.";
+                return View();
+            }
             if (string.IsNullOrWhiteSpace(name))
             {
                 TempData["Error"] = "Business name is required.";
                 return View();
             }
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out var ownerId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return View();
-            }
-
-            var result = await _businessService.RegisterBusinessAsync(name, address, phone, ownerId);
+            var result = await _businessService.RegisterBusinessAsync(name, address, phone, currentUser.UserId);
             if (!result.IsSuccess)
             {
                 TempData["Error"] = result.Message;

@@ -11,6 +11,8 @@ namespace CoffeeShop.Application.Interface.IService
       
         Task<User?> GetCurrentUserAsync();
         Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
+
+        bool CanManageBranch(User user, Branch branch);
     }
 
     public class AuthResult
