@@ -14,6 +14,10 @@ namespace CoffeeShop.Infrastructure.Repository
         {
         }
 
+        public async Task<Ingredient?> GetByIdAsync(int id)
+        {
+            return await _dbSet.FirstOrDefaultAsync(i => i.IngredientId == id && !i.IsDeleted);
+        }
         public async Task<Ingredient?> GetByNameAsync(string name)
         {
             return await _dbSet.FirstOrDefaultAsync(i => i.Name == name);

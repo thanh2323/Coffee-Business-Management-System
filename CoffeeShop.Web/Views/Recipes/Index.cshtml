@@ -1,0 +1,117 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>
+@{
+    ViewData["Title"] = "Recipe Management";
+    var branchId = ViewBag.BranchId as int?;
+    var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
+    var recipes = ViewBag.Recipes as IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-utensils me-2"></i>
+                        Recipe Management - @menuItem?.Name
+                    </h4>
+                    <div>
+                        <a href="@Url.Action("AddIngredient", new {branchId = branchId, menuItemId = ViewBag.MenuItemId })" 
+                           class="btn btn-primary me-2">
+                            <i class="fas fa-plus me-1"></i>Add Ingredient
+                        </a>
+                        <form method="post" action="@Url.Action("Validate", new { branchId ,menuItemId = ViewBag.MenuItemId })" class="d-inline">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check me-1"></i>Validate Recipe
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Menu Item:</strong> @menuItem?.Name
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Category:</strong> @menuItem?.Category
+                        </div>
+                    </div>
+
+                    @if (recipes != null && recipes.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Ingredient</th>
+                                        <th>Quantity</th>
+                                        <th>Unit</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var recipe in recipes)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-leaf me-2"></i>
+                                                @recipe.Ingredient?.Name
+                                            </td>
+                                            <td>@recipe.Quantity</td>
+                                            
+                                            <td>
+                                                <a href="@Url.Action("EditIngredient", new { branchId, menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
+                                                   class="btn btn-sm btn-outline-primary me-1">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="post" action="@Url.Action("RemoveIngredient", new { branchId ,menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
+                                                      class="d-inline" onsubmit="return confirm('Are you sure you want to remove this ingredient from the recipe?')">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No ingredients in recipe</h5>
+                            <p class="text-muted">Add ingredients to create a recipe for this menu item.</p>
+                            <a href="@Url.Action("AddIngredient", new { branchId = branchId,menuItemId = ViewBag.MenuItemId })"
+                               class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Add First Ingredient
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a href="@Url.Action("Index", "MenuItems",new {branchId = branchId})" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Menu Items
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
