@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Infrastructure.Data;
@@ -57,7 +58,10 @@ namespace CoffeeShop.Infrastructure.Repository
             return await query.AnyAsync();
         }
 
-      
-       
+        public async Task<MenuItem?> GetByIdAsync(int id)
+        {
+            return await _dbSet.FirstOrDefaultAsync(m => m.MenuItemId == id && !m.IsDeleted );
+                   
+        }
     }
 }

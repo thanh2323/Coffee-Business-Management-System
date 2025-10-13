@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Edit Ingredient in Recipe";
+    var recipe = ViewBag.Recipe as CoffeeShop.Domain.Entities.MenuItemRecipe;
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Ingredient in Recipe
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form method="post" action="@Url.Action("EditIngredient")">
+                        <input type="hidden" name="menuItemId" value="@ViewBag.MenuItemId" />
+                        <input type="hidden" name="ingredientId" value="@ViewBag.IngredientId" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-leaf me-1"></i>Ingredient
+                            </label>
+                            <input type="text" class="form-control" value="@recipe?.Ingredient?.Name" readonly>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">
+                                        <i class="fas fa-weight me-1"></i>Quantity
+                                    </label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           step="0.01" min="0.01" value="@recipe?.Quantity" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="unit" class="form-label">
+                                        <i class="fas fa-ruler me-1"></i>Unit
+                                    </label>
+                                  
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Index", new { menuItemId = ViewBag.MenuItemId })" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Update Recipe
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
