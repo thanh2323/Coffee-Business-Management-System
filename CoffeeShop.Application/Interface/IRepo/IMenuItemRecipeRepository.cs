@@ -11,3 +11,6 @@ public interface IMenuItemRecipeRepository : IBaseRepository<MenuItemRecipe>
     Task<IEnumerable<MenuItemRecipe>> GetByIngredientIdAsync(int ingredientId);
 }
 
+
+
+

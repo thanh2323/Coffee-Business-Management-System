@@ -49,6 +49,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IMenuItemService, MenuItemService>();
             services.AddScoped<IIngredientService, IngredientService>();
             services.AddScoped<IRecipeService, RecipeService>();
+            services.AddScoped<IStaffService, StaffService>();
             services.AddScoped<IPaymentGateway, VNPayGateway>();
             services.AddScoped<IPaymentGateway, MoMoGateway>();
 

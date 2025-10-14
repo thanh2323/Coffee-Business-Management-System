@@ -19,10 +19,7 @@
             </div>
 
             <ul class="nav-links">
-                
-                <li><a asp-area="" asp-controller="Home" asp-action="HowItWorks">How It Works</a></li>
-                <li><a asp-area="" asp-controller="Home" asp-action="Pricing">Pricing</a></li>
-                <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+               
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
@@ -40,8 +37,15 @@
                         <li>
                             <a asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
                         </li>
-                    }
+                    } 
+              
+                }else
+                {
+                <li><a asp-area="" asp-controller="Home" asp-action="HowItWorks">How It Works</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="Pricing">Pricing</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                 }
+                
             </ul>
 
             @if (User.Identity?.IsAuthenticated == true)
