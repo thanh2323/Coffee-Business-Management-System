@@ -23,17 +23,22 @@ namespace CoffeeShop.Infrastructure.Repository
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
+            return await _dbSet
+                        .Include(u => u.StaffProfile)
+                        .FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<IEnumerable<User>> GetByRoleAsync(UserRole role)
+        public async Task<IEnumerable<User>> GetStaffByBranchAsync(int branchId)
         {
-            return await _dbSet.Where(u => u.Role == role).ToListAsync();
+            return await _dbSet.Include(u => u.StaffProfile)
+                               .Where(u => u.BranchId == branchId)
+                               .ToListAsync();
         }
 
         public async Task<User?> GetByIdAsync(int id)
         {
             var user = await _dbSet
+                             .Include(u => u.StaffProfile)
                              .Include(u => u.Business)
                              .Include(u => u.Branch)
                              .FirstOrDefaultAsync(u => u.UserId == id);

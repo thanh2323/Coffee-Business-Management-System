@@ -1,0 +1,56 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.User>
+
+
+@{
+    ViewData["Title"] = "Staff Management";
+
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<h2>Staff Management</h2>
+
+<p>
+    <a asp-action="Create" asp-route-branchId="@ViewBag.Branches" class="btn btn-primary">Create Staff</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Position</th>
+            <th>Branch</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {@foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Username</td>
+                    <td>@user.Email</td>
+                    <td>@user.StaffProfile?.Position</td>
+                    <td>@(user.Branch?.Name ?? $"Branch #{user.BranchId}")</td>
+                </tr>
+            }
+
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">No staff found for this branch.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
