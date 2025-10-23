@@ -11,62 +11,59 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CoffeeShop.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Profile">Profile</a>
-                        </li>
-                        @if (User.IsInRole("Owner"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Business" asp-action="My">My Business</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-                            </li>
-                        }
-                    }
-                </ul>
-                <ul class="navbar-nav">
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <li class="nav-item">
-                            <span class="navbar-text me-3">Welcome, @User.Identity.Name!</span>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
-                                <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                            </form>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
-                        </li>
-                    }
-                </ul>
-                </div>
+        <div class="navbar-container">
+
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>Café</span>
             </div>
-        </nav>
+
+            <ul class="nav-links">
+               
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <li>
+                        <a asp-area="" asp-controller="Auth" asp-action="Profile">Profile</a>
+                    </li>
+                    @if (User.IsInRole("Owner"))
+                    {
+                        <li>
+                            <a asp-area="" asp-controller="Business" asp-action="My">My Business</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                        </li>
+                    } 
+              
+                }else
+                {
+                <li><a asp-area="" asp-controller="Home" asp-action="HowItWorks">How It Works</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="Pricing">Pricing</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                }
+                
+            </ul>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="user-actions">
+                    <span class="navbar-text" style="margin-right: 15px;">Welcome, @User.Identity.Name!</span>
+                    <form method="post" asp-controller="Auth" asp-action="Logout" style="display: inline;">
+                        <button type="submit" class="logout-button">Logout</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <a asp-area="" asp-controller="Auth" asp-action="Register" class="get-started-btn">
+                    Get Started <span class="arrow-icon">&rarr;</span>
+                </a>
+            }
+        </div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -74,9 +71,62 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    @* <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - CoffeeShop.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer> *@
+    <footer class="main-page-footer">
+        <div class="footer-container">
+            <div class="footer-column column-info">
+                <h3 class="footer-title">Giải pháp bán hàng và thanh toán hoàn toàn mới</h3>
+
+                <div class="social-icons">
+                    <a href="#" class="social-icon facebook-icon"></a>
+                    <a href="#" class="social-icon zalo-icon"></a>
+                    <a href="#" class="social-icon youtube-icon"></a>
+                </div>
+
+                <h3 class="footer-title product-info-title">Thông tin sản phẩm</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Hướng dẫn sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column column-support">
+                <h3 class="footer-title">Thông tin hỗ trợ</h3>
+
+                <div class="support-item">
+                    <span class="support-icon icon-phone"></span>
+                    <p>Hỗ trợ sử dụng:<br>0934 480 344<br>support@pinpos.vn</p>
+                </div>
+
+                <div class="support-item">
+                    <span class="support-icon icon-mail"></span>
+                    <p>Liên hệ hợp tác:<br>doitac@pinpos.vn</p>
+                </div>
+            </div>
+
+            <div class="footer-column column-contact">
+                <p class="company-name">Công ty Cổ phần Công nghệ TEKO Việt Nam</p>
+
+                <div class="office-item">
+                    <span class="office-icon icon-building"></span>
+                    <p class="office-title">Văn phòng của chúng tôi</p>
+                </div>
+
+                <p class="office-address">
+                    <strong>Hà Nội:</strong> Tầng 8, GEMS EMPIRE TOWER, 201 Trường Chinh, P. Phương Liệt, Hà Nội
+                </p>
+                <p class="office-address">
+                    <strong>Đà Nẵng:</strong> Tầng 3, 16 Nguyễn Văn Linh, Hải Châu, Đà Nẵng
+                </p>
+                <p class="office-address">
+                    <strong>TP.Hồ Chí Minh:</strong> Tầng 8, Tòa Minh Long, 17 Bà Huyện Thanh Quan, P. Xuân Hòa, TP. Hồ Chí Minh
+                </p>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

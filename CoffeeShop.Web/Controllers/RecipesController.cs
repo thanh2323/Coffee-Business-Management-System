@@ -29,7 +29,7 @@ public class RecipesController : Controller
         if (!result.IsSuccess)
         {
             TempData["Error"] = result.Message;
-            return RedirectToAction("Index", "MenuItems");
+            return RedirectToAction(nameof(Index), new { branchId, menuItemId });
         }
 
         // Get menu item details for display
@@ -37,7 +37,7 @@ public class RecipesController : Controller
         if (!menuItemResult.IsSuccess)
         {
             TempData["Error"] = menuItemResult.Message;
-            return RedirectToAction("Index", "MenuItems");
+            return RedirectToAction(nameof(Index), new { branchId, menuItemId });
         }
         ViewBag.BranchId = branchId;
         ViewBag.MenuItem = menuItemResult.MenuItem;
@@ -56,7 +56,7 @@ public class RecipesController : Controller
         if (!menuItemResult.IsSuccess)
         {
             TempData["Error"] = menuItemResult.Message;
-            return RedirectToAction("Index", "MenuItems");
+            return RedirectToAction(nameof(Index), new { branchId, menuItemId });
         }
 
         // Get available ingredients for this branch
@@ -100,16 +100,16 @@ public class RecipesController : Controller
         if (!result.IsSuccess)
         {
             TempData["Error"] = result.Message;
-            return RedirectToAction("Index", new { menuItemId });
+            return RedirectToAction("Index", new {branchId, menuItemId });
         }
 
         var recipe = result.Recipes?.FirstOrDefault(r => r.IngredientId == ingredientId);
         if (recipe == null)
         {
             TempData["Error"] = "Recipe not found";
-            return RedirectToAction("Index", new { menuItemId });
+            return RedirectToAction("Index", new {branchId ,menuItemId });
         }
-
+        ViewBag.BranchId = branchId;
         ViewBag.MenuItemId = menuItemId;
         ViewBag.IngredientId = ingredientId;
         ViewBag.Recipe = recipe;
@@ -133,7 +133,7 @@ public class RecipesController : Controller
             TempData["Error"] = result.Message;
         }
 
-        return RedirectToAction("Index", new { menuItemId });
+        return RedirectToAction("Index", new {branchId ,menuItemId });
     }
 
 
@@ -153,7 +153,7 @@ public class RecipesController : Controller
             TempData["Error"] = result.Message;
         }
 
-        return RedirectToAction("Index", new { menuItemId });
+        return RedirectToAction("Index", new {branchId, menuItemId });
     }
 
     [HttpPost]
@@ -172,9 +172,12 @@ public class RecipesController : Controller
             TempData["Error"] = result.Message;
         }
 
-        return RedirectToAction("Index", new { menuItemId });
+        return RedirectToAction("Index", new {branchId ,menuItemId });
     }
 
 
 }
+
+
+
 
