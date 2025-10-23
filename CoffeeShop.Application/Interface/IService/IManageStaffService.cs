@@ -5,9 +5,12 @@ namespace CoffeeShop.Application.Interface.IService
 {
     public interface IManageStaffService
     {
-     
+        Task<StaffResult> GetByIdAsync(int staffId);
         Task<IEnumerable<User>> GetStaffByBranchAsync(int? branchId);
         Task<StaffResult> CreateStaffAsync(string username, string email, string password, StaffRole position, int branchId);
+        Task<StaffResult> UpdateStaffAsync(int staffId, string username, StaffRole? position, int branchId);
+        Task<StaffResult> DeleteStaffAsync(int staffId, int branchId);
+
     }
 
     public class StaffResult
@@ -17,7 +20,7 @@ namespace CoffeeShop.Application.Interface.IService
         public User? User { get; set; }
         public StaffProfile? StaffProfile { get; set; }
 
-        public static StaffResult Success(User user, StaffProfile staffProfile, string message = "Staff created")
+        public static StaffResult Success(User user, StaffProfile? staffProfile, string message = "Staff created")
             => new StaffResult { IsSuccess = true, User = user, StaffProfile = staffProfile, Message = message };
 
         public static StaffResult Failed(string message)

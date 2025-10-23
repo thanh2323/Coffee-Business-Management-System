@@ -64,6 +64,70 @@ namespace CoffeeShop.Application.Service
             return StaffResult.Success(staffUser, staffUser.StaffProfile, "Staff account created");
         }
 
+        public async Task<StaffResult> DeleteStaffAsync(int staffId, int branchId)
+        {
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
+                return StaffResult.Failed("User not found");
+
+            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            if (branch == null)
+                return StaffResult.Failed("Branch not found");
+
+            var userCurrent = _authService.CanManageBranch(user, branch);
+            if (!userCurrent)
+                return StaffResult.Failed("Not authorized to manage this branch");
+
+            var staffUser = await _uow.Users.GetByIdAsync(staffId);
+            if (staffUser == null || staffUser.Role != UserRole.Staff || staffUser.BranchId != branchId)
+                return StaffResult.Failed("Staff member not found in the specified branch");
+            _uow.Users.SoftDelete(staffUser);
+            await _uow.SaveChangesAsync();
+            return StaffResult.Success(staffUser, staffUser.StaffProfile, "Staff account deleted");
+        }
+
+        public async Task<StaffResult> UpdateStaffAsync(int staffId, string username, StaffRole? position, int branchId)
+        {
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
+                return StaffResult.Failed("User not found");
+
+            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            if (branch == null)
+                return StaffResult.Failed("Branch not found");
+
+            var userCurrent = _authService.CanManageBranch(user, branch);
+            if (!userCurrent)
+                return StaffResult.Failed("Not authorized to manage this branch");
+
+            var staffUser = await _uow.Users.GetByIdAsync(staffId);
+            if (staffUser == null || staffUser.Role != UserRole.Staff || staffUser.BranchId != branchId)
+                return StaffResult.Failed("Staff member not found in the specified branch");
+
+
+            staffUser.Username = username;
+
+            if (position.HasValue && staffUser.StaffProfile != null)
+            {
+                staffUser.StaffProfile.Position = position.Value;
+            }
+
+            _uow.Users.Update(staffUser);
+            await _uow.SaveChangesAsync();
+
+            return StaffResult.Success(staffUser, staffUser.StaffProfile, "Staff account updated successfully");
+
+        }
+        public async Task<StaffResult> GetByIdAsync(int staffId)
+        {
+
+            var staffUser = await _uow.Users.GetByIdAsync(staffId);
+            if (staffUser == null || staffUser.Role != UserRole.Staff)
+                return StaffResult.Failed("Staff member not found");
+
+            return StaffResult.Success(staffUser, staffUser.StaffProfile, "Staff member found");
+        }
+
         public async Task<IEnumerable<User>> GetStaffByBranchAsync(int? branchId)
         {
             var user = await _authService.GetCurrentUserAsync();
@@ -83,6 +147,8 @@ namespace CoffeeShop.Application.Service
             return await _uow.Users.GetStaffByBranchAsync(targetBranchId);
 
         }
+
+
     }
 }
 

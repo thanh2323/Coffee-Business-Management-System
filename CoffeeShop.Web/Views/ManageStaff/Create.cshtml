@@ -24,7 +24,7 @@
     <div class="mb-3">
         <label class="form-label">Position</label>
         <select name="position" class="form-select">
-            @foreach (var pos in positions)
+            @foreach (var pos in positions!)
             {
                 <option value="@pos">@pos</option>
             }
