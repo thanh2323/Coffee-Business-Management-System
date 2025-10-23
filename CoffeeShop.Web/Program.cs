@@ -14,7 +14,7 @@ namespace CoffeeShop.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection")!);
+            builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddCookie(options =>
                     {

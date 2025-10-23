@@ -7,6 +7,7 @@ namespace CoffeeShop.Application.Interface.IRepo
     {
         Task<CafeTable?> GetByIdAsync(int tableId);
         Task<CafeTable?> GetByBranchAndNumberAsync(int branchId, int tableNumber);
+        Task<CafeTable?> GetByQrTokenAsync(string qrToken);
         Task<IEnumerable<CafeTable>> GetByBranchAsync(int branchId);
         Task<IEnumerable<CafeTable>> GetActiveByBranchAsync(int branchId);
     }
