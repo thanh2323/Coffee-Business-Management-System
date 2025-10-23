@@ -1,0 +1,44 @@
+@using CoffeeShop.Domain.Enums
+@{
+    ViewData["Title"] = "Create Staff";
+  
+    var positions = ViewBag.Positions as Array;
+}
+
+<h2>Create Staff</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Position</label>
+        <select name="position" class="form-select">
+            @foreach (var pos in positions!)
+            {
+                <option value="@pos">@pos</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" asp-route-branchId="@ViewBag.BranchId" class="btn btn-secondary">Back</a>
+</form>
+
+
+
+
+
+
+
+
