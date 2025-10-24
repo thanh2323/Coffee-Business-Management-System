@@ -1,0 +1,103 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.MenuItem>
+@{
+    ViewData["Title"] = "Menu";
+    var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
+    var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
+
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>@branch?.Name - Table @table?.TableNumber</h2>
+                <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })" 
+                   class="btn btn-primary position-relative">
+                    Cart
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                       
+                        <p class="card-text">
+                            <strong>@item.Price.ToString("C")</strong>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                        onclick="updateQuantity(@item.MenuItemId, -1)">
+                                    -
+                                </button>
+                                <span id="qty-@item.MenuItemId" class="btn btn-outline-secondary btn-sm">0</span>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                        onclick="updateQuantity(@item.MenuItemId, 1)">
+                                    +
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" 
+                                    onclick="addToCart(@item.MenuItemId)">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function updateQuantity(menuItemId, change) {
+        const qtyElement = document.getElementById('qty-' + menuItemId);
+        let currentQty = parseInt(qtyElement.textContent) || 0;
+        let newQty = Math.max(0, currentQty + change);
+        qtyElement.textContent = newQty;
+    }
+
+    function addToCart(menuItemId) {
+        const qtyElement = document.getElementById('qty-' + menuItemId);
+        const quantity = parseInt(qtyElement.textContent) || 0;
+        
+        if (quantity <= 0) {
+            alert('Please select quantity');
+            return;
+        }
+
+        fetch('@Url.Action("AddToCart")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: `menuItemId=${menuItemId}&quantity=${quantity}&tableId=@table?.TableId&branchId=@branch?.BranchId`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                qtyElement.textContent = '0';
+                updateCartCount();
+            }
+        });
+    }
+
+    function updateCartCount() {
+        // This would need to be implemented with actual cart count
+        // For now, just increment the display
+        const cartCount = document.getElementById('cart-count');
+        const current = parseInt(cartCount.textContent) || 0;
+        cartCount.textContent = current + 1;
+    }
+</script>
+
+

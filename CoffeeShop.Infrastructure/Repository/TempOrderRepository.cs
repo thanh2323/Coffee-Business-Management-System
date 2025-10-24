@@ -13,7 +13,7 @@ namespace CoffeeShop.Infrastructure.Repository
         private const string IDEMPOTENCY_PREFIX = "payment:processed:";
         private const int DEFAULT_TTL_MINUTES = 15;
 
-        public TempOrderRepository(IConnectionMultiplexer redis)
+        public TempOrderRepository(IConnectionMultiplexer redis)    
         {
             _redis = redis;
             _database = redis.GetDatabase();

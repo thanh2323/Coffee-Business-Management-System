@@ -67,6 +67,16 @@ namespace CoffeeShop.Web
                         context.User.HasClaim(c => c.Type == "BranchId"))));
             });
 
+            builder.Services.AddDistributedMemoryCache(); 
+            builder.Services.AddSession(options =>
+            {
+             
+                //  options.IdleTimeout = TimeSpan.FromMinutes(90); 
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true; 
+            });
+
+
             var app = builder.Build();
 
             // Initialize database with seed data
@@ -92,6 +102,8 @@ namespace CoffeeShop.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapStaticAssets();
             app.MapControllerRoute(
