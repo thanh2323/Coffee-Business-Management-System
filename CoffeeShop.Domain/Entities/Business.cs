@@ -29,8 +29,8 @@ namespace CoffeeShop.Domain.Entities
 
         // Subscription fields
         public DateTime? SubscriptionEndDate { get; set; }
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal MonthlyFee { get; set; } = 500000; // 500k VND
+        [Column(TypeName = "decimal(18,0)")]
+        public decimal MonthlyFee { get; set; } = 50000; // 50k VND
         [StringLength(100)]
         public string? PaymentReference { get; set; }
 

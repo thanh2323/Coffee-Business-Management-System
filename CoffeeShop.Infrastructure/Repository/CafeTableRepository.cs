@@ -33,6 +33,13 @@ namespace CoffeeShop.Infrastructure.Repository
         {
             return await _dbSet.FirstOrDefaultAsync(t => t.TableId == tableId);
         }
+
+        public async Task<CafeTable?> GetByQrTokenAsync(string qrToken)
+        {
+            return await _dbSet
+                .Include(t => t.Branch)
+                .FirstOrDefaultAsync(t => t.QRCode == qrToken);
+        }
     }
 }
 

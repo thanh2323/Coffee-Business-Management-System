@@ -20,7 +20,7 @@ namespace CoffeeShop.Domain.Entities
         [ForeignKey(nameof(Ingredient))]
         public int IngredientId { get; set; }
 
-        [Column(TypeName = "decimal(18,3)")]
+        [Column(TypeName = "decimal(18,0)")]
         public decimal Quantity { get; set; }
 
         // Navigation properties

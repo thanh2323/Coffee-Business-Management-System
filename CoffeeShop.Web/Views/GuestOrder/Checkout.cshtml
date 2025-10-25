@@ -1,0 +1,83 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
+@{
+    ViewData["Title"] = "Checkout";
+    var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
+    var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
+    var totalAmount = (decimal)ViewBag.TotalAmount;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2>Checkout - Table @table?.TableNumber</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h4>Order Summary</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MenuItemName</td>
+                                <td>@item.UnitPrice.ToString("C")</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.TotalPrice.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total</th>
+                            <th>@totalAmount.ToString("C")</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Checkout" method="post">
+                        <input type="hidden" name="tableId" value="@table?.TableId" />
+                        <input type="hidden" name="branchId" value="@branch?.BranchId" />
+                        
+                        <div class="mb-3">
+                            <label for="customerName" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="customerName" name="customerName" required />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="customerPhone" class="form-label">Phone (Optional)</label>
+                            <input type="tel" class="form-control" id="customerPhone" name="customerPhone" />
+                            <div class="form-text">Provide phone number to earn loyalty points</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Place Order & Pay
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -22,7 +22,7 @@ namespace CoffeeShop.Domain.Entities
         public int? OrderId { get; set; }
 
         public LoyaltyTransactionType PointsType { get; set; }
-        [Column(TypeName = "decimal(10,2)")]
+        [Column(TypeName = "decimal(10,0)")]
         public decimal Points { get; set; }
 
 
