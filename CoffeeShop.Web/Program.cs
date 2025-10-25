@@ -71,7 +71,8 @@ namespace CoffeeShop.Web
             builder.Services.AddSession(options =>
             {
              
-                //  options.IdleTimeout = TimeSpan.FromMinutes(90); 
+                options.IdleTimeout = TimeSpan.FromMinutes(90); 
+                options.Cookie.MaxAge = TimeSpan.FromMinutes(90);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true; 
             });

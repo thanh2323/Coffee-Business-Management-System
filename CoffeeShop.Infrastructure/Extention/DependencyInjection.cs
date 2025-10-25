@@ -53,6 +53,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IBusinessService, BusinessService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<IBranchService, BranchService>();
 
             services.AddScoped<ITableService, TableService>();

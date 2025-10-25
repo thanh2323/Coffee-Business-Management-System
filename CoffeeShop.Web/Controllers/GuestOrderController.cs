@@ -64,19 +64,7 @@ namespace CoffeeShop.Web.Controllers
             return Json(new { success = true });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RemoveFromCart(int menuItemId, int tableId, int branchId)
-        {
-            var sessionId = GetOrCreateSessionId();
-            var result = await _guestOrderService.RemoveFromCartAsync(sessionId, menuItemId);
-
-            if (!result.IsSuccess)
-            {
-                return Json(new { success = false, message = result.Message });
-            }
-
-            return Json(new { success = true, message = "Item removed from cart" });
-        }
+        
 
         [HttpGet]
         public async Task<IActionResult> Cart(int tableId, int branchId)
@@ -127,10 +115,10 @@ namespace CoffeeShop.Web.Controllers
 
             ViewBag.Table = tableResult.Table;
             ViewBag.Branch = tableResult.Branch;
-            ViewBag.Cart = cartResult.CartItems;
+           
             ViewBag.TotalAmount = cartResult.TotalAmount;
 
-            return View();
+            return View(cartResult.CartItems);
         }
 
         [HttpPost]
