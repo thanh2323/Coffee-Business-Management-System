@@ -12,35 +12,25 @@ namespace CoffeeShop.Web.Controllers
     public class TablesController : Controller
     {
         private readonly ITableService _tableService;
+        private readonly IQrService _qrService;
         private readonly IBranchService _branchService;
-        private readonly IAuthService _authService;
+      
         private readonly IUnitOfWork _uow;
 
-        public TablesController(ITableService tableService, IBranchService branchService, IAuthService authService, IUnitOfWork uow)
+        public TablesController(ITableService tableService, IBranchService branchService, IUnitOfWork uow, IQrService qrService)
         {
             _tableService = tableService;
             _branchService = branchService;
-            _authService = authService;
+          
             _uow = uow;
-        }
-
-        private bool TryGetUserId(out int userId)
-        {
-            userId = 0;
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return claim != null && int.TryParse(claim, out userId);
+            _qrService = qrService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(int branchId)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var tables = await _tableService.GetByBranchAsync(userId, branchId);
+          
+            var tables = await _tableService.GetByBranchAsync(branchId);
             ViewBag.BranchId = branchId;
             return View(tables);
         }
@@ -55,13 +45,8 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(int branchId, int tableNumber)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var result = await _tableService.CreateAsync(userId, branchId, tableNumber);
+          
+            var result = await _tableService.CreateAsync( branchId, tableNumber);
             TempData[result.IsSuccess ? "Success" : "Error"] = result.Message;
             return RedirectToAction("Index", new { branchId });
         }
@@ -69,14 +54,10 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> GenerateQr(int branchId, int tableId)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+      
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var result = await _tableService.GenerateQrAsync(userId, tableId, baseUrl);
+            var result = await _qrService.GenerateQrAsync(tableId, baseUrl);
             TempData[result.IsSuccess ? "Success" : "Error"] = result.Message;
             return RedirectToAction("Index", new { branchId });
         }
@@ -84,14 +65,9 @@ namespace CoffeeShop.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> QrCode(int tableId)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
-
+         
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var result = await _tableService.GenerateQrAsync(userId, tableId, baseUrl);
+            var result = await _qrService.GenerateQrAsync(tableId, baseUrl);
             
             if (result.IsSuccess && !string.IsNullOrEmpty(result.QRCodeBase64))
             {
@@ -105,11 +81,7 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int tableId)
         {
-            if (!TryGetUserId(out var userId))
-            {
-                TempData["Error"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
+            
             var table = await _uow.CafeTables.GetByIdAsync(tableId);
             if (table == null)
             {
@@ -119,7 +91,7 @@ namespace CoffeeShop.Web.Controllers
 
             var branchId = table.BranchId;
 
-            var result = await _tableService.DeleteAsync(userId, tableId);
+            var result = await _tableService.DeleteAsync(tableId);
             TempData[result.IsSuccess ? "Success" : "Error"] = result.Message;
 
             // Redirect về danh sách table của branch
