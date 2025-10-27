@@ -13,6 +13,7 @@ namespace CoffeeShop.Domain.Entities
         public decimal TotalAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal PayableAmount { get; set; }
+        public bool IsTakeAway { get; set; }
         public int RedeemPoints { get; set; }
         public string PaymentReference { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

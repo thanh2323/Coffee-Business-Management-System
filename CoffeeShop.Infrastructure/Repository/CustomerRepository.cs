@@ -15,9 +15,13 @@ namespace CoffeeShop.Infrastructure.Repository
         {
         }
 
-        public async Task<Customer?> GetByPhoneAsync(string phone)
+        public async Task<Customer?> GetByNameOrPhoneAsync(string name, string? phone)
         {
-            return await _dbSet.FirstOrDefaultAsync(c => c.Phone == phone);
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                return await _dbSet.FirstOrDefaultAsync(c => c.Phone == phone);
+            }       
+            return await _dbSet.FirstOrDefaultAsync(c => c.Name == name && string.IsNullOrEmpty(c.Phone));
         }
 
         public async Task<IEnumerable<Customer>> GetByBranchIdAsync(int branchId)

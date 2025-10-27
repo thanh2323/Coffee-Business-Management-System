@@ -7,26 +7,26 @@ namespace CoffeeShop.Application.Service
 {
     public class AdminService : IAdminService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _uow;
 
-        public AdminService(IUnitOfWork unitOfWork)
+        public AdminService(IUnitOfWork uow)
         {
-            _unitOfWork = unitOfWork;
+            _uow = uow;
         }
 
         public async Task<AdminResult> ActivateBusinessAsync(int businessId)
         {
             try
             {
-                var business = await _unitOfWork.Businesses.GetByIdAsync(businessId);
+                var business = await _uow.Businesses.GetByIdAsync(businessId);
                 if (business == null)
                     return AdminResult.Failed("Business not found");
                 if (business.IsActive)
                     return AdminResult.Failed("Business is already active");
                 business.IsActive = true;
                 business.SubscriptionEndDate = DateTime.UtcNow.AddMonths(1);
-                _unitOfWork.Businesses.Update(business);
-                await _unitOfWork.SaveChangesAsync();
+                _uow.Businesses.Update(business);
+                await _uow.SaveChangesAsync();
 
                 return AdminResult.Success(business, "Business activated successfully");
             }
@@ -40,14 +40,14 @@ namespace CoffeeShop.Application.Service
         {
             try
             {
-                var business = await _unitOfWork.Businesses.GetByIdAsync(businessId);
+                var business = await _uow.Businesses.GetByIdAsync(businessId);
                 if (business == null)
                     return AdminResult.Failed("Business not found");
                 if (!business.IsActive)
                     return AdminResult.Failed("Business is already inactive");
                 business.IsActive = false;
-                _unitOfWork.Businesses.Update(business);
-                await _unitOfWork.SaveChangesAsync();
+                _uow.Businesses.Update(business);
+                await _uow.SaveChangesAsync();
 
                 return AdminResult.Success(business, "Business deactivated successfully");
             }
@@ -59,23 +59,20 @@ namespace CoffeeShop.Application.Service
 
         public async Task<IEnumerable<Business>> GetAllBusinessesAsync()
         {
-            return await _unitOfWork.Businesses.GetAllAsync();
+            return await _uow.Businesses.GetAllAsync();
         }
 
-        public async Task<Business?> GetBusinessByIdAsync(int businessId)
-        {
-            return await _unitOfWork.Businesses.GetByIdAsync(businessId);
-        }
+       
 
         public async Task<IEnumerable<Business>> GetActiveBusinessesAsync()
         {
-            var allBusinesses = await _unitOfWork.Businesses.GetAllAsync();
+            var allBusinesses = await _uow.Businesses.GetAllAsync();
             return allBusinesses.Where(b => b.IsActive);
         }
 
         public async Task<IEnumerable<Business>> GetInactiveBusinessesAsync()
         {
-            var allBusinesses = await _unitOfWork.Businesses.GetAllAsync();
+            var allBusinesses = await _uow.Businesses.GetAllAsync();
             return allBusinesses.Where(b => !b.IsActive);
         }
 
@@ -83,14 +80,14 @@ namespace CoffeeShop.Application.Service
         {
             try
             {
-                var business = await _unitOfWork.Businesses.GetByIdAsync(businessId);
+                var business = await _uow.Businesses.GetByIdAsync(businessId);
                 if (business == null)
                     return AdminResult.Failed("Business not found");
 
                 business.SubscriptionEndDate = endDate;
                 business.MonthlyFee = monthlyFee;
-                _unitOfWork.Businesses.Update(business);
-                await _unitOfWork.SaveChangesAsync();
+                _uow.Businesses.Update(business);
+                await _uow.SaveChangesAsync();
 
                 return AdminResult.Success(business, "Subscription updated successfully");
             }
@@ -104,7 +101,7 @@ namespace CoffeeShop.Application.Service
         {
             try
             {
-                var allBusinesses = await _unitOfWork.Businesses.GetAllAsync();
+                var allBusinesses = await _uow.Businesses.GetAllAsync();
                 var expiredBusinesses = allBusinesses.Where(b =>
                     b.IsActive &&
                     b.SubscriptionEndDate.HasValue &&
@@ -114,13 +111,13 @@ namespace CoffeeShop.Application.Service
                 foreach (var business in expiredBusinesses)
                 {
                     business.IsActive = false;
-                    _unitOfWork.Businesses.Update(business);
+                    _uow.Businesses.Update(business);
                     deactivatedCount++;
                 }
 
                 if (deactivatedCount > 0)
                 {
-                    await _unitOfWork.SaveChangesAsync();
+                    await _uow.SaveChangesAsync();
                     return AdminResult.Success(null, $"{deactivatedCount} businesses deactivated due to expired subscription");
                 }
 

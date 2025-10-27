@@ -1,5 +1,6 @@
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Domain.Entities;
+using CoffeeShop.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeShop.Web.Controllers
@@ -122,10 +123,10 @@ namespace CoffeeShop.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(string customerName, string? customerPhone, int tableId, int branchId)
+        public async Task<IActionResult> Checkout(string customerName, string? customerPhone, int tableId, int branchId,bool isTakeAway, PaymentGateway gateway)
         {
             var sessionId = GetOrCreateSessionId();
-            var result = await _guestOrderService.CreateTempOrderAsync(customerName, customerPhone, tableId, branchId, sessionId);
+            var result = await _guestOrderService.CreateTempOrderAsync(customerName, customerPhone, tableId, branchId, isTakeAway, sessionId);
 
             if (!result.IsSuccess)
             {
@@ -134,11 +135,7 @@ namespace CoffeeShop.Web.Controllers
             }
 
             // Generate payment link
-            var paymentResult = await _paymentService.CreatePaymentLinkAsync(
-                branchId,
-                result.TempOrder!.PayableAmount,
-                $"Order for {customerName}",
-                Domain.Enums.PaymentGateway.VNPay);
+            var paymentResult = await _paymentService.CreatePaymentLinkAsync(branchId,result.TempOrder!.PayableAmount, $"{customerName}",gateway, result.TempOrder.TempOrderId);
 
             if (!paymentResult.IsSuccess)
             {

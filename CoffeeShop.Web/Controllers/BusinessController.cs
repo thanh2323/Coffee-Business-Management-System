@@ -12,14 +12,12 @@ namespace CoffeeShop.Web.Controllers
         private readonly IBusinessService _businessService;
         private readonly IAuthService _authService;
         private readonly IPaymentService _paymentService;
-        private readonly IAdminService _adminService;
-
-        public BusinessController(IBusinessService businessService, IAuthService authService, IPaymentService paymentService, IAdminService adminService)
+        public BusinessController(IBusinessService businessService, IAuthService authService, IPaymentService paymentService)
         {
             _businessService = businessService;
             _authService = authService;
             _paymentService = paymentService;
-            _adminService = adminService;
+         
         }
 
         [HttpGet]
@@ -32,14 +30,14 @@ namespace CoffeeShop.Web.Controllers
         public async Task<IActionResult> My()
         {
 
-            var currentUser = await _authService.GetCurrentUserAsync();
-            if (currentUser == null || currentUser.BusinessId == null)
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null || user.BusinessId == null)
             {
                 TempData["Error"] = "You don't have a business yet.";
                 return RedirectToAction("Create");
             }
 
-            var business = await _adminService.GetBusinessByIdAsync(currentUser.BusinessId.Value);
+            var business = await _businessService.GetBusinessByIdAsync(user.BusinessId.Value);
             if (business == null)
             {
                 TempData["Error"] = "Business not found.";
@@ -53,8 +51,8 @@ namespace CoffeeShop.Web.Controllers
         public async Task<IActionResult> Create(string name, string address, string? phone)
         {
 
-            var currentUser = await _authService.GetCurrentUserAsync();
-            if (currentUser == null)
+            var user = await _authService.GetCurrentUserAsync();
+            if (user == null)
             {
                 TempData["Error"] = "Invalid user.";
                 return View();
@@ -65,7 +63,7 @@ namespace CoffeeShop.Web.Controllers
                 return View();
             }
 
-            var result = await _businessService.RegisterBusinessAsync(name, address, phone, currentUser.UserId);
+            var result = await _businessService.RegisterBusinessAsync(name, address, phone, user.UserId);
             if (!result.IsSuccess)
             {
                 TempData["Error"] = result.Message;
@@ -84,24 +82,24 @@ namespace CoffeeShop.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Pay(int businessId, string gateway = "VNPay")
+        public async Task<IActionResult> Pay(int businessId, PaymentGateway gateway)
         {
-            var business = await _adminService.GetBusinessByIdAsync(businessId);
+            var business = await _businessService.GetBusinessByIdAsync(businessId);
             if (business == null)
             {
                 TempData["Error"] = "Business not found.";
                 return RedirectToAction("Create");
             }
+    
+            var paymentResult = await _paymentService.CreatePaymentLinkAsync(businessId, business.MonthlyFee, $"Subscription for {business.Name}", gateway, business.PaymentReference!);
 
-            var parsed = Enum.TryParse<PaymentGateway>(gateway, true, out var gw) ? gw : PaymentGateway.VNPay;
-            var link = await _businessService.CreatePaymentLinkAsync(businessId, parsed);
-            if (!link.IsSuccess || string.IsNullOrEmpty(link.PaymentUrl))
+            if (!paymentResult.IsSuccess || string.IsNullOrEmpty(paymentResult.PaymentUrl))
             {
-                TempData["Error"] = link.Message;
+                TempData["Error"] = paymentResult.Message;
                 return RedirectToAction("Success", new { id = businessId });
             }
 
-            return Redirect(link.PaymentUrl);
+            return Redirect(paymentResult.PaymentUrl);
         }
     }
 }

@@ -6,7 +6,8 @@ namespace CoffeeShop.Application.Interface.IRepo
     public interface ICustomerRepository : IBaseRepository<Customer>
     {
         // Customer-specific methods
-        Task<Customer?> GetByPhoneAsync(string phone);
+        Task<Customer?> GetByNameOrPhoneAsync(string name, string? phone);
+     
         Task<IEnumerable<Customer>> GetByBranchIdAsync(int branchId);
         Task<IEnumerable<Customer>> GetByLoyaltyTierAsync(LoyaltyTierType tier);
      

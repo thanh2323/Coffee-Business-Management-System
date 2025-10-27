@@ -7,20 +7,25 @@ namespace CoffeeShop.Application.Service
 {
     public class BusinessService : IBusinessService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _uow;
         private readonly IPaymentService _paymentService;
 
-        public BusinessService(IUnitOfWork unitOfWork, IPaymentService paymentService)
+        public BusinessService(IUnitOfWork uow, IPaymentService paymentService)
         {
-            _unitOfWork = unitOfWork;
+            _uow = uow;
             _paymentService = paymentService;
+        }
+
+        public async Task<Business?> GetBusinessByIdAsync(int businessId)
+        {
+            return await _uow.Businesses.GetByIdAsync(businessId);
         }
 
         public async Task<AdminResult> RegisterBusinessAsync(string businessName, string address, string? phone, int ownerId)
         {
             try
             {
-                var owner = await _unitOfWork.Users.GetByIdAsync(ownerId);
+                var owner = await _uow.Users.GetByIdAsync(ownerId);
                 if (owner == null)
                     return AdminResult.Failed("Owner not found");
                 if (owner.Role != UserRole.Owner)
@@ -35,15 +40,16 @@ namespace CoffeeShop.Application.Service
                     Phone = phone,
                     IsActive = false,
                     MonthlyFee = 500000,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    PaymentReference = $"BIZ-{Guid.NewGuid()}"
                 };
 
-                _unitOfWork.Businesses.Add(business);
-                await _unitOfWork.SaveChangesAsync();
+                _uow.Businesses.Add(business);
+                await _uow.SaveChangesAsync();
 
                 owner.BusinessId = business.BusinessId;
-                _unitOfWork.Users.Update(owner);
-                await _unitOfWork.SaveChangesAsync();
+                _uow.Users.Update(owner);
+                await _uow.SaveChangesAsync();
 
                 return AdminResult.Success(business, "Business registered successfully. Please complete payment to activate.");
             }
@@ -52,23 +58,35 @@ namespace CoffeeShop.Application.Service
                 return AdminResult.Failed($"Registration failed: {ex.Message}");
             }
         }
-
-        public async Task<PaymentLinkResult> CreatePaymentLinkAsync(int businessId, PaymentGateway gateway)
+        public async Task<bool> CompletePaymentAsync(string refCode, PaymentGateway gateway)
         {
-            var business = await _unitOfWork.Businesses.GetByIdAsync(businessId);
-            if (business == null)
-                return PaymentLinkResult.Failed("Business not found");
+            try
+            {
+                var bu = await _uow.Businesses.GetAllAsync();
+                var business = (await _uow.Businesses.GetAllAsync()).FirstOrDefault(b => b.PaymentReference == refCode);
+               
+                if (business == null)
+                    return false;
 
-            var link = await _paymentService.CreatePaymentLinkAsync(businessId, business.MonthlyFee, $"Subscription for {business.Name}", gateway);
-            if (!link.IsSuccess || string.IsNullOrEmpty(link.Reference))
-                return link;
+                if (business.IsActive)
+                    return true; // tránh double update
 
-            business.PaymentReference = link.Reference;
-            _unitOfWork.Businesses.Update(business);
-            await _unitOfWork.SaveChangesAsync();
+                business.IsActive = true;
+                business.SubscriptionEndDate = DateTime.UtcNow.AddMonths(1);
 
-            return link;
+                _uow.Businesses.Update(business);
+                await _uow.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CompletePaymentAsync] Error: {ex.Message}");
+                return false;
+            }
         }
+
+
     }
 }
 
