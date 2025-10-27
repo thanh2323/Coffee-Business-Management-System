@@ -12,7 +12,8 @@ namespace CoffeeShop.Application.Interface.IService
        
         Task<GuestOrderResult> ClearCartAsync(string sessionId);
         Task<GuestOrderResult> GetCartDetailsAsync(string sessionId);
-        Task<GuestOrderResult> CreateTempOrderAsync(string customerName, string? customerPhone, int tableId, int branchId, string sessionId);
+        Task<GuestOrderResult> CreateTempOrderAsync(string customerName, string? customerPhone, int tableId, int branchId,bool isTakeAway, string sessionId);
+
     }
 
     public class GuestOrderResult

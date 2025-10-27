@@ -1,5 +1,6 @@
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace CoffeeShop.Application.Service.Gateways
 {
@@ -7,14 +8,14 @@ namespace CoffeeShop.Application.Service.Gateways
     {
         public PaymentGateway Gateway => PaymentGateway.MoMo;
 
-        public async Task<PaymentLinkResult> CreatePaymentLinkAsync(int businessId, decimal amount, string description)
+        public async Task<PaymentLinkResult> CreatePaymentLinkAsync(int businessId, decimal amount, string description, string orderId)
         {
             var reference = $"MOMO-{businessId}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
             var url = $"https://test-payment.momo.vn/pay?ref={reference}&amount={amount}";
             return await Task.FromResult(PaymentLinkResult.Success(url, reference));
         }
 
-        public async Task<bool> VerifyPaymentAsync(string reference)
+        public async Task<bool> VerifyPaymentAsync(IQueryCollection queryParams)
         {
             // TODO: real verification with MoMo
             return await Task.FromResult(true);

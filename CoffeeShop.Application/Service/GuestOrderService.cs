@@ -27,7 +27,7 @@ namespace CoffeeShop.Application.Service
             return GuestOrderResult.Success(table, branch, menuItems);
         }
 
- 
+
         public async Task<GuestOrderResult> AddToCartAsync(string sessionId, int menuItemId, int quantity, int branchId, int? tableId)
         {
 
@@ -119,7 +119,7 @@ namespace CoffeeShop.Application.Service
             return GuestOrderResult.Success(cart);
         }
 
-   
+
         public async Task<GuestOrderResult> ClearCartAsync(string sessionId)
         {
 
@@ -148,7 +148,7 @@ namespace CoffeeShop.Application.Service
             return GuestOrderResult.Success(cartItems, cart.TotalAmount);
         }
 
-        public async Task<GuestOrderResult> CreateTempOrderAsync(string customerName, string? customerPhone, int tableId, int branchId, string sessionId)
+        public async Task<GuestOrderResult> CreateTempOrderAsync(string customerName, string? customerPhone, int tableId, int branchId, bool isTakeAway, string sessionId)
         {
             if (string.IsNullOrWhiteSpace(customerName))
                 return GuestOrderResult.Failed("Customer name is required");
@@ -166,7 +166,7 @@ namespace CoffeeShop.Application.Service
                 return GuestOrderResult.Failed("Table or branch not found");
 
             // Create temp order from cart
-            var tempOrderId = Guid.NewGuid().ToString();
+            var tempOrderId = $"ORD-{Guid.NewGuid()}";
             var tempOrder = new TempOrder
             {
                 TempOrderId = tempOrderId,
@@ -180,7 +180,8 @@ namespace CoffeeShop.Application.Service
                 PayableAmount = cart.PayableAmount,
                 RedeemPoints = cart.RedeemPoints,
                 PaymentReference = $"TEMP-{tempOrderId}",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsTakeAway = isTakeAway
             };
 
             // Save temp order to Redis
@@ -188,5 +189,7 @@ namespace CoffeeShop.Application.Service
 
             return GuestOrderResult.Success(tempOrder);
         }
+
+
     }
 }

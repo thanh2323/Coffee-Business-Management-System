@@ -49,7 +49,7 @@ namespace CoffeeShop.Infrastructure.Extention
 
             // Register services
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<IOrderPaymentService, OrderPaymentService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IBusinessService, BusinessService>();
             services.AddScoped<IPaymentService, PaymentService>();
