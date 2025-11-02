@@ -1,0 +1,238 @@
+﻿@using CoffeeShop.Domain.Enums
+@model IEnumerable<CoffeeShop.Domain.Entities.Order>
+@{
+	ViewData["Title"] = "Orders";
+
+}
+
+<div class="container-fluid">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h2>Orders Management</h2>
+		<a asp-action="Create" asp-route-branchId="@ViewBag.BranchId" class="btn btn-primary">
+
+			<i class="fas fa-plus"></i> New Order
+		</a>
+	</div>
+
+	<!-- Filter -->
+	<div class="card mb-3">
+		<div class="card-body">
+			<form method="get" class="row g-3">
+				<input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+				<div class="col-md-4">
+					<label>Filter by Status</label>
+					<select name="status" class="form-select" onchange="this.form.submit()">
+						<option value="">All Orders</option>
+						<option value="Pending">Pending</option>
+						<option value="Confirmed">Confirmed</option>
+						<option value="Preparing">Preparing</option>
+						<option value="Ready">Ready</option>
+						<option value="Completed">Completed</option>
+						<option value="Cancelled">Cancelled</option>
+					</select>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Orders Table -->
+	<div class="card">
+		<div class="card-body">
+			<table class="table table-hover" id="ordersTable">
+				<thead>
+					<tr>
+						<th>Order #</th>
+						<th>Customer</th>
+						<th>Phone</th>
+						<th>Type</th>
+						<th>Status</th>
+						<th>Total</th>
+						<th>Date</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var order in Model)
+					{
+						<tr data-order-id="@order.OrderId">
+							<td><strong>#@order.OrderId</strong></td>
+							<td>@order.Customer.Name</td>
+							<td>@(order.Customer.Phone ?? "N/A")</td>
+							<td>
+								<span class="badge bg-@(order.IsTakeAway ? "info" : "secondary")">
+									@(order.IsTakeAway ? "Take Away" : "Dine In")
+								</span>
+							</td>
+							<td>
+								<span class="badge bg-@GetStatusColor(order.CurrentStatus)" id="status-@order.OrderId">
+									@order.CurrentStatus
+								</span>
+							</td>
+							<td><strong>@order.TotalAmount.ToString("N0") đ</strong></td>
+							<td>@order.OrderDate.ToString("dd/MM HH:mm")</td>
+							<td>
+								<div class="btn-group" role="group">
+									@if (order.CurrentStatus == OrderStatus.Pending)
+									{
+										<button class="btn btn-sm btn-success" onclick="updateStatus(@order.OrderId, 'Confirmed')">
+											Confirm
+										</button>
+									}
+									@if (order.CurrentStatus == OrderStatus.Confirmed)
+									{
+										<button class="btn btn-sm btn-warning" onclick="updateStatus(@order.OrderId, 'Preparing')">
+											Prepare
+										</button>
+									}
+									@if (order.CurrentStatus == OrderStatus.Preparing)
+									{
+										<button class="btn btn-sm btn-primary" onclick="updateStatus(@order.OrderId, 'Ready')">
+											Ready
+										</button>
+									}
+									@if (order.CurrentStatus == OrderStatus.Ready)
+									{
+										<button class="btn btn-sm btn-success" onclick="updateStatus(@order.OrderId, 'Completed')">
+											Complete
+										</button>
+									}
+									@if (order.CurrentStatus != OrderStatus.Completed && order.CurrentStatus != OrderStatus.Cancelled)
+									{
+										<button class="btn btn-sm btn-danger" onclick="updateStatus(@order.OrderId, 'Cancelled')">
+											Cancel
+										</button>
+									}
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+	<script>
+		const branchId = @ViewBag.BranchId;
+
+		// SignalR Connection
+		const connection = new signalR.HubConnectionBuilder()
+			.withUrl("/orderHub")
+			.withAutomaticReconnect()
+			.build();
+
+		connection.on("NewOrderReceived", function (order) {
+			console.log("New order received:", order);
+			// Reload page để đảm bảo data consistency
+			location.reload();
+		});
+
+		connection.on("OrderStatusChanged", function (data) {
+			console.log("Order status changed:", data);
+			updateOrderStatusUI(data.orderId, data.newStatus);
+			updateOrderButtons(data.orderId, data.newStatus);
+		});
+
+		connection.start()
+			.then(() => {
+				console.log("SignalR Connected");
+				return connection.invoke("JoinBranchGroup", branchId);
+			})
+			.catch(err => console.error("SignalR Error:", err));
+
+		// Update order status
+		function updateStatus(orderId, newStatus) {
+			if (!confirm(`Change status to ${newStatus}?`)) return;
+
+			fetch('/Order/UpdateStatus', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: new URLSearchParams({
+					orderId: orderId,
+					newStatus: newStatus
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					// UI sẽ update qua SignalR
+				} else {
+					alert(data.message);
+				}
+			})
+			.catch(error => alert('Error: ' + error));
+		}
+
+		function updateOrderStatusUI(orderId, newStatus) {
+			const statusBadge = document.getElementById(`status-${orderId}`);
+			if (statusBadge) {
+				statusBadge.textContent = newStatus;
+				statusBadge.className = `badge bg-${getStatusColor(newStatus)}`;
+			}
+		}
+
+		function updateOrderButtons(orderId, newStatus) {
+			const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+			if (!row) return;
+
+			const actionsCell = row.querySelector('td:last-child .btn-group');
+			if (!actionsCell) return;
+
+			// Clear existing buttons
+			actionsCell.innerHTML = '';
+
+			// Add buttons based on new status
+			let buttons = '';
+			
+			if (newStatus === 'Pending') {
+				buttons += `<button class="btn btn-sm btn-success" onclick="updateStatus(${orderId}, 'Confirmed')">Confirm</button>`;
+			}
+			if (newStatus === 'Confirmed') {
+				buttons += `<button class="btn btn-sm btn-warning" onclick="updateStatus(${orderId}, 'Preparing')">Prepare</button>`;
+			}
+			if (newStatus === 'Preparing') {
+				buttons += `<button class="btn btn-sm btn-primary" onclick="updateStatus(${orderId}, 'Ready')">Ready</button>`;
+			}
+			if (newStatus === 'Ready') {
+				buttons += `<button class="btn btn-sm btn-success" onclick="updateStatus(${orderId}, 'Completed')">Complete</button>`;
+			}
+			if (newStatus !== 'Completed' && newStatus !== 'Cancelled') {
+				buttons += `<button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Cancel</button>`;
+			}
+
+			actionsCell.innerHTML = buttons;
+		}
+
+		function getStatusColor(status) {
+			const colors = {
+				'Pending': 'secondary',
+				'Confirmed': 'info',
+				'Preparing': 'warning',
+				'Ready': 'primary',
+				'Completed': 'success',
+				'Cancelled': 'danger'
+			};
+			return colors[status] || 'secondary';
+		}
+	</script>
+}
+
+@functions {
+	private string GetStatusColor(OrderStatus status)
+	{
+		return status switch
+		{
+			OrderStatus.Pending => "secondary",
+			OrderStatus.Confirmed => "info",
+			OrderStatus.Preparing => "warning",
+			OrderStatus.Ready => "primary",
+			OrderStatus.Completed => "success",
+			OrderStatus.Cancelled => "danger",
+			_ => "secondary"
+		};
+	}
+}

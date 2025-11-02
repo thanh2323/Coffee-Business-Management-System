@@ -41,6 +41,17 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet.Where(o => o.PaymentMethod == paymentMethod).ToListAsync();
         }
 
+        public async Task<IEnumerable<Order>> GetOrdersByBranchAsync(int branchId)
+        {
+            return await _dbSet
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.Customer)
+                .Include(o => o.CafeTable)
+                .Where(o => o.BranchId == branchId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
         // Order with OrderItems (include related data)
         public async Task<Order?> GetOrderWithItemsAsync(int orderId)
         {

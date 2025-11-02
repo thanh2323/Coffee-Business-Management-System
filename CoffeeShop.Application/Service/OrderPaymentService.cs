@@ -15,9 +15,11 @@ namespace CoffeeShop.Application.Service
     {
         private readonly IUnitOfWork _uow;
         private readonly ITempOrderRepository _tempOrderRepo;
+        private readonly IOrderRealtimeService _orderRealtimeService;
 
-        public OrderPaymentService(IUnitOfWork uow, ITempOrderRepository tempOrderRepo)
+        public OrderPaymentService(IUnitOfWork uow, ITempOrderRepository tempOrderRepo , IOrderRealtimeService orderRealtimeService)
         {
+            _orderRealtimeService = orderRealtimeService;
             _uow = uow;
             _tempOrderRepo = tempOrderRepo;
         }
@@ -91,6 +93,7 @@ namespace CoffeeShop.Application.Service
                 await _tempOrderRepo.DeleteAsync(tempOrderId);
 
                 await _uow.CommitTransactionAsync();
+                await _orderRealtimeService.BroadcastNewOrderAsync(order.BranchId,order);
                 return true;
             }
             catch

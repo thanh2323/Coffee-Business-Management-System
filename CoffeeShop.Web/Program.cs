@@ -3,6 +3,9 @@ using CoffeeShop.Domain.Enums;
 using CoffeeShop.Infrastructure.Extention;
 using CoffeeShop.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using CoffeeShop.Application.Interface.IService;
+using CoffeeShop.Application.Service;
+using CoffeeShop.Web.Hubs;
 
 namespace CoffeeShop.Web
 {
@@ -51,13 +54,11 @@ namespace CoffeeShop.Web
                         context.User.HasClaim(c => c.Type == "Position" && c.Value == "Manager") &&
                         context.User.HasClaim(c => c.Type == "BranchId")));
 
-                // Staff tác nghiệp
-                options.AddPolicy("RequireFrontline", policy =>
+                options.AddPolicy("StaffOrManager", policy =>
                     policy.RequireAssertion(context =>
                         context.User.IsInRole("Staff") &&
                         context.User.HasClaim(c => c.Type == "Position" &&
-                                                  (c.Value == "Barista" || c.Value == "Cashier"))));
-
+                                                  (c.Value == "Barista" || c.Value == "Cashier" || c.Value == "Manager"))));
                 // Owner or Manager (branch-level management)
                 options.AddPolicy("RequireOwnerOrManager", policy =>
                     policy.RequireAssertion(context =>
@@ -76,6 +77,8 @@ namespace CoffeeShop.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true; 
             });
+            builder.Services.AddSignalR();
+            builder.Services.AddScoped<IOrderRealtimeService, OrderRealtimeService>();
 
 
             var app = builder.Build();
@@ -105,6 +108,9 @@ namespace CoffeeShop.Web
             app.UseAuthorization();
 
             app.UseSession();
+
+            // Map SignalR Hub for real-time order updates
+            app.MapHub<OrderHub>("/orderHub");
 
             app.MapStaticAssets();
             app.MapControllerRoute(

@@ -6,6 +6,7 @@ namespace CoffeeShop.Application.Interface.IRepo
     public interface IOrderRepository : IBaseRepository<Order>
     {
         // Order-specific methods
+        Task<IEnumerable<Order>> GetOrdersByBranchAsync(int branchId);
         Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId);
         Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<IEnumerable<Order>> GetOrdersByStatusAsync(OrderStatus status);
