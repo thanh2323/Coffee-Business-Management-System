@@ -36,6 +36,19 @@ namespace CoffeeShop.Web.Controllers
             TempData[result.IsSuccess ? "Success" : "Error"] = result.Message;
             return RedirectToAction("Index");
         }
+
+        public IActionResult Package()
+        {
+            return View();
+        }
+
+        public IActionResult Post()
+        {
+            return View();
+        }
+
+
+
     }
 }
 

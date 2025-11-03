@@ -13,10 +13,7 @@ html {
 
 /* SỬA ĐỔI LỚN: Áp dụng Gradient từ TRẮNG TINH cho BODY */
 body {
-    /* MÀU NỀN GRADIENT TOÀN TRANG: 
-       - Bắt đầu từ MÀU TRẮNG TINH (#FFFFFF).
-       - KẾT THÚC BẰNG MÀU XANH CHÍNH XÁC NHƯ ẢNH BẠN GỬI (#007AFF) 
-         và KÉO DÀI TỚI 600vh (đảm bảo trắng vẫn chiếm ưu thế) */
+    
     background: linear-gradient(to bottom, #FFFFFF, #007AFF 600vh);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
