@@ -43,6 +43,7 @@
                         {
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100">
+                                    <img src="@Url.Content(item.ImagePath)"alt="@item.Name" class="card-img-top"style="height: 150px; object-fit: cover;" onerror="this.src='/images/no-image.png';" />
                                     <div class="card-body text-center">
                                         <h6>@item.Name</h6>
                                         <p class="text-primary fw-bold">@item.Price.ToString("N0") đ</p>

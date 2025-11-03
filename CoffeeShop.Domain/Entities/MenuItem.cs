@@ -30,6 +30,8 @@ namespace CoffeeShop.Domain.Entities
 
         public bool IsAvailable { get; set; } = true;
 
+        public string? ImagePath { get; set; }
+
         // Navigation properties
         public  Branch Branch { get; set; } = null!;
         public  ICollection<MenuItemRecipe> MenuItemRecipes { get; set; } = new List<MenuItemRecipe>();

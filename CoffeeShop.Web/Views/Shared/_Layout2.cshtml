@@ -1,279 +1,286 @@
 ﻿@{
-    ViewBag.Title = "Dashboard Layout - Café Dashboard";
+	ViewBag.Title = "Dashboard Layout - Café Dashboard";
 }
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="utf-8" />
-    <title>@ViewBag.Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+	<meta charset="utf-8" />
+	<title>@ViewBag.Title</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
 
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            background-color: #f4f6f8;
-            color: #555;
-        }
+	<style>
+		body {
+			font-family: 'Segoe UI', sans-serif;
+			margin: 0;
+			background-color: #f4f6f8;
+			color: #555;
+		}
 
-        /* ================= SIDEBAR ================= */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 220px;
-            height: 100vh;
-            background-color: #fff;
-            border-right: 1px solid #ddd; /* đường kẻ xám nhạt phân biệt khu */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* để cài đặt nằm cuối */
-            padding: 20px 0;
-        }
+		/* ================= SIDEBAR ================= */
+		.sidebar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 220px;
+			height: 100vh;
+			background-color: #fff;
+			border-right: 1px solid #ddd; /* đường kẻ xám nhạt phân biệt khu */
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between; /* để cài đặt nằm cuối */
+			padding: 20px 0;
+		}
 
-        /* Phần trên sidebar */
-        .sidebar-top {
-            display: flex;
-            flex-direction: column;
-        }
+		/* Phần trên sidebar */
+		.sidebar-top {
+			display: flex;
+			flex-direction: column;
+		}
 
-        /* Logo Café */
-        .sidebar .brand {
-            font-weight: 700;
-            font-size: 18px;
-            color: #000;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+		/* Logo Café */
+		.sidebar .brand {
+			font-weight: 700;
+			font-size: 18px;
+			color: #000;
+			text-align: center;
+			margin-bottom: 20px;
+		}
 
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #555;
-            font-size: 15px;
-            padding: 12px 20px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border-radius: 8px;
-            margin: 4px 10px;
-        }
+		.sidebar a {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			color: #555;
+			font-size: 15px;
+			padding: 12px 20px;
+			text-decoration: none;
+			transition: all 0.2s ease;
+			border-radius: 8px;
+			margin: 4px 10px;
+		}
 
-            .sidebar a:hover,
-            .sidebar a.active {
-                background-color: #dbeaff; /* xanh pastel nhạt */
-                color: #007AFF;
-            }
+			.sidebar a:hover,
+			.sidebar a.active {
+				background-color: #dbeaff; /* xanh pastel nhạt */
+				color: #007AFF;
+			}
 
-                .sidebar a:hover i,
-                .sidebar a.active i {
-                    color: #007AFF;
-                }
+		.sidebar i {
+			font-size: 17px;
+			color: #555;
+		}
 
-        .sidebar i {
-            font-size: 17px;
-            color: #555;
-        }
+		/* ================= TOP NAVBAR ================= */
+		.top-nav {
+			position: fixed;
+			top: 0;
+			left: 220px; /* chừa chỗ cho sidebar */
+			right: 0;
+			height: 60px;
+			background-color: #fff;
+			border-bottom: 1px solid #ddd;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 25px;
+			z-index: 1000;
+		}
 
-        /* ================= TOP NAVBAR ================= */
-        .top-nav {
-            position: fixed;
-            top: 0;
-            left: 220px; /* chừa chỗ cho sidebar */
-            right: 0;
-            height: 60px;
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            z-index: 1000;
-        }
+			.top-nav .brand {
+				font-weight: 600;
+				font-size: 18px;
+				color: #000; /* Café màu đen */
+			}
 
-            .top-nav .brand {
-                font-weight: 600;
-                font-size: 18px;
-                color: #000; /* Café màu đen */
-            }
+		.nav-actions {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+		}
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+			.nav-actions i {
+				color: #555;
+				cursor: pointer;
+				transition: color 0.2s ease;
+			}
 
-            .nav-actions i {
-                color: #555;
-                cursor: pointer;
-                transition: color 0.2s ease;
-            }
+				.nav-actions i:hover {
+					color: #007AFF;
+				}
 
-                .nav-actions i:hover {
-                    color: #007AFF;
-                }
+		.user-avatar {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 1px solid #ddd;
+		}
 
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #ddd;
-        }
-
-        /* ================= MAIN CONTENT ================= */
-        .main-content {
-            margin-left: 220px;
-            margin-top: 60px;
-            padding: 25px;
-        }
-    </style>
+		/* ================= MAIN CONTENT ================= */
+		.main-content {
+			margin-left: 220px;
+			margin-top: 60px;
+			padding: 25px;
+		}
+	</style>
 </head>
 
 <body>
-    @if (User.IsInRole("Owner"))
-    {
-        <div class="sidebar">
-        <div class="sidebar-top">
-            <div class="brand">☕ Café</div>
-                <a asp-controller="Owner" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Owner" && ViewContext.RouteData.Values["action"]!.ToString() == "Index" ? "active" : "")">
-                    <i class="bi bi-speedometer2"></i> Tổng quan
-                </a>
 
-                <a asp-controller="Owner" asp-action="Revenue"
-                   class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Owner" && ViewContext.RouteData.Values["action"]!.ToString() == "Revenue" ? "active" : "")">
-                    <i class="bi bi-cash-stack"></i> Doanh thu
-                </a>
+	@if (User.Identity?.IsAuthenticated == true)
+	{
 
-                <a asp-controller="Business" asp-action="My"
-                   class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Create" ? "active" : "")">
-                    <i class="bi bi-shop"></i> Doanh nghiệp
-                </a>
+		@if (User.IsInRole("Owner"))
+		{
+			<div class="sidebar">
+				<div class="sidebar-top">
+					<div class="brand">☕ Café</div>
+					<a asp-controller="Business" asp-action="My"
+					   class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Owner" && ViewContext.RouteData.Values["action"]!.ToString() == "Index" ? "active" : "")">
+						<i class="bi bi-speedometer2"></i> Tổng quan
+					</a>
 
-                <a asp-controller="Order" asp-action="Index"
+					<a asp-controller="Owner" asp-action="Revenue"
+					   class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Owner" && ViewContext.RouteData.Values["action"]!.ToString() == "Revenue" ? "active" : "")">
+						<i class="bi bi-cash-stack"></i> Doanh thu
+					</a>
+
+					<a asp-controller="Branch" asp-action="Index"
+					   class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Create" ? "active" : "")">
+						<i class="bi bi-shop"></i> Chi Nhánh
+					</a>
+
+
+					@*                 <a asp-controller="Order" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Order" ? "active" : "")">
                     <i class="bi bi-receipt"></i> Đơn hàng
-                </a>
-
+                </a> *@
+					@* 
                 <a asp-controller="Product" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Product" ? "active" : "")">
                     <i class="bi bi-cup-straw"></i> Sản phẩm
-                </a>
-
+                </a> *@
+					@* 
                 <a asp-controller="Inventory" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Inventory" ? "active" : "")">
                     <i class="bi bi-box-seam"></i> Kho hàng
                 </a>
-
+ *@@* 
                 <a asp-controller="Customer" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Customer" ? "active" : "")">
                     <i class="bi bi-person-badge"></i> Khách hàng
                 </a>
-
-                <a asp-controller="Staff" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Staff" ? "active" : "")">
+ *@@* 
+                <a asp-controller="ManageStaff" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "ManageStaff" ? "active" : "")">
                     <i class="bi bi-people"></i> Nhân viên
                 </a>
-
-                <a asp-controller="Promotion" asp-action="Index"
+ *@
+					@*        <a asp-controller="Promotion" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]!.ToString() == "Promotion" ? "active" : "")">
                     <i class="bi bi-gift"></i> Khuyến mãi
                 </a>
+ *@
 
+				</div>
 
-        </div>
+				<!-- Mục Cài đặt nằm dưới cùng -->
+				<div class="sidebar-bottom">
+					<a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
+				</div>
+			</div>
 
-        <!-- Mục Cài đặt nằm dưới cùng -->
-        <div class="sidebar-bottom">
-            <a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
-        </div>
-    </div>
+			<!-- Navbar ngang -->
+			<div class="top-nav">
+				<div class="brand">☕ Café</div>
+				<div class="nav-actions">
+					<i class="bi bi-bell fs-5"></i>
+					<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+					<div class="user-actions">
+						<span class="navbar-text" style="margin-right: 15px;">@User.Identity.Name!</span>
+						<form method="post" asp-controller="Auth" asp-action="Logout" style="display: inline;">
+							<button type="submit" class="logout-button">Logout</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		}
+		@if (User.IsInRole("Admin"))
+		{
+			<!-- Sidebar trái -->
+			<div class="sidebar">
+				<div class="sidebar-top">
+					<div class="brand">☕ Café</div>
+					<a asp-controller="Admin" asp-action="Index" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Index" ? "active" : "")">
+						<i class="bi bi-speedometer2"></i> Tổng quan
+					</a>
 
-    <!-- Navbar ngang -->
-    <div class="top-nav">
-        <div class="brand">☕ Café</div>
-        <div class="nav-actions">
-            <i class="bi bi-bell fs-5"></i>
-            <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
-        </div>
-    </div>
-    }
-    @if (User.IsInRole("Admin"))
-    { 
-    <!-- Sidebar trái -->
-    <div class="sidebar">
-        <div class="sidebar-top">
-            <div class="brand">☕ Café</div>
-                <a asp-controller="Admin" asp-action="Index" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Index" ? "active" : "")">
-                    <i class="bi bi-speedometer2"></i> Tổng quan
-                </a>
+					<a asp-controller="Admin" asp-action="UserList" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "UserList" ? "active" : "")">
+						<i class="bi bi-person-lines-fill"></i> Người dùng
+					</a>
 
-                <a asp-controller="Admin" asp-action="UserList" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "UserList" ? "active" : "")">
-                    <i class="bi bi-person-lines-fill"></i> Người dùng
-                </a>
+					<a asp-controller="Admin" asp-action="Package" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Package" ? "active" : "")">
+						<i class="bi bi-box2-heart"></i> Gói dịch vụ
+					</a>
 
-                <a asp-controller="Admin" asp-action="Package" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Package" ? "active" : "")">
-                    <i class="bi bi-box2-heart"></i> Gói dịch vụ
-                </a>
+					<a asp-controller="Admin" asp-action="Post" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Post" ? "active" : "")">
+						<i class="bi bi-file-post"></i> Bài đăng
+					</a>
 
-                <a asp-controller="Admin" asp-action="Post" class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Post" ? "active" : "")">
-                    <i class="bi bi-file-post"></i> Bài đăng
-                </a>
+				</div>
 
-        </div>
+				<!-- Mục Cài đặt nằm dưới cùng -->
+				<div class="sidebar-bottom">
+					<a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
+				</div>
+			</div>
 
-        <!-- Mục Cài đặt nằm dưới cùng -->
-        <div class="sidebar-bottom">
-            <a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
-        </div>
-    </div>
+			<!-- Navbar ngang -->
+			<div class="top-nav">
+				<div class="brand">☕ Café</div>
+				<div class="nav-actions">
+					<i class="bi bi-bell fs-5"></i>
+					<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+				</div>
+			</div>
+		}
+		@if (User.IsInRole("Manager"))
+		{
+			<div class="sidebar">
+				<div class="sidebar-top">
+					<div class="brand">☕ Café</div>
+					<a href="#" class="active"><i class="bi bi-speedometer2"></i> Tổng quan</a>
+					<a href="#"><i class="bi bi-clipboard-data"></i> Báo cáo</a>
+					<a href="#"><i class="bi bi-receipt"></i> Đơn hàng</a>
+					<a href="#"><i class="bi bi-cup-straw"></i> Sản phẩm</a>
+					<a href="#"><i class="bi bi-box-seam"></i> Kho hàng</a>
+					<a href="#"><i class="bi bi-person-badge"></i> Khách hàng</a>
+					<a href="#"><i class="bi bi-people"></i> Nhân viên</a>
+					<a href="#"><i class="bi bi-qr-code-scan"></i> Bàn & QR bàn</a>
+				</div>
 
-    <!-- Navbar ngang -->
-    <div class="top-nav">
-        <div class="brand">☕ Café</div>
-        <div class="nav-actions">
-            <i class="bi bi-bell fs-5"></i>
-            <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
-        </div>
-    </div> 
-    }
-    @if (User.IsInRole("Manager"))
-    {
-        <div class="sidebar">
-            <div class="sidebar-top">
-                <div class="brand">☕ Café</div>
-                <a href="#" class="active"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                <a href="#"><i class="bi bi-clipboard-data"></i> Báo cáo</a>
-                <a href="#"><i class="bi bi-receipt"></i> Đơn hàng</a>
-                <a href="#"><i class="bi bi-cup-straw"></i> Sản phẩm</a>
-                <a href="#"><i class="bi bi-box-seam"></i> Kho hàng</a>
-                <a href="#"><i class="bi bi-person-badge"></i> Khách hàng</a>
-                <a href="#"><i class="bi bi-people"></i> Nhân viên</a>
-                <a href="#"><i class="bi bi-qr-code-scan"></i> Bàn & QR bàn</a>
-            </div>
+				<!-- Mục Cài đặt nằm dưới cùng -->
+				<div class="sidebar-bottom">
+					<a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
+				</div>
+			</div>
 
-            <!-- Mục Cài đặt nằm dưới cùng -->
-            <div class="sidebar-bottom">
-                <a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
-            </div>
-        </div>
+			<!-- Navbar ngang -->
+			<div class="top-nav">
+				<div class="brand">☕ Café</div>
+				<div class="nav-actions">
+					<i class="bi bi-bell fs-5"></i>
+					<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+				</div>
+			</div>
+		}
+	}
 
-        <!-- Navbar ngang -->
-        <div class="top-nav">
-            <div class="brand">☕ Café</div>
-            <div class="nav-actions">
-                <i class="bi bi-bell fs-5"></i>
-                <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
-            </div>
-        </div>
-    }
-
-    <!-- Nội dung chính -->
-    <div class="main-content">
-        @RenderBody()
-    </div>
+	<!-- Nội dung chính -->
+	<div class="main-content">
+		@RenderBody()
+	</div>
 </body>
 </html>

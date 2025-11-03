@@ -3,6 +3,7 @@ using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
 using CoffeeShop.Domain.Rules;
+using Microsoft.AspNetCore.Http;
 
 namespace CoffeeShop.Application.Service
 {
@@ -70,7 +71,7 @@ namespace CoffeeShop.Application.Service
             return MenuItemResult.Success(menuItem);
         }
 
-        public async Task<MenuItemResult> CreateAsync(int branchId, string name, decimal price, string? category, bool isAvailable = true)
+        public async Task<MenuItemResult> CreateAsync(int branchId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable = true)
         {
 
 
@@ -90,6 +91,23 @@ namespace CoffeeShop.Application.Service
             if (!validationResult.IsSuccess)
                 return MenuItemResult.Failed("A menu item with this name already exists in this branch.", branchId);
 
+            string? imagePath = null;
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "uploads", "menu");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                imagePath = $"/uploads/menu/{fileName}";
+            }
+
             var menuItem = new MenuItem
             {
                 BranchId = branchId,
@@ -97,7 +115,8 @@ namespace CoffeeShop.Application.Service
                 Price = price,
                 Category = string.IsNullOrWhiteSpace(category) ? null : category.Trim(),
                 IsAvailable = isAvailable,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                ImagePath = imagePath
             };
 
             _uow.MenuItems.Add(menuItem);
@@ -106,7 +125,7 @@ namespace CoffeeShop.Application.Service
             return MenuItemResult.Success(menuItem, "Menu item created successfully");
         }
 
-        public async Task<MenuItemResult> UpdateAsync(int menuItemId, string name, decimal price, string? category, bool isAvailable, int branchId)
+        public async Task<MenuItemResult> UpdateAsync(int menuItemId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable, int branchId)
         {
             var user = await _authService.GetCurrentUserAsync();
             if (user == null)
@@ -127,10 +146,28 @@ namespace CoffeeShop.Application.Service
             if (!validationResult.IsSuccess)
                 return MenuItemResult.Failed("A menu item with this name already exists in this branch.", branchId);
 
+            string? imagePath = null;
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "uploads", "menu");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                imagePath = $"/uploads/menu/{fileName}";
+            }
+
             menuItem.Name = name.Trim();
             menuItem.Price = price;
             menuItem.Category = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
             menuItem.IsAvailable = isAvailable;
+            menuItem.ImagePath = imagePath;
             menuItem.MarkAsUpdated();
 
             _uow.MenuItems.Update(menuItem);

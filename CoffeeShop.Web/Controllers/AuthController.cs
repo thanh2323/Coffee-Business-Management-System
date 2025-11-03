@@ -20,7 +20,7 @@ namespace CoffeeShop.Web.Controllers
         public IActionResult Login()
         {
             if (User.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("RedirectByRole", "Auth");
 
             return View();
         }
@@ -63,7 +63,7 @@ namespace CoffeeShop.Web.Controllers
                     return RedirectToAction("Index", "Admin");
 
                 case "Owner":
-                    return RedirectToAction("Index", "Owner");
+                    return RedirectToAction("My", "Business");
 
                 case "Staff":
                     if (position == "Manager")

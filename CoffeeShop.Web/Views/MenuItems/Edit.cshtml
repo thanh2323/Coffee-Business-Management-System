@@ -22,7 +22,7 @@
                 </h4>
             </div>
             <div class="card-body">
-                <form method="post" asp-action="Edit">
+                <form method="post" asp-action="Edit" enctype="multipart/form-data">
                 
                     <input type="hidden" name="branchId" value="@Model.BranchId" />
                     <input type="hidden" name="menuItemId" value="@Model.MenuItemId" />
@@ -67,6 +67,13 @@
                                maxlength="100"
                                placeholder="e.g., Coffee, Tea, Pastry, Sandwich">
                         <div class="form-text">Optional: Group similar items together</div>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="imageFile" name="imageFile" />
+                        <div class="form-text">Upload an image (JPG, PNG, WEBP). Optional but recommended.</div>
                     </div>
 
                     <div class="mb-3">

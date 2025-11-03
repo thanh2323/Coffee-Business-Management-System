@@ -1,5 +1,7 @@
-@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
+﻿@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
 @{
+    Layout = "_Layout";
+    ViewData["HideHeader"] = true;
     ViewData["Title"] = "Cart";
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;

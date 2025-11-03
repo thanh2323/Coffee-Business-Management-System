@@ -41,10 +41,10 @@ namespace CoffeeShop.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int branchId, string name, decimal price, string? category, bool isAvailable = true)
+        public async Task<IActionResult> Create(int branchId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable = true)
         {
            
-            var result = await _menuItemService.CreateAsync( branchId, name, price, category, isAvailable);
+            var result = await _menuItemService.CreateAsync( branchId, name, price, category, imageFile, isAvailable);
 
             if (result.IsSuccess)
             {
@@ -74,10 +74,10 @@ namespace CoffeeShop.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int menuItemId, string name, decimal price, string? category, bool isAvailable, int branchId)
+        public async Task<IActionResult> Edit(int menuItemId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable, int branchId)
             {
             
-            var result = await _menuItemService.UpdateAsync(menuItemId, name, price, category, isAvailable, branchId);
+            var result = await _menuItemService.UpdateAsync(menuItemId, name, price, category, imageFile, isAvailable, branchId);
 
             if (!result.IsSuccess)
             {

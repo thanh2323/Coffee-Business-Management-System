@@ -1,4 +1,5 @@
 using CoffeeShop.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace CoffeeShop.Application.Interface.IService
 {
@@ -7,8 +8,8 @@ namespace CoffeeShop.Application.Interface.IService
       //  Task<IEnumerable<MenuItem>> GetByBranchAsync(int? branchId);
         Task<IEnumerable<MenuItem>> GetByCategoryAsync(int? branchId, string? category);
         Task<MenuItemResult> GetByIdAsync(int menuItemId);
-        Task<MenuItemResult> CreateAsync(int branchId, string name, decimal price, string? category, bool isAvailable = true);
-        Task<MenuItemResult> UpdateAsync( int menuItemId, string name, decimal price, string? category, bool isAvailable, int branchId);
+        Task<MenuItemResult> CreateAsync(int branchId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable = true);
+        Task<MenuItemResult> UpdateAsync( int menuItemId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable, int branchId);
         Task<MenuItemResult> DeleteAsync(int menuItemId);
         Task<MenuItemResult> ToggleAvailabilityAsync(int menuItemId);
         Task<IEnumerable<string>> GetCategoriesAsync(int? branchId);
