@@ -15,6 +15,37 @@
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
+    <div class="register-page">
+        <!-- TRÁI -->
+        <div class="form-section">
+            <div class="form-card">
+                <h2>Tạo tài khoản mới</h2>
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                <p class="form-subtitle">Tham gia nền tảng và quản lý quán cà phê của bạn một cách dễ dàng.</p>
+
+                <form method="post" novalidate>
+                    <div class="form-group">
+                        <label for="name" class="form-label">Họ và tên</label>
+                        <div class="field">
+                            <input type="text" class="form-control" id="name" name="username" placeholder="Nhập họ và tên" required>
+                        </div>
+                    </div>
 	<div class="register-page">
 		<!-- TRÁI -->
 		<div class="form-section">

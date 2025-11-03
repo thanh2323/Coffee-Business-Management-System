@@ -1,0 +1,108 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Quản lý gói dịch vụ - Café Dashboard";
+}
+
+<div class="container-fluid px-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold text-dark">🎁 Quản lý gói dịch vụ</h4>
+        <button class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Tạo gói mới
+        </button>
+    </div>
+
+    <!-- Bộ lọc -->
+    <div class="card p-3 mb-4 border-0 shadow-sm">
+        <div class="row g-2">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="🔍 Tìm kiếm gói dịch vụ..." />
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option>Tất cả trạng thái</option>
+                    <option>Đang hoạt động</option>
+                    <option>Hết hạn</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option>Sắp xếp theo</option>
+                    <option>Giá tăng dần</option>
+                    <option>Giá giảm dần</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-funnel"></i> Lọc
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách gói dịch vụ -->
+    <div class="table-responsive card shadow-sm border-0">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Tên gói</th>
+                    <th>Giá (VNĐ)</th>
+                    <th>Thời hạn</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gói Cơ Bản</td>
+                    <td>199.000</td>
+                    <td>1 tháng</td>
+                    <td><span class="badge bg-success">Đang hoạt động</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gói Nâng Cao</td>
+                    <td>499.000</td>
+                    <td>3 tháng</td>
+                    <td><span class="badge bg-secondary">Hết hạn</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gói Premium</td>
+                    <td>999.000</td>
+                    <td>12 tháng</td>
+                    <td><span class="badge bg-success">Đang hoạt động</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    th {
+        color: #333;
+        font-weight: 600;
+    }
+
+    td {
+        color: #555;
+    }
+
+    .btn-primary {
+        background-color: #007AFF;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0066d6;
+        }
+</style>
