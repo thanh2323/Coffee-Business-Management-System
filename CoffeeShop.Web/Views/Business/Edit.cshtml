@@ -1,0 +1,28 @@
+﻿@model CoffeeShop.Domain.DTOs.BusinessEditDto
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="BusinessId" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MonthlyFee" class="form-label"></label>
+        <input asp-for="MonthlyFee" class="form-control" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <a asp-action="My" class="btn btn-outline-secondary">Quay lại</a>
+</form>

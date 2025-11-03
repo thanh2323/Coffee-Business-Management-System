@@ -147,9 +147,9 @@
 						<i class="bi bi-cash-stack"></i> Doanh thu
 					</a>
 
-					<a asp-controller="Branch" asp-action="Index"
-					   class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Create" ? "active" : "")">
-						<i class="bi bi-shop"></i> Chi Nhánh
+					<a asp-controller="Business" asp-action="ManageBusiness"
+					   class="@(ViewContext.RouteData.Values["action"]!.ToString() == "Business" ? "active" : "")">
+						<i class="bi bi-shop"></i> Doanh nghiệp 
 					</a>
 
 

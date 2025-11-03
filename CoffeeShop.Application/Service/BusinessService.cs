@@ -1,7 +1,9 @@
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
+using CoffeeShop.Application.Common;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
+using CoffeeShop.Domain.DTOs;
 
 namespace CoffeeShop.Application.Service
 {
@@ -58,18 +60,17 @@ namespace CoffeeShop.Application.Service
                 return AdminResult.Failed($"Registration failed: {ex.Message}");
             }
         }
+
         public async Task<bool> CompletePaymentAsync(string refCode, PaymentGateway gateway)
         {
             try
             {
-                var bu = await _uow.Businesses.GetAllAsync();
                 var business = (await _uow.Businesses.GetAllAsync()).FirstOrDefault(b => b.PaymentReference == refCode);
-               
                 if (business == null)
                     return false;
 
                 if (business.IsActive)
-                    return true; // tránh double update
+                    return true;
 
                 business.IsActive = true;
                 business.SubscriptionEndDate = DateTime.UtcNow.AddMonths(1);
@@ -86,8 +87,28 @@ namespace CoffeeShop.Application.Service
             }
         }
 
+        public async Task<ServiceResult> UpdateBusinessAsync(BusinessEditDto dto)
+        {
+            try
+            {
+                var business = await _uow.Businesses.GetByIdAsync(dto.BusinessId);
+                if (business == null)
+                    return ServiceResult.Failed("Business not found.");
 
+                business.Name = dto.Name;
+                business.Address = dto.Address;
+                business.Phone = dto.Phone;
+                business.MonthlyFee = dto.MonthlyFee;
+
+                _uow.Businesses.Update(business);
+                await _uow.SaveChangesAsync();
+
+                return ServiceResult.Success("Business updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult.Failed($"Update failed: {ex.Message}");
+            }
+        }
     }
 }
-
-

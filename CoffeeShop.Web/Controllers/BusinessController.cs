@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using CoffeeShop.Application.Interface.IService;
 using System.Security.Claims;
 using CoffeeShop.Domain.Enums;
+using CoffeeShop.Domain.DTOs;
 
 namespace CoffeeShop.Web.Controllers
 {
@@ -100,6 +101,87 @@ namespace CoffeeShop.Web.Controllers
             }
 
             return Redirect(paymentResult.PaymentUrl);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            var user = await _authService.GetCurrentUserAsync();
+
+            int businessId = id ?? user?.BusinessId ?? 0;
+
+            if (businessId == 0)
+            {
+                TempData["Error"] = "Business not found.";
+                return RedirectToAction("Create");
+            }
+
+            var business = await _businessService.GetBusinessByIdAsync(businessId);
+            if (business == null)
+            {
+                TempData["Error"] = "Business not found.";
+                return RedirectToAction("My");
+            }
+
+            if (user?.BusinessId != businessId)
+            {
+                TempData["Error"] = "You don't have permission to edit this business.";
+                return RedirectToAction("My");
+            }
+
+            var model = new BusinessEditDto
+            {
+                BusinessId = business.BusinessId,
+                Name = business.Name,
+                Address = business.Address,
+                Phone = business.Phone,
+                MonthlyFee = business.MonthlyFee
+            };
+
+            return View(model);
+        }
+
+        // ================== EDIT (POST) ==================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, BusinessEditDto model)
+        {
+            if (id != model.BusinessId)
+            {
+                TempData["Error"] = "Invalid business ID.";
+                return RedirectToAction("My");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Invalid input data.";
+                return View(model);
+            }
+
+            var user = await _authService.GetCurrentUserAsync();
+
+            if (user?.BusinessId != id)
+            {
+                TempData["Error"] = "You don't have permission to edit this business.";
+                return RedirectToAction("My");
+            }
+
+            var result = await _businessService.UpdateBusinessAsync(model);
+
+            if (!result.IsSuccess)
+            {
+                TempData["Error"] = result.Message;
+                return View(model);
+            }
+
+            TempData["Success"] = "Business updated successfully.";
+            return RedirectToAction("My");
+        }
+
+        [HttpGet]
+        public IActionResult ManageBusiness()
+        {
+            return View();
         }
     }
 }

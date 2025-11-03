@@ -63,7 +63,7 @@ namespace CoffeeShop.Web.Controllers
                     return RedirectToAction("Index", "Admin");
 
                 case "Owner":
-                    return RedirectToAction("My", "Business");
+                    return RedirectToAction("Business", "Business");
 
                 case "Staff":
                     if (position == "Manager")

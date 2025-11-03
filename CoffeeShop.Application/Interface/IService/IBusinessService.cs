@@ -1,5 +1,7 @@
+using CoffeeShop.Domain.DTOs;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
+using CoffeeShop.Application.Common;
 
 namespace CoffeeShop.Application.Interface.IService
 {
@@ -10,7 +12,7 @@ namespace CoffeeShop.Application.Interface.IService
         Task<Business?> GetBusinessByIdAsync(int businessId);
         Task<bool> CompletePaymentAsync(string refCode, PaymentGateway gateway);
 
-
+        Task<ServiceResult> UpdateBusinessAsync(BusinessEditDto dto);
     }
 }
 
