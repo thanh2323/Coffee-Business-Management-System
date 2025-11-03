@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,16 +35,47 @@ namespace CoffeeShop.Web.Controllers
             }
 
             var result = await _authService.LoginAsync(email, password);
-            
+
             if (result.IsSuccess)
             {
                 TempData["Success"] = "Login successful!";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("RedirectByRole", "Auth");
             }
+
+
 
             TempData["Error"] = result.Message;
             return View();
         }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult RedirectByRole()
+        {
+            // 🔹 Lấy thông tin Role và Position từ cookie (claims)
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            var position = User.FindFirst("Position")?.Value;
+
+            // 🔹 Điều hướng đến trang phù hợp
+            switch (role)
+            {
+                case "Admin":
+                    return RedirectToAction("Index", "Admin");
+
+                case "Owner":
+                    return RedirectToAction("Index", "Owner");
+
+                case "Staff":
+                    if (position == "Manager")
+                        return RedirectToAction("Index", "Manager");
+                    else
+                        return RedirectToAction("Index", "Staff");
+
+                default:
+                    return RedirectToAction("Index", "Home");
+            }
+        }
+
 
         [HttpGet]
         public IActionResult Register()
@@ -58,7 +89,7 @@ namespace CoffeeShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string username, string email, string password, string confirmPassword)
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || 
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) ||
                 string.IsNullOrEmpty(password))
             {
                 TempData["Error"] = "All fields are required.";
@@ -72,7 +103,7 @@ namespace CoffeeShop.Web.Controllers
             }
 
             var result = await _authService.RegisterOwnerAsync(username, email, password);
-            
+
             if (result.IsSuccess)
             {
                 TempData["Success"] = "Registration successful! You can now login.";
