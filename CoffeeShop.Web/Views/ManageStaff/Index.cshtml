@@ -1,0 +1,88 @@
+@model IEnumerable<CoffeeShop.Domain.Entities.User>
+
+
+@{
+    ViewData["Title"] = "Staff Management";
+
+}
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<h2>Staff Management</h2>
+
+<p>
+    <a asp-action="Create" asp-route-branchId="@ViewBag.Branches" class="btn btn-primary">Create Staff</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Position</th>
+            <th>Branch</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {@foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Username</td>
+                    <td>@user.Email</td>
+                    <td>@user.StaffProfile?.Position</td>
+                    <td>@(user.Branch?.Name ?? $"Branch #{user.BranchId}")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@user.UserId" asp-route-branchId="@ViewBag.Branches" class="btn btn-sm btn-warning">Edit</a>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@user.UserId">Delete</button>
+                    </td>
+                </tr>
+            }
+
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">No staff found for this branch.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* Delete Modals *@
+@if (Model != null && Model.Any())
+{
+    @foreach (var user in Model)
+    {
+        <div class="modal fade" id="deleteModal-@user.UserId" tabindex="-1" aria-labelledby="deleteModalLabel-@user.UserId" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel-@user.UserId">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete staff member <strong>@user.Username</strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form asp-action="Delete" method="post" style="display: inline;">
+                            <input type="hidden" name="staffId" value="@user.UserId" />
+                            <input type="hidden" name="branchId" value="@ViewBag.Branches" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -31,16 +31,16 @@ namespace CoffeeShop.Domain.Entities
         public string? DisplayUnit { get; set; }
 
         // How many base units in one display unit (e.g., 1 box_1l = 1000 ml)
-        [Column(TypeName = "decimal(10,3)")]
+        [Column(TypeName = "decimal(10,0)")]
         public decimal ConversionFactorToBase { get; set; } = 1m;
 
         // Quantity stored in base units (e.g., ml/g/pcs)
-        [Column(TypeName = "decimal(18,3)")]
+        [Column(TypeName = "decimal(18,0)")]
         public decimal Quantity { get; set; }
 
         // Unit cost currency per base unit
 
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "decimal(18,0)")]
         public decimal UnitCost { get; set; }
 
         [NotMapped]

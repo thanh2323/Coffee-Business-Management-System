@@ -9,7 +9,7 @@ namespace CoffeeShop.Application.Interface.IRepo
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByUsernameAsync(string username);
         Task<User?> GetByEmailAsync(string email);
-        Task<IEnumerable<User>> GetByRoleAsync(UserRole role);
+        Task<IEnumerable<User>> GetStaffByBranchAsync(int branchId);
 
     }
 }

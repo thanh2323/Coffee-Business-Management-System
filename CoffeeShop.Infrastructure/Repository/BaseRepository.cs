@@ -40,7 +40,7 @@ namespace CoffeeShop.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+        public async Task<IEnumerable<T>> GetAllAsync() =>  await _dbSet.ToListAsync();
 
         public void Update(T entity) => _dbSet.Update(entity);
     }

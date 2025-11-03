@@ -1,0 +1,41 @@
+@model CoffeeShop.Domain.Entities.User
+@using CoffeeShop.Domain.Enums
+@{
+    ViewData["Title"] = "Edit Staff";
+    var positions = ViewBag.Positions as Array;
+}
+
+<h2>Edit Staff</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="staffId" value="@Model.UserId" />
+    <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+    
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" value="@Model.Username" required />
+    </div>
+    
+  
+    
+    <div class="mb-3">
+        <label class="form-label">Position</label>
+        <select name="position" class="form-select">
+            <option value="">Select Position</option>
+            @foreach (var pos in positions!)
+            {
+                <option value="@pos" selected="@(Model.StaffProfile?.Position.ToString() == pos.ToString())">@pos</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-action="Index" asp-route-branchId="@ViewBag.BranchId" class="btn btn-secondary">Back</a>
+    </div>
+</form>

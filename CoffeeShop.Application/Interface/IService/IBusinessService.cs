@@ -6,7 +6,11 @@ namespace CoffeeShop.Application.Interface.IService
     public interface IBusinessService
     {
         Task<AdminResult> RegisterBusinessAsync(string businessName, string address, string? phone, int ownerId);
-        Task<PaymentLinkResult> CreatePaymentLinkAsync(int businessId, PaymentGateway gateway);
+
+        Task<Business?> GetBusinessByIdAsync(int businessId);
+        Task<bool> CompletePaymentAsync(string refCode, PaymentGateway gateway);
+
+
     }
 }
 

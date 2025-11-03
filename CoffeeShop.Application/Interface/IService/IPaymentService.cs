@@ -1,9 +1,13 @@
+using CoffeeShop.Domain.Enums;
+using Microsoft.AspNetCore.Http;
+
 namespace CoffeeShop.Application.Interface.IService
 {
     public interface IPaymentService
     {
-        Task<PaymentLinkResult> CreatePaymentLinkAsync(int businessId, decimal amount, string description, CoffeeShop.Domain.Enums.PaymentGateway gateway);
-        Task<bool> VerifyPaymentAsync(string reference, CoffeeShop.Domain.Enums.PaymentGateway gateway);
+        Task<PaymentLinkResult> CreatePaymentLinkAsync(int branhid, decimal amount, string description, PaymentGateway gateway, string reference);
+        Task<bool> VerifyPaymentAsync(IQueryCollection queryParams, PaymentGateway gateway);
+
     }
 
     public class PaymentLinkResult

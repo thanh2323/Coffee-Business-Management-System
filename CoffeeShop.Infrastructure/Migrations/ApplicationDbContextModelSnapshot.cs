@@ -93,7 +93,7 @@ namespace CoffeeShop.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("MonthlyFee")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -229,7 +229,7 @@ namespace CoffeeShop.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("ConversionFactorToBase")
-                        .HasColumnType("decimal(10,3)");
+                        .HasColumnType("decimal(10,0)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -250,10 +250,10 @@ namespace CoffeeShop.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,3)");
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<decimal>("UnitCost")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -293,7 +293,7 @@ namespace CoffeeShop.Infrastructure.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("QuantityChange")
-                        .HasColumnType("decimal(18,3)");
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -340,7 +340,7 @@ namespace CoffeeShop.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Points")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(10,0)");
 
                     b.Property<int>("PointsType")
                         .HasColumnType("int");
@@ -428,7 +428,7 @@ namespace CoffeeShop.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,3)");
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

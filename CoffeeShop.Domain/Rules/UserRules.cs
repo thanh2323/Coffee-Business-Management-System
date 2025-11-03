@@ -27,14 +27,14 @@ namespace CoffeeShop.Domain.Rules
         // 2. Validate username
         public static bool IsValidUsername(string username)
         {
-            if (string.IsNullOrWhiteSpace(username))
+            if (string.IsNullOrEmpty(username))
                 return false;
 
             if (username.Length < MIN_USERNAME_LENGTH || username.Length > MAX_USERNAME_LENGTH)
                 return false;
 
             // Username should only contain letters, numbers, and underscores
-            return Regex.IsMatch(username, @"^[a-zA-Z0-9_]+$");
+            return true;
         }
 
         // 3. Validate email

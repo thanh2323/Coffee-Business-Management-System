@@ -10,7 +10,7 @@ namespace CoffeeShop.Application.Interface.IService
         
         // Business management
         Task<IEnumerable<Business>> GetAllBusinessesAsync();
-        Task<Business?> GetBusinessByIdAsync(int businessId);
+ 
         Task<IEnumerable<Business>> GetActiveBusinessesAsync();
         Task<IEnumerable<Business>> GetInactiveBusinessesAsync();
         
