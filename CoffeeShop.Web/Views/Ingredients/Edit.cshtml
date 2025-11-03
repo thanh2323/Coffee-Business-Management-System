@@ -1,34 +1,115 @@
 @model CoffeeShop.Domain.Entities.Ingredient
 @{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
     ViewData["Title"] = "Edit Ingredient";
 }
 
 <div class="container mt-4">
-    <h3>Edit Ingredient</h3>
-    <form method="post" asp-action="Edit">
-        <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-        <input type="hidden" name="ingredientName" value="@ViewBag.OriginalName" />
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input class="form-control" name="name" value="@Model.Name" required />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Quantity</label>
-            <input class="form-control" name="quantity" type="number" step="0.001" min="0" value="@Model.Quantity" required />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Unit Cost</label>
-            <input class="form-control" name="unitCost" type="number" step="0.01" min="0" value="@Model.UnitCost" required />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Package Size (e.g., 1l, 500ml, 5kg, 10pcs)</label>
-            <input class="form-control" name="displayUnit" value="@Model.DisplayUnit" placeholder="e.g. 1l or 500ml" />
-            <small class="text-muted">Used to auto-convert into the stored base unit.</small>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a class="btn btn-secondary" asp-action="Index" asp-route-branchId="@ViewBag.BranchId">Back</a>
-    </form>
+	<div class="mb-4">
+		<h2 class="mb-1">Edit Ingredient</h2>
+		<p class="text-muted mb-0">Update ingredient information</p>
+	</div>
+
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+
+	<div class="row justify-content-center">
+		<div class="col-lg-8">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<div class="mb-4">
+						<h4 class="card-title mb-2">
+							<i class="fas fa-box text-primary me-2"></i>@Model.Name
+						</h4>
+						<p class="text-muted small mb-0">Update ingredient information and settings.</p>
+					</div>
+
+					<form method="post" asp-action="Edit">
+						<input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+						<input type="hidden" name="ingredientName" value="@ViewBag.OriginalName" />
+						
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="name">
+								<i class="fas fa-tag me-2 text-primary"></i>Ingredient Name <span class="text-danger">*</span>
+							</label>
+							<input class="form-control form-control-lg" 
+								   name="name" 
+								   id="name"
+								   value="@Model.Name" 
+								   required 
+								   placeholder="e.g., Coffee Beans, Milk, Sugar"/>
+							<small class="form-text text-muted">Enter the name of the ingredient.</small>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label fw-semibold" for="quantity">
+									<i class="fas fa-weight me-2 text-info"></i>Quantity <span class="text-danger">*</span>
+								</label>
+								<input class="form-control form-control-lg" 
+									   name="quantity" 
+									   id="quantity"
+									   type="number" 
+									   step="0.001" 
+									   min="0" 
+									   value="@Model.Quantity" 
+									   required />
+								<small class="form-text text-muted">Current stock quantity.</small>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label fw-semibold" for="unitCost">
+									<i class="fas fa-tags me-2 text-success"></i>Unit Cost (VND) <span class="text-danger">*</span>
+								</label>
+								<div class="input-group input-group-lg">
+									<input class="form-control" 
+										   name="unitCost" 
+										   id="unitCost"
+										   type="number" 
+										   step="0.01" 
+										   min="0" 
+										   value="@Model.UnitCost" 
+										   required />
+									<span class="input-group-text">VND</span>
+								</div>
+								<small class="form-text text-muted">Cost per unit.</small>
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="displayUnit">
+								<i class="fas fa-box-open me-2 text-warning"></i>Package Size
+							</label>
+							<input class="form-control form-control-lg" 
+								   name="displayUnit" 
+								   id="displayUnit"
+								   value="@Model.DisplayUnit" 
+								   placeholder="e.g., 1l, 500ml, 5kg, 10pcs" />
+							<small class="form-text text-muted">
+								<i class="fas fa-info-circle me-1"></i>
+								System will auto-detect unit type. Examples: "1l" → 1000ml, "5kg" → 5000g, "10pcs" → 10pcs
+							</small>
+						</div>
+
+						<hr class="my-4 bg-light" />
+
+						<div class="d-flex justify-content-between align-items-center">
+							<a class="btn btn-outline-secondary" asp-action="Index" asp-route-branchId="@ViewBag.BranchId">
+								<i class="fas fa-times me-2"></i> Cancel
+							</a>
+							<button class="btn btn-primary btn-lg px-4" type="submit">
+								<i class="fas fa-check me-2"></i> Update Ingredient
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 

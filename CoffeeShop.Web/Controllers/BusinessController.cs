@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using CoffeeShop.Application.Interface.IService;
 using System.Security.Claims;
 using CoffeeShop.Domain.Enums;
+using System.Linq;
 
 namespace CoffeeShop.Web.Controllers
 {
@@ -43,6 +44,9 @@ namespace CoffeeShop.Web.Controllers
                 TempData["Error"] = "Business not found.";
                 return RedirectToAction("Create");
             }
+            var branches = business.Branches.ToList();
+            ViewBag.Branches = branches;
+            ViewBag.BranchCount = branches.Count();
 
             return View(business);
         }

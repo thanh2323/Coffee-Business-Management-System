@@ -1,24 +1,65 @@
 @{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
     ViewData["Title"] = "Create Table";
 }
 
 <div class="container mt-4">
-    <h3>Create Table</h3>
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
-    <form method="post">
-        <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-        <div class="mb-3">
-            <label class="form-label" for="tableNumber">Table Number</label>
-            <input class="form-control" type="number" id="tableNumber" name="tableNumber" min="1" required />
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-primary" type="submit">Create</button>
-            <a class="btn btn-secondary" asp-action="Index" asp-route-branchId="@ViewBag.BranchId">Back</a>
-        </div>
-    </form>
+	<div class="mb-4">
+		<h2 class="mb-1">Create New Table</h2>
+		<p class="text-muted mb-0">Add a new table to your branch</p>
+	</div>
+
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+
+	<div class="row justify-content-center">
+		<div class="col-lg-6">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<div class="mb-4">
+						<h4 class="card-title mb-2">
+							<i class="fas fa-table text-primary me-2"></i>Table Information
+						</h4>
+						<p class="text-muted small mb-0">Enter the table number for your branch.</p>
+					</div>
+
+					<form method="post">
+						<input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+						
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="tableNumber">
+								<i class="fas fa-hashtag me-2 text-primary"></i>Table Number <span class="text-danger">*</span>
+							</label>
+							<input class="form-control form-control-lg" 
+								   type="number" 
+								   id="tableNumber" 
+								   name="tableNumber" 
+								   min="1" 
+								   required 
+								   placeholder="e.g., 1, 2, 3..."/>
+							<small class="form-text text-muted">Enter a unique number for this table (e.g., 1, 2, 3...).</small>
+						</div>
+
+						<hr class="my-4 bg-light" />
+
+						<div class="d-flex justify-content-between align-items-center">
+							<a class="btn btn-outline-secondary" asp-action="Index" asp-route-branchId="@ViewBag.BranchId">
+								<i class="fas fa-times me-2"></i> Cancel
+							</a>
+							<button class="btn btn-primary btn-lg px-4" type="submit">
+								<i class="fas fa-check me-2"></i> Create Table
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 

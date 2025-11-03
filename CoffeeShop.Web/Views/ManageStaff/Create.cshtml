@@ -1,39 +1,91 @@
 @using CoffeeShop.Domain.Enums
 @{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
     ViewData["Title"] = "Create Staff";
-  
     var positions = ViewBag.Positions as Array;
 }
 
-<h2>Create Staff</h2>
+<div class="container mt-4">
+	<div class="mb-4">
+		<h2 class="mb-1">Create New Staff Member</h2>
+		<p class="text-muted mb-0">Add a new staff member to your branch</p>
+	</div>
 
-<form asp-action="Create" method="post">
-    <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-    <div class="mb-3">
-        <label class="form-label">Username</label>
-        <input type="text" name="username" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="email" name="email" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" name="password" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Position</label>
-        <select name="position" class="form-select">
-            @foreach (var pos in positions!)
-            {
-                <option value="@pos">@pos</option>
-            }
-        </select>
-    </div>
+	@if (TempData["ErrorMessage"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
 
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" asp-route-branchId="@ViewBag.BranchId" class="btn btn-secondary">Back</a>
-</form>
+	<div class="row justify-content-center">
+		<div class="col-lg-8">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<div class="mb-4">
+						<h4 class="card-title mb-2">
+							<i class="fas fa-user-plus text-primary me-2"></i>Staff Information
+						</h4>
+						<p class="text-muted small mb-0">Enter the details for the new staff member.</p>
+					</div>
+
+					<form asp-action="Create" method="post">
+						<input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+						
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="username">
+								<i class="fas fa-user me-2 text-primary"></i>Username <span class="text-danger">*</span>
+							</label>
+							<input type="text" name="username" id="username" class="form-control form-control-lg" required placeholder="Enter username"/>
+							<small class="form-text text-muted">Enter a unique username for this staff member.</small>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="email">
+								<i class="fas fa-envelope me-2 text-info"></i>Email <span class="text-danger">*</span>
+							</label>
+							<input type="email" name="email" id="email" class="form-control form-control-lg" required placeholder="Enter email address"/>
+							<small class="form-text text-muted">Enter a valid email address.</small>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="password">
+								<i class="fas fa-lock me-2 text-warning"></i>Password <span class="text-danger">*</span>
+							</label>
+							<input type="password" name="password" id="password" class="form-control form-control-lg" required placeholder="Enter password"/>
+							<small class="form-text text-muted">Enter a secure password.</small>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="position">
+								<i class="fas fa-briefcase me-2 text-success"></i>Position <span class="text-danger">*</span>
+							</label>
+							<select name="position" id="position" class="form-select form-select-lg">
+								@foreach (var pos in positions!)
+								{
+									<option value="@pos">@pos</option>
+								}
+							</select>
+							<small class="form-text text-muted">Select the staff member's role.</small>
+						</div>
+
+						<hr class="my-4 bg-light" />
+
+						<div class="d-flex justify-content-between align-items-center">
+							<a asp-action="Index" asp-route-branchId="@ViewBag.BranchId" class="btn btn-outline-secondary">
+								<i class="fas fa-times me-2"></i> Cancel
+							</a>
+							<button type="submit" class="btn btn-primary btn-lg px-4">
+								<i class="fas fa-check me-2"></i> Create Staff
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 

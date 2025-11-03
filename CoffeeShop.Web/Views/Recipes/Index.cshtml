@@ -1,118 +1,170 @@
 @model IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>
 @{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
     ViewData["Title"] = "Recipe Management";
     var branchId = ViewBag.BranchId as int?;
     var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
     var recipes = ViewBag.Recipes as IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>;
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
-                        <i class="fas fa-utensils me-2"></i>
-                        Recipe Management - @menuItem?.Name
-                    </h4>
-                    <div>
-                        <a href="@Url.Action("AddIngredient", new {branchId = branchId, menuItemId = ViewBag.MenuItemId })" 
-                           class="btn btn-primary me-2">
-                            <i class="fas fa-plus me-1"></i>Add Ingredient
-                        </a>
-                        <form method="post" action="@Url.Action("Validate", new { branchId ,menuItemId = ViewBag.MenuItemId })" class="d-inline">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-check me-1"></i>Validate Recipe
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    }
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    }
+<div class="container mt-4">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<div>
+			<h2 class="mb-1">Recipe Management</h2>
+			<p class="text-muted mb-0">
+				<i class="fas fa-utensils me-1"></i>@menuItem?.Name
+				@if (!string.IsNullOrEmpty(menuItem?.Category))
+				{
+					<span class="badge bg-secondary ms-2">@menuItem.Category</span>
+				}
+			</p>
+		</div>
+		<div>
+			<a href="@Url.Action("AddIngredient", new {branchId = branchId, menuItemId = ViewBag.MenuItemId })" 
+			   class="btn btn-primary">
+				<i class="fas fa-plus me-1"></i> Add Ingredient
+			</a>
+			<form method="post" action="@Url.Action("Validate", new { branchId ,menuItemId = ViewBag.MenuItemId })" class="d-inline ms-2">
+				<button type="submit" class="btn btn-success">
+					<i class="fas fa-check me-1"></i> Validate Recipe
+				</button>
+			</form>
+		</div>
+	</div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Menu Item:</strong> @menuItem?.Name
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Category:</strong> @menuItem?.Category
-                        </div>
-                    </div>
+	@if (TempData["Success"] != null)
+	{
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
 
-                    @if (recipes != null && recipes.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Ingredient</th>
-                                        <th>Quantity</th>
-                                        <th>Unit</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var recipe in recipes)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <i class="fas fa-leaf me-2"></i>
-                                                @recipe.Ingredient?.Name
-                                            </td>
-                                            <td>@recipe.Quantity</td>
-                                            
-                                            <td>
-                                                <a href="@Url.Action("EditIngredient", new { branchId, menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
-                                                   class="btn btn-sm btn-outline-primary me-1">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form method="post" action="@Url.Action("RemoveIngredient", new { branchId ,menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
-                                                      class="d-inline" onsubmit="return confirm('Are you sure you want to remove this ingredient from the recipe?')">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No ingredients in recipe</h5>
-                            <p class="text-muted">Add ingredients to create a recipe for this menu item.</p>
-                            <a href="@Url.Action("AddIngredient", new { branchId = branchId,menuItemId = ViewBag.MenuItemId })"
-                               class="btn btn-primary">
-                                <i class="fas fa-plus me-1"></i>Add First Ingredient
-                            </a>
-                        </div>
-                    }
-                </div>
-                <div class="card-footer">
-                    <a href="@Url.Action("Index", "MenuItems",new {branchId = branchId})" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>Back to Menu Items
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+	@if (recipes != null && recipes.Any())
+	{
+		<div class="card shadow-sm border-0 mb-4">
+			<div class="card-body">
+				<div class="row text-center">
+					<div class="col-md-4">
+						<div class="border-end border-md-0 pb-3 pb-md-0">
+							<h3 class="text-primary mb-1">@recipes.Count()</h3>
+							<small class="text-muted">Ingredients</small>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="border-end border-md-0 pb-3 pb-md-0">
+							<h3 class="text-success mb-1">@menuItem?.Price.ToString("N0")</h3>
+							<small class="text-muted">Price (VND)</small>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<h3 class="text-info mb-1">
+							<i class="fas fa-utensils"></i>
+						</h3>
+						<small class="text-muted">Recipe Steps</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card shadow-sm border-0">
+			<div class="card-header bg-light">
+				<h5 class="mb-0">
+					<i class="fas fa-list-check me-2 text-primary"></i>Ingredient List
+				</h5>
+			</div>
+			<div class="card-body">
+				<p class="text-muted mb-3">
+					<i class="fas fa-info-circle me-2"></i>
+					To make <strong>1 serving of @menuItem?.Name</strong>, you will need the following ingredients:
+				</p>
+				<div class="table-responsive">
+					<table class="table table-hover mb-0">
+						<thead class="table-light">
+							<tr>
+								<th style="width: 50px;">#</th>
+								<th><i class="fas fa-leaf me-1"></i> Ingredient</th>
+								<th class="text-end"><i class="fas fa-weight me-1"></i> Required Quantity</th>
+								<th class="text-center"><i class="fas fa-cog me-1"></i> Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							@{
+								int index = 1;
+							}
+							@foreach (var recipe in recipes)
+							{
+								<tr>
+									<td>
+										<span class="badge bg-secondary">@index</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<div class="flex-shrink-0 me-3">
+												<i class="fas fa-leaf text-success fa-lg"></i>
+											</div>
+											<div>
+												<strong class="d-block">@recipe.Ingredient?.Name</strong>
+												<small class="text-muted">Base Unit: @recipe.Ingredient?.BaseUnit</small>
+											</div>
+										</div>
+									</td>
+									<td class="text-end">
+										<span class="badge bg-info fs-6 px-3 py-2" d-flex justify-content-end align-items-center"
+											  style="width: 100px;">
+											@recipe.Quantity @recipe.Ingredient?.BaseUnit
+										</span>
+									</td>
+									<td>
+										<div class="d-flex gap-1 justify-content-center">
+											<a href="@Url.Action("EditIngredient", new { branchId, menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
+											   class="btn btn-sm btn-outline-primary" title="Edit Quantity">
+												<i class="fas fa-edit"></i>
+											</a>
+											<form method="post" action="@Url.Action("RemoveIngredient", new { branchId ,menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
+												  class="d-inline" onsubmit="return confirm('Are you sure you want to remove this ingredient from the recipe?')">
+												<button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">
+													<i class="fas fa-trash"></i>
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+								index++;
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="card shadow-sm border-0">
+			<div class="card-body text-center py-5">
+				<i class="fas fa-list-ul fa-4x text-muted mb-3"></i>
+				<h5>No ingredients in recipe</h5>
+				<p class="text-muted mb-4">Add ingredients to create a recipe for this menu item.</p>
+				<a href="@Url.Action("AddIngredient", new { branchId = branchId,menuItemId = ViewBag.MenuItemId })"
+				   class="btn btn-primary">
+					<i class="fas fa-plus me-1"></i> Add First Ingredient
+				</a>
+			</div>
+		</div>
+	}
+
+	<div class="mt-4">
+		<a href="@Url.Action("Index", "MenuItems",new {branchId = branchId})" class="btn btn-outline-secondary">
+			<i class="fas fa-arrow-left me-1"></i> Back to Menu Items
+		</a>
+	</div>
 </div>
 
 

@@ -9,6 +9,7 @@
 	<title>@ViewBag.Title</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 	<style>
 		body {
@@ -197,13 +198,14 @@
 				<div class="brand">☕ Café</div>
 				<div class="nav-actions">
 					<i class="bi bi-bell fs-5"></i>
-					<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
-					<div class="user-actions">
-						<span class="navbar-text" style="margin-right: 15px;">@User.Identity.Name!</span>
-						<form method="post" asp-controller="Auth" asp-action="Logout" style="display: inline;">
-							<button type="submit" class="logout-button">Logout</button>
-						</form>
-					</div>
+						<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+						<div class="user-actions">
+							<span class="navbar-text" style="margin-right: 15px;">@User.Identity.Name!</span>
+							<form method="post" asp-controller="Auth" asp-action="Logout" style="display: inline;">
+								<button type="submit" class="logout-button">Logout</button>
+							</form>
+						</div>
+
 				</div>
 			</div>
 		}
@@ -246,35 +248,45 @@
 				</div>
 			</div>
 		}
-		@if (User.IsInRole("Manager"))
+		@if (User.IsInRole("Staff"))
 		{
-			<div class="sidebar">
-				<div class="sidebar-top">
+			if (User.Claims.FirstOrDefault(c => c.Type == "Position")?.Value == "Manager")
+			{
+
+				<div class="sidebar">
+					<div class="sidebar-top">
+						<div class="brand">☕ Café</div>
+						<a href="#" class="active"><i class="bi bi-speedometer2"></i> Tổng quan</a>
+						<a href="#"><i class="bi bi-clipboard-data"></i> Báo cáo</a>
+						<a href="#"><i class="bi bi-receipt"></i> Đơn hàng</a>
+						<a href="#"><i class="bi bi-cup-straw"></i> Sản phẩm</a>
+						<a href="#"><i class="bi bi-box-seam"></i> Kho hàng</a>
+						<a href="#"><i class="bi bi-person-badge"></i> Khách hàng</a>
+						<a href="#"><i class="bi bi-people"></i> Nhân viên</a>
+						<a href="#"><i class="bi bi-qr-code-scan"></i> Bàn & QR bàn</a>
+					</div>
+
+					<!-- Mục Cài đặt nằm dưới cùng -->
+					<div class="sidebar-bottom">
+						<a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
+					</div>
+				</div>
+
+				<!-- Navbar ngang -->
+				<div class="top-nav">
 					<div class="brand">☕ Café</div>
-					<a href="#" class="active"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-					<a href="#"><i class="bi bi-clipboard-data"></i> Báo cáo</a>
-					<a href="#"><i class="bi bi-receipt"></i> Đơn hàng</a>
-					<a href="#"><i class="bi bi-cup-straw"></i> Sản phẩm</a>
-					<a href="#"><i class="bi bi-box-seam"></i> Kho hàng</a>
-					<a href="#"><i class="bi bi-person-badge"></i> Khách hàng</a>
-					<a href="#"><i class="bi bi-people"></i> Nhân viên</a>
-					<a href="#"><i class="bi bi-qr-code-scan"></i> Bàn & QR bàn</a>
+					<div class="nav-actions">
+						<i class="bi bi-bell fs-5"></i>
+						<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
+						<div class="user-actions">
+							<span class="navbar-text" style="margin-right: 15px;">@User.Identity.Name!</span>
+							<form method="post" asp-controller="Auth" asp-action="Logout" style="display: inline;">
+								<button type="submit" class="logout-button">Logout</button>
+							</form>
+						</div>
+					</div>
 				</div>
-
-				<!-- Mục Cài đặt nằm dưới cùng -->
-				<div class="sidebar-bottom">
-					<a href="#"><i class="bi bi-gear"></i> Cài đặt</a>
-				</div>
-			</div>
-
-			<!-- Navbar ngang -->
-			<div class="top-nav">
-				<div class="brand">☕ Café</div>
-				<div class="nav-actions">
-					<i class="bi bi-bell fs-5"></i>
-					<img src="https://i.pravatar.cc/40" alt="User" class="user-avatar" />
-				</div>
-			</div>
+			}
 		}
 	}
 
@@ -282,5 +294,7 @@
 	<div class="main-content">
 		@RenderBody()
 	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
