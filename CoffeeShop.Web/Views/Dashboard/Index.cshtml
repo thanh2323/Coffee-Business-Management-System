@@ -1,0 +1,404 @@
+@using CoffeeShop.Application.Interface.IService
+@using CoffeeShop.Application.DTO
+@using CoffeeShop.Domain.Enums
+@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Dashboard";
+    
+    var revenueStats = ViewBag.RevenueStats as RevenueStatsDto;
+    var orderStats = ViewBag.OrderStats as OrderStatsDto;
+    var topMenuItems = ViewBag.TopMenuItems as IEnumerable<TopMenuItemDto> ?? Enumerable.Empty<TopMenuItemDto>();
+    var revenueByBranch = ViewBag.RevenueByBranch as IEnumerable<BranchRevenueDto> ?? Enumerable.Empty<BranchRevenueDto>();
+    var lowStockIngredients = ViewBag.LowStockIngredients as IEnumerable<LowStockIngredientDto> ?? Enumerable.Empty<LowStockIngredientDto>();
+    var recentOrders = ViewBag.RecentOrders as IEnumerable<CoffeeShop.Domain.Entities.Order> ?? Enumerable.Empty<CoffeeShop.Domain.Entities.Order>();
+    var revenueTimeSeries = ViewBag.RevenueTimeSeries as IEnumerable<RevenueTimeSeriesDto> ?? Enumerable.Empty<RevenueTimeSeriesDto>();
+    var ordersByStatus = ViewBag.OrdersByStatus as Dictionary<OrderStatus, int> ?? new Dictionary<OrderStatus, int>();
+    var branches = ViewBag.Branches as IEnumerable<CoffeeShop.Domain.Entities.Branch> ?? Enumerable.Empty<CoffeeShop.Domain.Entities.Branch>();
+    var selectedBranchId = ViewBag.SelectedBranchId as int?;
+    var selectedPeriod = ViewBag.SelectedPeriod as string ?? "today";
+}
+
+<div class="container mt-4">
+    <!-- Header with Filters -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Dashboard</h2>
+            <p class="text-muted mb-0">
+                Business: <strong>@(ViewBag.BusinessName ?? "-")</strong> | Owner: <strong>@(ViewBag.OwnerName ?? "-")</strong>
+            </p>
+        </div>
+        <form method="get" class="d-flex gap-2">
+            <select name="branchId" class="form-select" onchange="this.form.submit()">
+                <option value="">All Branches</option>
+                @foreach (var branch in branches)
+                {
+                    <option value="@branch.BranchId" selected="@(selectedBranchId == branch.BranchId)">@branch.Name</option>
+                }
+            </select>
+            <select name="period" class="form-select" onchange="this.form.submit()">
+                <option value="today" selected="@(selectedPeriod == "today")">Today</option>
+                <option value="week" selected="@(selectedPeriod == "week")">Last 7 Days</option>
+                <option value="month" selected="@(selectedPeriod == "month")">Last 30 Days</option>
+                <option value="quarter" selected="@(selectedPeriod == "quarter")">Last Quarter</option>
+                <option value="year" selected="@(selectedPeriod == "year")">Last Year</option>
+            </select>
+        </form>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Overview Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Today's Revenue</h6>
+                            <h3 class="mb-1">@(revenueStats?.TodayRevenue.ToString("N0") ?? "0") VND</h3>
+                            @if (revenueStats != null && revenueStats.PercentageChange != 0)
+                            {
+                                <small class="@(revenueStats.PercentageChange > 0 ? "text-success" : "text-danger")">
+                                    <i class="fas fa-arrow-@(revenueStats.PercentageChange > 0 ? "up" : "down")"></i>
+                                    @Math.Abs(revenueStats.PercentageChange).ToString("F1")% vs yesterday
+                                </small>
+                            }
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-dollar-sign fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Today's Orders</h6>
+                            <h3 class="mb-1">@(orderStats?.TodayOrders ?? 0)</h3>
+                            <small class="text-muted">Total: @(orderStats?.TotalOrders ?? 0) orders</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-shopping-cart fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Average Order Value</h6>
+                            <h3 class="mb-1">@((revenueStats?.AverageOrderValue ?? 0).ToString("N0")) VND</h3>
+                            <small class="text-muted">Total Revenue: @((revenueStats?.TotalRevenue ?? 0).ToString("N0")) VND</small>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-chart-line fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Low Stock Alerts</h6>
+                            <h3 class="mb-1 @(lowStockIngredients.Any() ? "text-danger" : "text-success")">
+                                @lowStockIngredients.Count()
+                            </h3>
+                            <small class="text-muted">Ingredients need attention</small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-area me-2 text-primary"></i>Revenue Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-success"></i>Orders by Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ordersStatusChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-utensils me-2 text-primary"></i>Top Menu Items</h5>
+                </div>
+                <div class="card-body">
+                    @if (topMenuItems.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Item</th>
+                                        <th>Category</th>
+                                        <th class="text-end">Qty Sold</th>
+                                        <th class="text-end">Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int rank = 1; }
+                                    @foreach (var item in topMenuItems)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-primary">#@rank</span></td>
+                                            <td><strong>@item.MenuItemName</strong></td>
+                                            <td><span class="badge bg-secondary">@item.Category</span></td>
+                                            <td class="text-end">@item.QuantitySold</td>
+                                            <td class="text-end">@item.Revenue.ToString("N0") VND</td>
+                                        </tr>
+                                        rank++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">No data available</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list me-2 text-info"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    @if (recentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th class="text-end">Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in recentOrders)
+                                    {
+                                        <tr>
+                                            <td>#@order.OrderId</td>
+                                            <td>@(order.Customer?.Name ?? "Guest")</td>
+                                            <td class="text-end">@order.TotalAmount.ToString("N0") VND</td>
+                                            <td>
+                                                <span class="badge bg-@(order.CurrentStatus == OrderStatus.Completed ? "success" : order.CurrentStatus == OrderStatus.Cancelled ? "danger" : "warning")">
+                                                    @order.CurrentStatus
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">No recent orders</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock & Branch Revenue Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Low Stock Ingredients</h5>
+                </div>
+                <div class="card-body">
+                    @if (lowStockIngredients.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var ingredient in lowStockIngredients)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">@ingredient.IngredientName</h6>
+                                        <small class="text-muted">@ingredient.BranchName</small>
+                                    </div>
+                                    <span class="badge bg-danger">@ingredient.Quantity.ToString("N0") @ingredient.BaseUnit</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4"><i class="fas fa-check-circle text-success"></i> All ingredients are well stocked</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-store me-2 text-primary"></i>Revenue by Branch</h5>
+                </div>
+                <div class="card-body">
+                    @if (revenueByBranch.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Branch</th>
+                                        <th class="text-end">Orders</th>
+                                        <th class="text-end">Revenue</th>
+                                        <th class="text-end">Avg Order</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var branch in revenueByBranch)
+                                    {
+                                        <tr>
+                                            <td><strong>@branch.BranchName</strong></td>
+                                            <td class="text-end">@branch.OrderCount</td>
+                                            <td class="text-end">@branch.Revenue.ToString("N0") VND</td>
+                                            <td class="text-end">@branch.AverageOrderValue.ToString("N0") VND</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">No data available</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Revenue Line Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(revenueTimeSeries.Select(ts => new { 
+        Date = ts.Date.ToString("MM/dd"), 
+        Revenue = ts.Revenue 
+    })));
+
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: revenueData.map(d => d.Date),
+            datasets: [{
+                label: 'Revenue (VND)',
+                data: revenueData.map(d => d.Revenue),
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('vi-VN') + ' VND';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Orders Status Pie Chart
+    const ordersStatusCtx = document.getElementById('ordersStatusChart').getContext('2d');
+    const ordersStatusData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ordersByStatus.Select(kvp => new { Key = kvp.Key.ToString(), Value = kvp.Value })));
+
+    const statusLabels = ordersStatusData.map(d => d.Key);
+    const statusValues = ordersStatusData.map(d => d.Value);
+    const statusColors = [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)'
+    ];
+
+    new Chart(ordersStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: statusColors.slice(0, statusLabels.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
