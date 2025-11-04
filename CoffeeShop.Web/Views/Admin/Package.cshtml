@@ -6,7 +6,7 @@
 <div class="container-fluid px-3">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-semibold text-dark">🎁 Quản lý gói dịch vụ</h4>
-        <button class="btn btn-primary shadow-sm">
+        <button id="btnAdd" class="btn btn-primary shadow-sm">
             <i class="bi bi-plus-circle me-1"></i> Tạo gói mới
         </button>
     </div>
@@ -15,24 +15,24 @@
     <div class="card p-3 mb-4 border-0 shadow-sm">
         <div class="row g-2">
             <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="🔍 Tìm kiếm gói dịch vụ..." />
+                <input id="searchBox" type="text" class="form-control" placeholder="🔍 Tìm kiếm gói dịch vụ..." />
             </div>
             <div class="col-md-3">
-                <select class="form-select">
-                    <option>Tất cả trạng thái</option>
-                    <option>Đang hoạt động</option>
-                    <option>Hết hạn</option>
+                <select id="filterStatus" class="form-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Đang hoạt động">Đang hoạt động</option>
+                    <option value="Hết hạn">Hết hạn</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <select class="form-select">
-                    <option>Sắp xếp theo</option>
-                    <option>Giá tăng dần</option>
-                    <option>Giá giảm dần</option>
+                <select id="sortPrice" class="form-select">
+                    <option value="">Sắp xếp theo</option>
+                    <option value="asc">Giá tăng dần</option>
+                    <option value="desc">Giá giảm dần</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-outline-secondary w-100">
+                <button id="btnFilter" class="btn btn-outline-secondary w-100">
                     <i class="bi bi-funnel"></i> Lọc
                 </button>
             </div>
@@ -51,41 +51,147 @@
                     <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Gói Cơ Bản</td>
-                    <td>199.000</td>
-                    <td>1 tháng</td>
-                    <td><span class="badge bg-success">Đang hoạt động</span></td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Gói Nâng Cao</td>
-                    <td>499.000</td>
-                    <td>3 tháng</td>
-                    <td><span class="badge bg-secondary">Hết hạn</span></td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Gói Premium</td>
-                    <td>999.000</td>
-                    <td>12 tháng</td>
-                    <td><span class="badge bg-success">Đang hoạt động</span></td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-            </tbody>
+            <tbody id="packageTable"></tbody>
         </table>
     </div>
 </div>
+
+<!-- Modal thêm/sửa -->
+<div class="modal fade" id="packageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">🧾 Thêm / Sửa gói dịch vụ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pkgId" />
+                <div class="mb-2">
+                    <label>Tên gói</label>
+                    <input id="pkgName" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label>Giá (VNĐ)</label>
+                    <input id="pkgPrice" type="number" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label>Thời hạn</label>
+                    <input id="pkgDuration" class="form-control" placeholder="Ví dụ: 1 tháng, 3 tháng..." />
+                </div>
+                <div class="mb-2">
+                    <label>Trạng thái</label>
+                    <select id="pkgStatus" class="form-select">
+                        <option>Đang hoạt động</option>
+                        <option>Hết hạn</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button id="btnSave" class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 🔹 Dữ liệu mẫu nếu localStorage rỗng
+        let packages = JSON.parse(localStorage.getItem("packages")) || [
+            { id: 1, name: "Gói Cơ Bản", price: 199000, duration: "1 tháng", status: "Đang hoạt động" },
+            { id: 2, name: "Gói Nâng Cao", price: 499000, duration: "3 tháng", status: "Hết hạn" },
+            { id: 3, name: "Gói Premium", price: 999000, duration: "12 tháng", status: "Đang hoạt động" }
+        ];
+
+        // 🧠 Hàm render danh sách gói
+        function renderPackages(list = packages) {
+            let html = "";
+            list.forEach(pkg => {
+                html += `
+                    <tr>
+                        <td>${pkg.name}</td>
+                        <td>${pkg.price.toLocaleString("vi-VN")}</td>
+                        <td>${pkg.duration}</td>
+                        <td><span class="badge ${pkg.status === "Đang hoạt động" ? "bg-success" : "bg-secondary"}">${pkg.status}</span></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editPackage(${pkg.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deletePackage(${pkg.id})"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            $("#packageTable").html(html);
+            localStorage.setItem("packages", JSON.stringify(packages));
+        }
+
+        // ➕ Thêm mới
+        $("#btnAdd").click(() => {
+            $("#pkgId").val('');
+            $("#pkgName, #pkgPrice, #pkgDuration").val('');
+            $("#pkgStatus").val("Đang hoạt động");
+            $("#packageModal").modal("show");
+        });
+
+        // 💾 Lưu (thêm/sửa)
+        $("#btnSave").click(() => {
+            const id = $("#pkgId").val();
+            const pkg = {
+                id: id ? parseInt(id) : (packages.length ? Math.max(...packages.map(p => p.id)) + 1 : 1),
+                name: $("#pkgName").val(),
+                price: parseInt($("#pkgPrice").val() || 0),
+                duration: $("#pkgDuration").val(),
+                status: $("#pkgStatus").val()
+            };
+
+            if (id) {
+                const index = packages.findIndex(p => p.id == id);
+                packages[index] = pkg;
+            } else {
+                packages.push(pkg);
+            }
+
+            $("#packageModal").modal("hide");
+            renderPackages();
+        });
+
+        // ✏️ Sửa
+        function editPackage(id) {
+            const pkg = packages.find(x => x.id == id);
+            $("#pkgId").val(pkg.id);
+            $("#pkgName").val(pkg.name);
+            $("#pkgPrice").val(pkg.price);
+            $("#pkgDuration").val(pkg.duration);
+            $("#pkgStatus").val(pkg.status);
+            $("#packageModal").modal("show");
+        }
+
+        // ❌ Xóa
+        function deletePackage(id) {
+            if (!confirm("Xóa gói dịch vụ này?")) return;
+            packages = packages.filter(p => p.id !== id);
+            renderPackages();
+        }
+
+        // 🔍 Lọc / tìm / sắp xếp
+        $("#btnFilter").click(() => {
+            const keyword = $("#searchBox").val().toLowerCase();
+            const status = $("#filterStatus").val();
+            const sortOrder = $("#sortPrice").val();
+
+            let filtered = [...packages];
+            if (keyword) filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword));
+            if (status) filtered = filtered.filter(p => p.status === status);
+            if (sortOrder === "asc") filtered.sort((a, b) => a.price - b.price);
+            if (sortOrder === "desc") filtered.sort((a, b) => b.price - a.price);
+
+            renderPackages(filtered);
+        });
+
+        // 🚀 Khởi tạo
+        $(document).ready(() => {
+            renderPackages();
+        });
+    </script>
+}
 
 <style>
     th {

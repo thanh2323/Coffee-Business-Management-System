@@ -6,93 +6,171 @@
 <div class="container-fluid px-3">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-semibold text-dark">📰 Quản lý bài đăng</h4>
-        <button class="btn btn-primary shadow-sm">
+        <button id="btnAdd" class="btn btn-primary shadow-sm">
             <i class="bi bi-plus-circle me-1"></i> Viết bài mới
         </button>
     </div>
 
-    <!-- Thanh tìm kiếm -->
-    <div class="card p-3 mb-4 border-0 shadow-sm">
-        <div class="row g-2">
-            <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="🔍 Tìm bài đăng..." />
-            </div>
-            <div class="col-md-3">
-                <select class="form-select">
-                    <option>Tất cả trạng thái</option>
-                    <option>Đã xuất bản</option>
-                    <option>Bản nháp</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-outline-secondary w-100">
-                    <i class="bi bi-funnel"></i> Lọc
-                </button>
-            </div>
-        </div>
-    </div>
+    <div id="postContainer" class="row g-3"></div>
+</div>
 
-    <!-- Danh sách bài đăng -->
-    <div class="row g-3">
-        <!-- Card bài đăng -->
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <img src="https://images.unsplash.com/photo-1556910103-1c27b8f85e25?auto=format&fit=crop&w=800&q=80"
-                     class="card-img-top" alt="Cà phê sáng" style="height: 160px; object-fit: cover;">
-                <div class="card-body">
-                    <h6 class="fw-semibold text-dark">Khuyến mãi mùa thu - Giảm 20% tất cả đồ uống</h6>
-                    <p class="text-muted small">Ngày đăng: 20/10/2025</p>
-                    <p class="text-secondary small">Cùng thưởng thức hương vị mùa thu cùng Café...</p>
+<!-- Modal thêm/sửa -->
+<div class="modal fade" id="postModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">📝 Thêm / Sửa bài đăng</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="postId" />
+                <div class="mb-2">
+                    <label>Tiêu đề</label>
+                    <input id="postTitle" class="form-control" />
                 </div>
-                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                    <span class="badge bg-success">Đã xuất bản</span>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                    </div>
+                <div class="mb-2">
+                    <label>Tóm tắt</label>
+                    <textarea id="postSummary" class="form-control"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label>Ảnh (URL hoặc để trống để tự lấy ảnh cà phê)</label>
+                    <input id="postImage" class="form-control" placeholder="URL ảnh..." />
+                    <!-- ✅ Thêm preview ảnh -->
+                    <img id="previewImage" class="mt-2 rounded shadow-sm"
+                         style="width:100%;max-height:200px;object-fit:cover;display:none;">
+                </div>
+                <div class="mb-2">
+                    <label>Trạng thái</label>
+                    <select id="postStatus" class="form-select">
+                        <option>Đã xuất bản</option>
+                        <option>Bản nháp</option>
+                    </select>
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=800&q=80"
-                     class="card-img-top" alt="Cà phê đá" style="height: 160px; object-fit: cover;">
-                <div class="card-body">
-                    <h6 class="fw-semibold text-dark">Bài viết giới thiệu menu mới tháng 11</h6>
-                    <p class="text-muted small">Ngày đăng: 01/11/2025</p>
-                    <p class="text-secondary small">Menu mới với nhiều món đồ uống đặc trưng hấp dẫn...</p>
-                </div>
-                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                    <span class="badge bg-warning text-dark">Bản nháp</span>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <img src="https://images.unsplash.com/photo-1520072959219-c595dc870360?auto=format&fit=crop&w=800&q=80"
-                     class="card-img-top" alt="Latte" style="height: 160px; object-fit: cover;">
-                <div class="card-body">
-                    <h6 class="fw-semibold text-dark">Workshop pha cà phê dành cho người mới</h6>
-                    <p class="text-muted small">Ngày đăng: 25/09/2025</p>
-                    <p class="text-secondary small">Khám phá kỹ thuật pha cà phê và bí quyết barista...</p>
-                </div>
-                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                    <span class="badge bg-success">Đã xuất bản</span>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                    </div>
-                </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button id="btnSave" class="btn btn-primary">Lưu</button>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // 🔹 Dữ liệu mẫu nếu localStorage rỗng
+        let posts = JSON.parse(localStorage.getItem("posts")) || [
+            {
+                id: 1,
+                title: "Khuyến mãi mùa thu - Giảm 20% tất cả đồ uống",
+                summary: "Cùng thưởng thức hương vị mùa thu cùng Café...",
+                imageUrl: "https://cdn3.ivivu.com/2022/08/quan-cafe-da-nang-ivivu-2.jpg",
+                status: "Đã xuất bản",
+                createdDate: "20/10/2025"
+            },
+            {
+                id: 2,
+                title: "Bài viết giới thiệu menu mới tháng 11",
+                summary: "Menu mới với nhiều món đồ uống đặc trưng hấp dẫn...",
+                imageUrl: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=800&q=80",
+                status: "Bản nháp",
+                createdDate: "01/11/2025"
+            }
+        ];
+
+        // 🧠 Hiển thị danh sách bài đăng
+        function renderPosts() {
+            let html = '';
+            posts.forEach(p => {
+                html += `
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <img src="${p.imageUrl}" class="card-img-top" style="height:160px;object-fit:cover;">
+                        <div class="card-body">
+                            <h6 class="fw-semibold text-dark">${p.title}</h6>
+                            <p class="text-muted small">Ngày đăng: ${p.createdDate}</p>
+                            <p class="text-secondary small">${p.summary}</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                            <span class="badge ${p.status === 'Đã xuất bản' ? 'bg-success' : 'bg-warning text-dark'}">${p.status}</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editPost(${p.id})"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deletePost(${p.id})"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            $("#postContainer").html(html);
+            localStorage.setItem("posts", JSON.stringify(posts));
+        }
+
+        // ➕ Thêm mới
+        $("#btnAdd").click(() => {
+            $("#postId").val('');
+            $("#postTitle, #postSummary, #postImage").val('');
+            $("#previewImage").hide(); // Ẩn preview khi mở modal mới
+            $("#postStatus").val('Bản nháp');
+            $("#postModal").modal("show");
+        });
+
+        // 💾 Lưu bài (thêm/sửa)
+        $("#btnSave").click(() => {
+            const id = $("#postId").val();
+            const post = {
+                id: id ? parseInt(id) : (posts.length ? Math.max(...posts.map(p => p.id)) + 1 : 1),
+                title: $("#postTitle").val(),
+                summary: $("#postSummary").val(),
+                imageUrl: $("#postImage").val() || "https://source.unsplash.com/800x400/?coffee,cafe,latte",
+                status: $("#postStatus").val(),
+                createdDate: new Date().toLocaleDateString('vi-VN')
+            };
+
+            if (id) {
+                const index = posts.findIndex(p => p.id == id);
+                posts[index] = post;
+            } else {
+                posts.push(post);
+            }
+
+            $("#postModal").modal("hide");
+            renderPosts();
+        });
+
+        // ✏️ Sửa bài
+        function editPost(id) {
+            const p = posts.find(x => x.id == id);
+            $("#postId").val(p.id);
+            $("#postTitle").val(p.title);
+            $("#postSummary").val(p.summary);
+            $("#postImage").val(p.imageUrl);
+            $("#postStatus").val(p.status);
+            $("#previewImage").attr("src", p.imageUrl).show();
+            $("#postModal").modal("show");
+        }
+
+        // ❌ Xóa bài
+        function deletePost(id) {
+            if (!confirm("Xóa bài này?")) return;
+            posts = posts.filter(p => p.id !== id);
+            renderPosts();
+        }
+
+        // 👀 Preview ảnh ngay khi nhập URL
+        $("#postImage").on("input", function () {
+            const url = $(this).val();
+            if (url) {
+                $("#previewImage").attr("src", url).show();
+            } else {
+                $("#previewImage").hide();
+            }
+        });
+
+        // 🚀 Khởi tạo
+        $(document).ready(() => {
+            renderPosts();
+        });
+    </script>
+}
 
 <style>
     h6 {
