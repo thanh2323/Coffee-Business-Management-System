@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeShop.Application.Interface.IRepo;
@@ -43,10 +43,19 @@ namespace CoffeeShop.Infrastructure.Repository
                              .Include(u => u.Branch)
                              .FirstOrDefaultAsync(u => u.UserId == id);
 
-           
             return user;
+        }
+
+        // 🟢 Thêm mới: Dành cho Owner xem toàn bộ nhân viên trong business
+        public async Task<IEnumerable<User>> GetStaffByBusinessAsync(int businessId)
+        {
+            return await _dbSet
+                .Include(u => u.StaffProfile)
+                .Include(u => u.Branch)
+                .Where(u => u.Role == UserRole.Staff &&
+                            u.BusinessId == businessId &&
+                            !u.IsDeleted)
+                .ToListAsync();
         }
     }
 }
-
-

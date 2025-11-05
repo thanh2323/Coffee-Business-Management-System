@@ -2,6 +2,10 @@
     ViewBag.Title = "Dashboard Layout - Café Dashboard";
 }
 
+@{
+    var position = User.FindFirst("Position")?.Value;
+}
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -247,15 +251,17 @@
         <!-- ========== STAFF ========== -->
         @if (User.IsInRole("Staff"))
         {
+            @if ( position == "Manager"){
             <div class="sidebar">
                 <div class="sidebar-top">
                     <div class="brand">☕ Café</div>
-                    <a href="#"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                    <a href="#"><i class="bi bi-clipboard-data"></i> Báo cáo</a>
-                    <a href="#"><i class="bi bi-receipt"></i> Đơn hàng</a>
-                    <a href="#"><i class="bi bi-cup-straw"></i> Sản phẩm</a>
-                    <a href="#"><i class="bi bi-box-seam"></i> Kho hàng</a>
-                    <a href="#"><i class="bi bi-person-badge"></i> Khách hàng</a>
+                        <a asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2"></i> Tổng quan</a>
+                        <a asp-controller="Report" asp-action="Index"><i class="bi bi-bar-chart"></i> Báo cáo</a>
+                        <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
+                        <a asp-controller="MenuItems" asp-action="Index"><i class="bi bi-cup-hot"></i> Sản phẩm</a>
+                        <a asp-controller="Ingredients" asp-action="Index"><i class="bi bi-archive"></i> Kho hàng</a>
+                        <a asp-controller="Customer" asp-action="Index"><i class="bi bi-people"></i> Khách hàng</a>
+                        <a asp-controller="ManageStaff" asp-action="Index"><i class="bi bi-people"></i> Nhân viên</a>
                 </div>
 
                 <div class="sidebar-bottom position-relative">
@@ -286,6 +292,46 @@
                     <img src="https://i.pravatar.cc/40" class="user-avatar" />
                 </div>
             </div>
+            }
+            @if ( position == "Cashier" || position == "Barista")
+            {
+                <div class="sidebar">
+                    <div class="sidebar-top">
+                        <div class="brand">☕ Café</div>
+                        <a asp-controller="Tables" asp-action="Index"><i class="bi bi-table"></i> Bàn</a>
+                        <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
+
+                    </div>
+
+                    <div class="sidebar-bottom position-relative">
+                        <a href="#" id="settingsBtnStaff" class="d-flex align-items-center">
+                            <i class="bi bi-gear"></i> Cài đặt
+                        </a>
+
+                        <div id="settingsPopupStaff" class="settings-popup">
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="/Account/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
+                                <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li>
+                                <li>
+                                    <form id="logoutFormStaff" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
+                                    <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
+                                       onclick="event.preventDefault(); document.getElementById('logoutFormStaff').submit();">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="top-nav">
+                    <div class="brand">☕ Café</div>
+                    <div class="nav-actions">
+                        <i class="bi bi-bell fs-5"></i>
+                        <img src="https://i.pravatar.cc/40" class="user-avatar" />
+                    </div>
+                </div>
+            }
         }
     }
 
@@ -296,6 +342,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
+            // 🔹 Tự động highlight link hiện tại
+            const path = window.location.pathname.toLowerCase();
+            $(".sidebar a").each(function () {
+                const href = $(this).attr("href");
+                if (href && path.startsWith(href.toLowerCase())) {
+                    $(this).addClass("active");
+                }
+            });
+
+            // 🔹 Xử lý popup Cài đặt
             const pairs = [
                 { btn: "#settingsBtnOwner", popup: "#settingsPopupOwner" },
                 { btn: "#settingsBtnAdmin", popup: "#settingsPopupAdmin" },
@@ -318,5 +374,8 @@
             });
         });
     </script>
+
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

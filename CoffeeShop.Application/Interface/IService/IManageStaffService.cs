@@ -1,4 +1,4 @@
-using CoffeeShop.Domain.Entities;
+﻿using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
 
 namespace CoffeeShop.Application.Interface.IService
@@ -7,10 +7,13 @@ namespace CoffeeShop.Application.Interface.IService
     {
         Task<StaffResult> GetByIdAsync(int staffId);
         Task<IEnumerable<User>> GetStaffByBranchAsync(int? branchId);
+
         Task<StaffResult> CreateStaffAsync(string username, string email, string password, StaffRole position, int branchId);
         Task<StaffResult> UpdateStaffAsync(int staffId, string username, StaffRole? position, int branchId);
         Task<StaffResult> DeleteStaffAsync(int staffId, int branchId);
 
+        // 🟢 Thêm hàm mới cho Owner xem toàn bộ nhân viên
+        Task<IEnumerable<User>> GetAllStaffAsync(int businessId);
     }
 
     public class StaffResult
@@ -27,5 +30,3 @@ namespace CoffeeShop.Application.Interface.IService
             => new StaffResult { IsSuccess = false, Message = message };
     }
 }
-
-
