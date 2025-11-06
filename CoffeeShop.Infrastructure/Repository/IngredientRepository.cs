@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeShop.Application.Interface.IRepo;
@@ -18,23 +18,26 @@ namespace CoffeeShop.Infrastructure.Repository
         {
             return await _dbSet.FirstOrDefaultAsync(i => i.IngredientId == id && !i.IsDeleted);
         }
-        public async Task<Ingredient?> GetByNameAsync(string name)
+
+        // ✅ Sửa lại để lấy theo tên và branchId (tránh lấy nhầm chi nhánh khác)
+        public async Task<Ingredient?> GetByNameAsync(string name, int branchId)
         {
-            return await _dbSet.FirstOrDefaultAsync(i => i.Name == name);
+            return await _dbSet.FirstOrDefaultAsync(i => i.Name == name && i.BranchId == branchId && !i.IsDeleted);
         }
 
         public async Task<IEnumerable<Ingredient>> GetLowStockIngredientsAsync(int threshold)
         {
-            return await _dbSet.Where(i => i.Quantity <= threshold).ToListAsync();
+            return await _dbSet.Where(i => i.Quantity <= threshold && !i.IsDeleted).ToListAsync();
         }
 
         public async Task<IEnumerable<Ingredient>> GetIngredientsByBranchAsync(int branchId)
         {
             return await _dbSet
                 .Include(i => i.Branch)
-                .Where(i => i.BranchId == branchId)
+                .Where(i => i.BranchId == branchId && !i.IsDeleted)
                 .ToListAsync();
         }
+
         public async Task<bool> ExistsByNameInBranchAsync(int branchId, string name, int? excludeId = null)
         {
             var query = _context.Ingredients
@@ -48,7 +51,6 @@ namespace CoffeeShop.Infrastructure.Repository
             return await query.AnyAsync();
         }
 
-        // InventoryTransaction CRUD methods (since InventoryTransaction is part of Ingredient aggregate)
         public async Task<IEnumerable<InventoryTransaction>> GetInventoryTransactionsByIngredientIdAsync(int ingredientId)
         {
             return await _context.InventoryTransactions
@@ -76,5 +78,3 @@ namespace CoffeeShop.Infrastructure.Repository
         }
     }
 }
-
-

@@ -1,4 +1,4 @@
-using CoffeeShop.Application.Interface.IService;
+﻿using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
 
@@ -13,11 +13,13 @@ namespace CoffeeShop.Application.Service
             _uow = uow;
         }
 
+        // ✅ Sửa logic: Lấy chi nhánh theo BusinessId của Owner (đúng)
         public async Task<IEnumerable<Branch>> GetBranchesForOwnerAsync(int userId)
         {
             var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null || !owner.BusinessId.HasValue)
                 return Enumerable.Empty<Branch>();
+
             return await _uow.Branches.GetByBusinessIdAsync(owner.BusinessId.Value);
         }
 
@@ -31,7 +33,7 @@ namespace CoffeeShop.Application.Service
             var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null || !owner.BusinessId.HasValue)
                 return BranchResult.Failed("Owner has no business");
-            // Ensure business is active before allowing branch creation
+
             var business = await _uow.Businesses.GetByIdAsync(owner.BusinessId.Value);
             if (business == null)
                 return BranchResult.Failed("Business not found");
@@ -39,7 +41,7 @@ namespace CoffeeShop.Application.Service
                 return BranchResult.Failed("Business is not active. Please complete payment to activate.");
             if (await _uow.Branches.ExistsByNameAsync(owner.BusinessId.Value, name.Trim()))
                 return BranchResult.Failed("Branch name already exists");
-         
+
             var branch = new Branch
             {
                 Name = name.Trim(),
@@ -86,12 +88,14 @@ namespace CoffeeShop.Application.Service
             var owner = await _uow.Users.GetByIdAsync(userId);
             if (owner == null)
                 return (string.Empty, string.Empty);
+
             var businessName = string.Empty;
             if (owner.BusinessId.HasValue)
             {
                 var business = await _uow.Businesses.GetByIdAsync(owner.BusinessId.Value);
                 businessName = business?.Name ?? string.Empty;
             }
+
             return (businessName, owner.Username);
         }
 
@@ -109,7 +113,10 @@ namespace CoffeeShop.Application.Service
             await _uow.SaveChangesAsync();
             return BranchResult.Success(branch, "Branch deleted");
         }
+
+        public async Task<IEnumerable<Branch>> GetByBusinessAsync(int businessId)
+        {
+            return await _uow.Branches.GetByBusinessIdAsync(businessId);
+        }
     }
 }
-
-
