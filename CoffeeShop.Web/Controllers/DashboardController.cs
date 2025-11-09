@@ -35,7 +35,7 @@ namespace CoffeeShop.Web.Controllers
             var businessId = user.BusinessId.Value;
 
             // Calculate date range based on period
-            var (startDate, endDate) = GetDateRange(period);
+            var (startDate, endDate) = GetDateRange(period!);
 
             // Load branches for filter dropdown
             var branches = await _branchService.GetBranchesForOwnerAsync(user.UserId);

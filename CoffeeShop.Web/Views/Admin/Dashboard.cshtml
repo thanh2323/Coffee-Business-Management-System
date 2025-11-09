@@ -1,0 +1,393 @@
+@using CoffeeShop.Application.Interface.IService
+@using CoffeeShop.Application.DTO
+@using CoffeeShop.Domain.Enums
+@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Admin Dashboard";
+    
+    var systemStats = ViewBag.SystemStats as AdminSystemStatsDto;
+    var businessStats = ViewBag.BusinessStats as AdminBusinessStatsDto;
+    var topBusinesses = ViewBag.TopBusinesses as IEnumerable<TopBusinessDto> ?? Enumerable.Empty<TopBusinessDto>();
+    var expiringBusinesses = ViewBag.ExpiringBusinesses as IEnumerable<ExpiringBusinessDto> ?? Enumerable.Empty<ExpiringBusinessDto>();
+    var recentBusinesses = ViewBag.RecentBusinesses as IEnumerable<CoffeeShop.Domain.Entities.Business> ?? Enumerable.Empty<CoffeeShop.Domain.Entities.Business>();
+    var revenueTimeSeries = ViewBag.RevenueTimeSeries as IEnumerable<RevenueTimeSeriesDto> ?? Enumerable.Empty<RevenueTimeSeriesDto>();
+    var ordersByStatus = ViewBag.OrdersByStatus as Dictionary<OrderStatus, int> ?? new Dictionary<OrderStatus, int>();
+    var selectedPeriod = ViewBag.SelectedPeriod as string ?? "today";
+}
+
+<div class="container mt-4">
+    <!-- Header with Filters -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Admin Dashboard</h2>
+            <p class="text-muted mb-0">System-wide statistics and analytics</p>
+        </div>
+        <form method="get" class="d-flex gap-2">
+            <select name="period" class="form-select" onchange="this.form.submit()">
+                <option value="today" selected="@(selectedPeriod == "today")">Today</option>
+                <option value="week" selected="@(selectedPeriod == "week")">Last 7 Days</option>
+                <option value="month" selected="@(selectedPeriod == "month")">Last 30 Days</option>
+                <option value="quarter" selected="@(selectedPeriod == "quarter")">Last Quarter</option>
+                <option value="year" selected="@(selectedPeriod == "year")">Last Year</option>
+            </select>
+        </form>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Overview Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Businesses</h6>
+                            <h3 class="mb-1">@(systemStats?.TotalBusinesses ?? 0)</h3>
+                            <small class="text-muted">
+                                Active: <span class="text-success">@(systemStats?.ActiveBusinesses ?? 0)</span> | 
+                                Inactive: <span class="text-danger">@(systemStats?.InactiveBusinesses ?? 0)</span>
+                            </small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-building fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Today's Revenue</h6>
+                            <h3 class="mb-1">@(systemStats?.TodayRevenue.ToString("N0") ?? "0") VND</h3>
+                            <small class="text-muted">Total: @((systemStats?.TotalRevenue ?? 0).ToString("N0")) VND</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-dollar-sign fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Orders</h6>
+                            <h3 class="mb-1">@(systemStats?.TodayOrders ?? 0)</h3>
+                            <small class="text-muted">Total: @(systemStats?.TotalOrders ?? 0) orders</small>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-shopping-cart fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">System Users</h6>
+                            <h3 class="mb-1">@(systemStats?.TotalUsers ?? 0)</h3>
+                            <small class="text-muted">@(systemStats?.TotalBranches ?? 0) branches</small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-users fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">New Businesses This Month</h6>
+                    <h3 class="mb-0 text-primary">@(businessStats?.NewBusinessesThisMonth ?? 0)</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Expiring Subscriptions</h6>
+                    <h3 class="mb-0 @(systemStats?.ExpiringSubscriptions > 0 ? "text-danger" : "text-success")">
+                        @(systemStats?.ExpiringSubscriptions ?? 0)
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-area me-2 text-primary"></i>System Revenue Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-success"></i>Orders by Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ordersStatusChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-trophy me-2 text-warning"></i>Top Performing Businesses</h5>
+                </div>
+                <div class="card-body">
+                    @if (topBusinesses.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Business</th>
+                                        <th class="text-end">Revenue</th>
+                                        <th class="text-end">Orders</th>
+                                        <th class="text-end">Branches</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int rank = 1; }
+                                    @foreach (var business in topBusinesses)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-warning">#@rank</span></td>
+                                            <td><strong>@business.BusinessName</strong></td>
+                                            <td class="text-end">@business.Revenue.ToString("N0") VND</td>
+                                            <td class="text-end">@business.OrderCount</td>
+                                            <td class="text-end">@business.BranchCount</td>
+                                        </tr>
+                                        rank++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">No data available</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2 text-danger"></i>Expiring Subscriptions</h5>
+                </div>
+                <div class="card-body">
+                    @if (expiringBusinesses.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var business in expiringBusinesses)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">@business.BusinessName</h6>
+                                        <small class="text-muted">
+                                            Expires: @(business.SubscriptionEndDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-@(business.DaysUntilExpiry <= 7 ? "danger" : business.DaysUntilExpiry <= 15 ? "warning" : "info")">
+                                        @business.DaysUntilExpiry days
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4"><i class="fas fa-check-circle text-success"></i> No expiring subscriptions</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Businesses -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-building me-2 text-primary"></i>Recent Businesses</h5>
+                    <a asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (recentBusinesses.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Business ID</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Subscription End</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var business in recentBusinesses)
+                                    {
+                                        <tr>
+                                            <td>#@business.BusinessId</td>
+                                            <td><strong>@business.Name</strong></td>
+                                            <td>
+                                                <span class="badge bg-@(business.IsActive ? "success" : "secondary")">
+                                                    @(business.IsActive ? "Active" : "Inactive")
+                                                </span>
+                                            </td>
+                                            <td>@(business.SubscriptionEndDate?.ToString("MMM dd, yyyy") ?? "-")</td>
+                                            <td>@business.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (!business.IsActive)
+                                                {
+                                                    <form method="post" asp-action="Activate" class="d-inline">
+                                                        <input type="hidden" name="id" value="@business.BusinessId" />
+                                                        <button class="btn btn-sm btn-success" type="submit">Activate</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form method="post" asp-action="Deactivate" class="d-inline">
+                                                        <input type="hidden" name="id" value="@business.BusinessId" />
+                                                        <button class="btn btn-sm btn-warning" type="submit">Deactivate</button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">No recent businesses</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Revenue Line Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(revenueTimeSeries.Select(ts => new { 
+        Date = ts.Date.ToString("MM/dd"), 
+        Revenue = ts.Revenue 
+    })));
+
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: revenueData.map(d => d.Date),
+            datasets: [{
+                label: 'Revenue (VND)',
+                data: revenueData.map(d => d.Revenue),
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('vi-VN') + ' VND';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Orders Status Pie Chart
+    const ordersStatusCtx = document.getElementById('ordersStatusChart').getContext('2d');
+    const ordersStatusData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ordersByStatus.Select(kvp => new { Key = kvp.Key.ToString(), Value = kvp.Value })));
+
+    const statusLabels = ordersStatusData.map(d => d.Key);
+    const statusValues = ordersStatusData.map(d => d.Value);
+    const statusColors = [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)'
+    ];
+
+    new Chart(ordersStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: statusColors.slice(0, statusLabels.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
