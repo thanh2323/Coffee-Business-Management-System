@@ -91,25 +91,14 @@
 										<i class="fas fa-ellipsis-v"></i>
 									</button>
 									<ul class="dropdown-menu dropdown-menu-end">
-										<li>
-											<a href="@Url.Action("Edit", new { id = item.MenuItemId })" class="dropdown-item">
-												<i class="fas fa-edit me-2"></i> Edit
-											</a>
-										</li>
+										
 										<li>
 											<a href="@Url.Action("Index", "Recipes", new {branchId ,menuItemId = item.MenuItemId })" class="dropdown-item">
 												<i class="fas fa-list me-2"></i> Recipe
 											</a>
 										</li>
 										<li><hr class="dropdown-divider" /></li>
-										<li>
-											<form method="post" action="@Url.Action("ToggleAvailability", new { id = item.MenuItemId })" class="d-inline">
-												@Html.AntiForgeryToken()
-												<button type="submit" class="dropdown-item @(item.IsAvailable ? "text-warning" : "text-success")" onclick="return confirm('Are you sure?')">
-													<i class="fas @(item.IsAvailable ? "fa-eye-slash" : "fa-eye") me-2"></i>@(item.IsAvailable ? "Hide" : "Show")
-												</button>
-											</form>
-										</li>
+										
 										<li>
 											<form method="post" action="@Url.Action("Delete", new { id = item.MenuItemId })" class="d-inline">
 												@Html.AntiForgeryToken()

@@ -1,7 +1,7 @@
 @model IEnumerable<CoffeeShop.Domain.Entities.User>
 @{
-	Layout = "~/Views/Shared/_Layout2.cshtml";
-	ViewData["Title"] = "Staff Management";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Staff Management";
 }
 
 <div class="container mt-4">
@@ -80,9 +80,7 @@
 								<a asp-action="Edit" asp-route-id="@user.UserId" asp-route-branchId="@ViewBag.Branches" class="btn btn-outline-primary btn-sm w-100">
 									<i class="fas fa-edit me-1"></i> Manage Staff
 								</a>
-								<button type="button" class="btn btn-outline-danger btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#deleteModal-@user.UserId">
-									<i class="fas fa-trash me-1"></i> Delete
-								</button>
+
 							</div>
 						</div>
 					</div>
