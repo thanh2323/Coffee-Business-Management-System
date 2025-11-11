@@ -26,23 +26,23 @@
 
 				<ul class="nav-links">
 
-					<li><a asp-area="" asp-controller="Home" asp-action="HowItWorks">Hướng dẫn sử dụng</a></li>
-					<li><a asp-area="" asp-controller="Home" asp-action="Pricing">Bảng giá</a></li>
-					<li><a asp-area="" asp-controller="Home" asp-action="About">Câu chuyện</a></li>
+					<li><a asp-area="" asp-controller="Home" asp-action="HowItWorks">How It Works</a></li>
+					<li><a asp-area="" asp-controller="Home" asp-action="Pricing">Pricing</a></li>
+					<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
 				</ul>
 
 				@if (User.Identity?.IsAuthenticated == true)
 				{
 					<div class="user-actions">
 						<a asp-area="" asp-controller="Auth" asp-action="RedirectByRole" class="get-started-btn">
-							Bắt đầu <span class="arrow-icon">&rarr;</span>
+							Get Started <span class="arrow-icon">&rarr;</span>
 						</a>
 					</div>
 				}
 				else
 				{
 					<a asp-area="" asp-controller="Auth" asp-action="Register" class="get-started-btn">
-						Bắt đầu <span class="arrow-icon">&rarr;</span>
+						Get Started <span class="arrow-icon">&rarr;</span>
 					</a>
 				}
 
@@ -84,17 +84,17 @@
 
 				<div class="support-item">
 					<span class="support-icon icon-phone"></span>
-					<p>Hỗ trợ sử dụng:<br>0934 480 344<br>support@cafe.vn</p>
+					<p>Hỗ trợ sử dụng:<br>0934 480 344<br>support@pinpos.vn</p>
 				</div>
 
 				<div class="support-item">
 					<span class="support-icon icon-mail"></span>
-					<p>Liên hệ hợp tác:<br>doitac@cafe.vn</p>
+					<p>Liên hệ hợp tác:<br>doitac@pinpos.vn</p>
 				</div>
 			</div>
 
 			<div class="footer-column column-contact">
-				<p class="company-name">Công ty TNHH 2 thành viên Việt Nam</p>
+				<p class="company-name">Công ty Cổ phần Công nghệ TEKO Việt Nam</p>
 
 				<div class="office-item">
 					<span class="office-icon icon-building"></span>

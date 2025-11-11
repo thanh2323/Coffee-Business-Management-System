@@ -11,7 +11,5 @@ namespace CoffeeShop.Application.Interface.IRepo
         Task<User?> GetByEmailAsync(string email);
         Task<IEnumerable<User>> GetStaffByBranchAsync(int branchId);
 
-        // 🟢 Thêm dòng này để Owner xem tất cả nhân viên trong business
-        Task<IEnumerable<User>> GetStaffByBusinessAsync(int businessId);
     }
 }

@@ -35,13 +35,6 @@ namespace CoffeeShop.Application.Service
                 if (result != PasswordVerificationResult.Success)
                     return AuthResult.Failed("Invalid password");
 
-                // ✅ ADDED: Nếu là Staff, nạp thêm StaffProfile để có Position
-                if (user.Role == UserRole.Staff && user.StaffProfile == null)
-                {
-                    var staffProfile = await _unitOfWork.StaffProfiles.GetByUserIdAsync(user.UserId);
-                    user.StaffProfile = staffProfile;
-                }
-
                 // Create claims
                 var claims = new List<Claim>
                 {
@@ -56,7 +49,7 @@ namespace CoffeeShop.Application.Service
                 if (user.BranchId.HasValue)
                     claims.Add(new Claim("BranchId", user.BranchId.Value.ToString()));
                 // Staff have Position
-                if (user.Role == UserRole.Staff && user.StaffProfile != null)
+                if (user.StaffProfile != null)
                     claims.Add(new Claim("Position", user.StaffProfile.Position.ToString()));
 
                 // Create identity

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeShop.Application.Interface.IRepo;
@@ -16,37 +17,28 @@ namespace CoffeeShop.Infrastructure.Repository
 
         public async Task<Branch?> GetByNameAsync(string branchName)
         {
-            return await _dbSet.FirstOrDefaultAsync(b => b.Name == branchName && !b.IsDeleted);
+            return await _dbSet.FirstOrDefaultAsync(b => b.Name == branchName);
         }
 
         public async Task<IEnumerable<Branch>> GetActiveBranchesAsync()
         {
             // Global query filter excludes deleted entities
-            return await _dbSet.Where(b => !b.IsDeleted).ToListAsync();
-        }
-
-        // ✅ Cách 2: Cả hai phương thức cùng trỏ đến 1 logic
-        public async Task<IEnumerable<Branch>> GetByBusinessAsync(int businessId)
-        {
-            return await _dbSet
-                .Where(b => b.BusinessId == businessId && !b.IsDeleted)
-                .ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
         public async Task<IEnumerable<Branch>> GetByBusinessIdAsync(int businessId)
         {
-            // Gọi lại hàm trên để tránh trùng logic
-            return await GetByBusinessAsync(businessId);
+            return await _dbSet.Where(b => b.BusinessId == businessId).ToListAsync();
         }
 
         public async Task<bool> ExistsByNameAsync(int businessId, string name)
         {
-            return await _dbSet.AnyAsync(b => b.BusinessId == businessId && b.Name == name && !b.IsDeleted);
+            return await _dbSet.AnyAsync(b => b.BusinessId == businessId && b.Name == name);
         }
 
         public async Task<Branch?> GetByIdAsync(int branchId)
         {
-            return await _dbSet.FirstOrDefaultAsync(b => b.BranchId == branchId && !b.IsDeleted);
+           return await _dbSet.FirstOrDefaultAsync(b => b.BranchId == branchId);
         }
     }
 }

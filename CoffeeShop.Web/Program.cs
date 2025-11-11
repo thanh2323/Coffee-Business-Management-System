@@ -66,14 +66,6 @@ namespace CoffeeShop.Web
                         (context.User.IsInRole("Staff") &&
                          context.User.HasClaim(c => c.Type == "Position" && c.Value == "Manager") &&
                         context.User.HasClaim(c => c.Type == "BranchId"))));
-
-                options.AddPolicy("AllowAllEmployees", policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.IsInRole("Owner") ||
-                        (context.User.IsInRole("Staff") &&
-                        context.User.HasClaim(c => c.Type == "Position" &&
-                        (c.Value == "Manager" || c.Value == "Barista" || c.Value == "Cashier")))));
-
             });
 
             builder.Services.AddDistributedMemoryCache(); 

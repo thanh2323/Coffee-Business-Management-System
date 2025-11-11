@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Domain.Entities;
+using CoffeeShop.Domain.Entities;
 
 namespace CoffeeShop.Application.Interface.IService
 {
@@ -9,7 +9,6 @@ namespace CoffeeShop.Application.Interface.IService
         Task<BranchResult> UpdateBranchAsync(int userId, int branchId, string name, string? address, TimeSpan openTime, TimeSpan closeTime);
         Task<(string businessName, string ownerName)> GetOwnerContextAsync(int userId);
         Task<BranchResult> DeleteBranchAsync(int userId, int branchId);
-        Task<IEnumerable<Branch>> GetByBusinessAsync(int businessId);
     }
 
     public class BranchResult
@@ -22,3 +21,5 @@ namespace CoffeeShop.Application.Interface.IService
         public static BranchResult Failed(string message) => new BranchResult { IsSuccess = false, Message = message };
     }
 }
+
+
