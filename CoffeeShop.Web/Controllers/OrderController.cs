@@ -1,43 +1,81 @@
-﻿// Controllers/OrderController.cs
-using CoffeeShop.Application.DTO;
+﻿using CoffeeShop.Application.DTO;
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CoffeeShop.Web.Controllers
 {
-    [Authorize(Policy = "StaffOrManager")]
+    [Authorize(Policy = "AllowAllEmployees")]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
         private readonly IUnitOfWork _uow;
+        private readonly IBranchService _branchService;
+        private readonly IAuthService _authService;
 
-        public OrderController(IOrderService orderService, IUnitOfWork uow)
+        public OrderController(
+            IOrderService orderService,
+            IUnitOfWork uow,
+            IBranchService branchService,
+            IAuthService authService)
         {
             _orderService = orderService;
             _uow = uow;
+            _branchService = branchService;
+            _authService = authService;
         }
 
-        // GET: /Order/Index
+        // ✅ Index: Owner xem toàn bộ đơn hàng, Staff/Manager xem theo chi nhánh
         public async Task<IActionResult> Index(OrderStatus? status)
         {
-            var result = await _orderService.GetOrdersByBranchAsync(status);
-            ViewBag.BranchId = result.BranchId;
-            return View(result.Orders);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            IEnumerable<Order> orders;
+            int? branchId = null;
+
+            if (role == "Owner")
+            {
+                // ✅ Lấy thông tin Owner chính xác từ AuthService
+                var currentUser = await _authService.GetCurrentUserAsync();
+                if (currentUser == null || currentUser.BusinessId == null)
+                {
+                    return Json(new { success = false, message = "Owner or Business not found" });
+                }
+
+                // ✅ Lấy danh sách chi nhánh theo BusinessId
+                var branches = await _branchService.GetByBusinessAsync(currentUser.BusinessId.Value);
+
+                var allOrders = new List<Order>();
+                foreach (var branch in branches)
+                {
+                    var result = await _orderService.GetOrdersByBranchAsync(status, branch.BranchId);
+                    allOrders.AddRange(result.Orders);
+                }
+
+                orders = allOrders;
+                ViewBag.BranchId = null;
+            }
+            else
+            {
+                // ✅ Giữ nguyên logic cho Staff/Manager
+                var result = await _orderService.GetOrdersByBranchAsync(status);
+                orders = result.Orders;
+                branchId = result.BranchId;
+                ViewBag.BranchId = branchId;
+            }
+
+            return View(orders.OrderByDescending(o => o.OrderDate));
         }
 
         // GET: /Order/Create
         public async Task<IActionResult> Create(int branchId)
         {
             ViewBag.BranchId = branchId;
-
-            // Load menu items trực tiếp
             var menuItems = await _uow.MenuItems.GetByBranchIdAsync(branchId);
             ViewBag.MenuItems = menuItems.Where(m => m.IsAvailable).ToList();
-
             return View();
         }
 
@@ -53,14 +91,12 @@ namespace CoffeeShop.Web.Controllers
                 request.CustomerName,
                 request.CustomerPhone,
                 request.IsTakeAway,
-                request.OrderItems
-                    .Select(i => new OrderItem
-                    {
-                        MenuItemId = i.MenuItemId,
-                        Quantity = i.Quantity,
-                        Price = i.Price,
-                    })
-                    .ToList()
+                request.OrderItems.Select(i => new OrderItem
+                {
+                    MenuItemId = i.MenuItemId,
+                    Quantity = i.Quantity,
+                    Price = i.Price
+                }).ToList()
             );
 
             if (!result.IsSuccess)
@@ -102,7 +138,6 @@ namespace CoffeeShop.Web.Controllers
             }
         }
 
-        // GET: /Order/GetMenuItems (cho AJAX nếu cần)
         [HttpGet]
         public async Task<IActionResult> GetMenuItems(int branchId)
         {
@@ -115,6 +150,4 @@ namespace CoffeeShop.Web.Controllers
             }));
         }
     }
-
-
 }

@@ -1,19 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
 using CoffeeShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeShop.Infrastructure.Repository
 {
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
-        public OrderRepository(ApplicationDbContext context) : base(context)
+        public OrderRepository(ApplicationDbContext context) : base(context) { }
+
+        public async Task<IEnumerable<Order>> GetOrdersByBranchAsync(int branchId)
         {
+            return await _dbSet
+                .Include(o => o.OrderItems).ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.Customer)
+                .Include(o => o.CafeTable)
+                .Where(o => o.BranchId == branchId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
@@ -41,26 +50,13 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet.Where(o => o.PaymentMethod == paymentMethod).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByBranchAsync(int branchId)
-        {
-            return await _dbSet
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.MenuItem)
-                .Include(o => o.Customer)
-                .Include(o => o.CafeTable)
-                .Where(o => o.BranchId == branchId)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
-        }
-        // Order with OrderItems (include related data)
         public async Task<Order?> GetOrderWithItemsAsync(int orderId)
         {
             return await _dbSet
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.OrderItems).ThenInclude(oi => oi.MenuItem)
                 .Include(o => o.Customer)
-                .Include(o => o.CafeTable)
                 .Include(o => o.Branch)
+                .Include(o => o.CafeTable)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
         }
@@ -68,17 +64,33 @@ namespace CoffeeShop.Infrastructure.Repository
         public async Task<IEnumerable<Order>> GetOrdersWithItemsByCustomerIdAsync(int customerId)
         {
             return await _dbSet
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.OrderItems).ThenInclude(oi => oi.MenuItem)
                 .Include(o => o.Customer)
-                .Include(o => o.CafeTable)
                 .Include(o => o.Branch)
-                .Include(o => o.User)
                 .Where(o => o.CustomerId == customerId)
+                .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
 
-        // OrderItem CRUD methods (since OrderItem is part of Order aggregate)
+        public async Task<IEnumerable<Order>> GetByBusinessIdAsync(int businessId)
+        {
+            return await _dbSet
+                .Include(o => o.Branch)
+                .Include(o => o.OrderItems)
+                .Where(o => o.Branch!.BusinessId == businessId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+        {
+            return await _dbSet
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
+
+
         public async Task<IEnumerable<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
         {
             return await _context.OrderItems
@@ -94,33 +106,14 @@ namespace CoffeeShop.Infrastructure.Repository
                 .FirstOrDefaultAsync(oi => oi.OrderItemId == orderItemId);
         }
 
-        public void AddOrderItem(OrderItem orderItem)
-        {
-            _context.OrderItems.Add(orderItem);
-        }
-
-        public void UpdateOrderItem(OrderItem orderItem)
-        {
-            _context.OrderItems.Update(orderItem);
-        }
-
-        public void DeleteOrderItem(OrderItem orderItem)
-        {
-            _context.OrderItems.Remove(orderItem);
-        }
+        public void AddOrderItem(OrderItem orderItem) => _context.OrderItems.Add(orderItem);
+        public void UpdateOrderItem(OrderItem orderItem) => _context.OrderItems.Update(orderItem);
+        public void DeleteOrderItem(OrderItem orderItem) => _context.OrderItems.Remove(orderItem);
 
         public void DeleteOrderItemsByOrderId(int orderId)
         {
-            var orderItems = _context.OrderItems
-                .Where(oi => oi.OrderId == orderId)
-                .ToList();
-
-            if (orderItems.Any())
-            {
-                _context.OrderItems.RemoveRange(orderItems);
-            }
+            var items = _context.OrderItems.Where(oi => oi.OrderId == orderId).ToList();
+            if (items.Any()) _context.OrderItems.RemoveRange(items);
         }
     }
 }
-
-

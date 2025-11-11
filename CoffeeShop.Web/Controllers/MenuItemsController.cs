@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using CoffeeShop.Application.Interface.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +18,29 @@ namespace CoffeeShop.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int branchId, string? category = null)
+        public async Task<IActionResult> Index(int? branchId, string? category = null)
         {
-           
-            var menuItems = await _menuItemService.GetByCategoryAsync(branchId, category);
-         
-            var categories = await _menuItemService.GetCategoriesAsync(branchId);
+            int resolvedBranchId;
 
-            ViewBag.BranchId = branchId;
+            // ✅ Nếu Owner truyền branchId thì dùng, nếu không thì lấy từ Claim của Manager
+            if (branchId.HasValue && branchId.Value > 0)
+                resolvedBranchId = branchId.Value;
+            else
+            {
+                var branchIdClaim = User.FindFirst("BranchId")?.Value;
+                if (string.IsNullOrEmpty(branchIdClaim))
+                {
+                    TempData["ErrorMessage"] = "No branch assigned for this account.";
+                    return RedirectToAction("Forbidden", "Auth");
+                }
+                resolvedBranchId = int.Parse(branchIdClaim);
+            }
+
+            // ✅ Dùng resolvedBranchId cho tất cả service
+            var menuItems = await _menuItemService.GetByCategoryAsync(resolvedBranchId, category);
+            var categories = await _menuItemService.GetCategoriesAsync(resolvedBranchId);
+
+            ViewBag.BranchId = resolvedBranchId;
             ViewBag.Categories = categories;
             ViewBag.SelectedCategory = category;
 
@@ -33,35 +48,36 @@ namespace CoffeeShop.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create(int branchId)
+        public IActionResult Create(int? branchId)
         {
-            ViewBag.BranchId = branchId;
+            int resolvedBranchId = branchId ?? int.Parse(User.FindFirst("BranchId")!.Value);
+            ViewBag.BranchId = resolvedBranchId;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int branchId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable = true)
+        public async Task<IActionResult> Create(int? branchId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable = true)
         {
-           
-            var result = await _menuItemService.CreateAsync( branchId, name, price, category, imageFile, isAvailable);
+            int resolvedBranchId = branchId ?? int.Parse(User.FindFirst("BranchId")!.Value);
+
+            var result = await _menuItemService.CreateAsync(resolvedBranchId, name, price, category, imageFile, isAvailable);
 
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
-                return RedirectToAction(nameof(Index), new { branchId });
+                return RedirectToAction(nameof(Index), new { branchId = resolvedBranchId });
             }
 
             TempData["ErrorMessage"] = result.Message;
-            ViewBag.BranchId = branchId;
+            ViewBag.BranchId = resolvedBranchId;
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-         
-            var result = await _menuItemService.GetByIdAsync( id);
+            var result = await _menuItemService.GetByIdAsync(id);
 
             if (!result.IsSuccess)
             {
@@ -69,72 +85,50 @@ namespace CoffeeShop.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.BranchId = result.MenuItem.BranchId;
             return View(result.MenuItem);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int menuItemId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable, int branchId)
-            {
-            
-            var result = await _menuItemService.UpdateAsync(menuItemId, name, price, category, imageFile, isAvailable, branchId);
+        public async Task<IActionResult> Edit(int menuItemId, string name, decimal price, string? category, IFormFile? imageFile, bool isAvailable, int? branchId)
+        {
+            int resolvedBranchId = branchId ?? int.Parse(User.FindFirst("BranchId")!.Value);
 
-            if (!result.IsSuccess)
-            {
-                TempData["ErrorMessage"] = result.Message;
-                return RedirectToAction(nameof(Edit), new { branchId });
-            }
-            else
+            var result = await _menuItemService.UpdateAsync(menuItemId, name, price, category, imageFile, isAvailable, resolvedBranchId);
+
+            if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
-                return RedirectToAction(nameof(Index), new { branchId });
+                return RedirectToAction(nameof(Index), new { branchId = resolvedBranchId });
             }
 
+            TempData["ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Edit), new { id = menuItemId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-           
             var result = await _menuItemService.DeleteAsync(id);
 
-            if (result.IsSuccess)
-            {
-                TempData["SuccessMessage"] = result.Message;
-            }
-            else
-            {
-                TempData["ErrorMessage"] = result.Message;
-            }
+            int resolvedBranchId = result.MenuItem?.BranchId ?? int.Parse(User.FindFirst("BranchId")!.Value);
 
-            return RedirectToAction(nameof(Index), new { branchId = result.MenuItem?.BranchId });
+            TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Index), new { branchId = resolvedBranchId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleAvailability(int id)
         {
-            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (claimUserId == null || !int.TryParse(claimUserId, out var userId))
-            {
-                TempData["ErrorMessage"] = "Invalid user.";
-                return RedirectToAction("Index", "Home");
-            }
             var result = await _menuItemService.ToggleAvailabilityAsync(id);
 
+            int resolvedBranchId = result.MenuItem?.BranchId ?? int.Parse(User.FindFirst("BranchId")!.Value);
 
-            if (result.IsSuccess)
-            {
-                TempData["SuccessMessage"] = result.Message;
-            }
-            else
-            {
-                TempData["ErrorMessage"] = result.Message;
-            }
-
-            return RedirectToAction(nameof(Index), new { branchId = result.MenuItem?.BranchId });
+            TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Index), new { branchId = resolvedBranchId });
         }
     }
 }
-
