@@ -17,8 +17,8 @@ namespace CoffeeShop.Infrastructure.Data.Configuration
                .HasConversion<int>()
                .IsRequired();
 
-            builder.HasIndex(u => u.Username)
-               .IsUnique();
+            builder.HasIndex(u => u.Username);
+           
             builder.HasIndex(u => u.Email)
                 .IsUnique();
 

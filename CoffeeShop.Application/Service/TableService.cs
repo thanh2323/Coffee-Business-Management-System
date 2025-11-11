@@ -1,4 +1,5 @@
-﻿using CoffeeShop.Application.Interface.IService;
+﻿using CoffeeShop.Application.Interface;
+using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
 using CoffeeShop.Domain.Enums;
@@ -12,19 +13,19 @@ namespace CoffeeShop.Application.Service
     {
         private readonly IUnitOfWork _uow;
         private readonly IAuthService _authService;
-
-        public TableService(IUnitOfWork uow, IAuthService authService)
+        private readonly IBranchResolverService _branchResolver;
+        public TableService(IUnitOfWork uow, IAuthService authService, IBranchResolverService branchResolver)
         {
+            _branchResolver = branchResolver;
             _uow = uow;
             _authService = authService;
         }
 
-        public async Task<IEnumerable<CafeTable>> GetByBranchAsync(int branchId)
+        public async Task<IEnumerable<CafeTable>> GetByBranchAsync(int? branchId)
         {
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
-            if (branch == null)
-                return Enumerable.Empty<CafeTable>();
-            return await _uow.CafeTables.GetByBranchAsync(branchId);
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+            return await _uow.CafeTables.GetByBranchAsync(targetBranchId.Value);
         }
 
         public async Task<TableResult> CreateAsync(int branchId, int tableNumber)
@@ -34,7 +35,9 @@ namespace CoffeeShop.Application.Service
             if (user == null)
                 return TableResult.Failed("User not found");
 
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+            var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
             if (branch == null)
                 return TableResult.Failed("Branch not found");
 
@@ -51,7 +54,7 @@ namespace CoffeeShop.Application.Service
 
             var table = new CafeTable
             {
-                BranchId = branchId,
+                BranchId = branch.BranchId,
                 TableNumber = tableNumber,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow

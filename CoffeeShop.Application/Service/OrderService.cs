@@ -1,4 +1,5 @@
-﻿using CoffeeShop.Application.Interface.IRepo;
+﻿using CoffeeShop.Application.Interface;
+using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
@@ -19,8 +20,10 @@ namespace CoffeeShop.Application.Service
         private readonly IUnitOfWork _uow;
         private readonly IOrderRealtimeService _realtimeService;
         private readonly IAuthService _authService;
-        public OrderService(IUnitOfWork uow, IAuthService authService, IOrderRealtimeService orderRealtimeService)
+        private readonly IBranchResolverService _branchResolver;
+        public OrderService(IUnitOfWork uow, IAuthService authService, IOrderRealtimeService orderRealtimeService, IBranchResolverService branchResolver)
         {
+            _branchResolver = branchResolver;
             _authService = authService;
             _realtimeService = orderRealtimeService;
             _uow = uow;
@@ -29,11 +32,9 @@ namespace CoffeeShop.Application.Service
         public async Task<OrderResult> CreateOrderAsync(int branchId, string name, string? phone, bool isTakeAway, List<OrderItem> orderItems)
         {
 
-         /*   var user = await _authService.GetCurrentUserAsync();
-            if (user == null)
-                return OrderResult.Failed("Unauthorized");
-            branchId = user.BranchId!.Value;*/
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+            var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
             if (branch == null)
                 return OrderResult.Failed("Branch not found");
 
@@ -45,7 +46,7 @@ namespace CoffeeShop.Application.Service
             var customerType = string.IsNullOrWhiteSpace(phone) ? CustomerType.Guest : CustomerType.Registered;
             var customer = new Customer
             {
-                BranchId = branchId,
+                BranchId = branch.BranchId,
                 Name = name,
                 Phone = phone,
                 Type = customerType,
@@ -57,7 +58,7 @@ namespace CoffeeShop.Application.Service
             var order = new Order
             {
                 
-                BranchId = branchId,
+                BranchId = branch.BranchId,
                 Customer = customer,
                 CurrentStatus = OrderStatus.Pending,
                 IsTakeAway = isTakeAway,

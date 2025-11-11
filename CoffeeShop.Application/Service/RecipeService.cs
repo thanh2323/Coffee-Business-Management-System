@@ -1,3 +1,4 @@
+using CoffeeShop.Application.Interface;
 using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
@@ -11,21 +12,25 @@ public class RecipeService : IRecipeService
 {
     private readonly IUnitOfWork _uow;
     private readonly IAuthService _authService;
-    public RecipeService(IUnitOfWork uow, IAuthService authService)
+    private readonly IBranchResolverService _branchResolver;
+    public RecipeService(IUnitOfWork uow, IAuthService authService, IBranchResolverService branchResolver)
     {
+        _branchResolver = branchResolver;
         _uow = uow;
         _authService = authService;
       
     }
 
-    public async Task<RecipeResult> GetByMenuItemAsync(int branhcId, int menuItemId)
+    public async Task<RecipeResult> GetByMenuItemAsync(int branchId, int menuItemId)
     {
 
         var user = await _authService.GetCurrentUserAsync();
         if (user == null)
             return RecipeResult.Failed("User not found");
 
-        var branch = await _uow.Branches.GetByIdAsync(branhcId);
+        var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+        var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
         if (branch == null)
             return RecipeResult.Failed("Branch not found");
 
@@ -56,7 +61,9 @@ public class RecipeService : IRecipeService
             if (user == null)
                 return RecipeResult.Failed("User not found");
 
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+            var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
             if (branch == null)
                 return RecipeResult.Failed("Branch not found");
 
@@ -107,9 +114,12 @@ public class RecipeService : IRecipeService
         if (user == null)
             return RecipeResult.Failed("User not found");
 
-        var branch = await _uow.Branches.GetByIdAsync(branchId);
+        var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+        var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
         if (branch == null)
             return RecipeResult.Failed("Branch not found");
+
 
         var userCanManage = _authService.CanManageBranch(user, branch);
         if (!userCanManage)
@@ -144,9 +154,12 @@ public class RecipeService : IRecipeService
         if (user == null)
             return RecipeResult.Failed("User not found");
 
-        var branch = await _uow.Branches.GetByIdAsync(branchId);
+        var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+        var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
         if (branch == null)
             return RecipeResult.Failed("Branch not found");
+
 
         var userCanManage = _authService.CanManageBranch(user, branch);
         if (!userCanManage)
@@ -172,16 +185,19 @@ public class RecipeService : IRecipeService
 
 
 
-    public async Task<RecipeResult> ValidateRecipeAsync(int brachId, int menuItemId)
+    public async Task<RecipeResult> ValidateRecipeAsync(int branchId, int menuItemId)
     {
 
         var user = await _authService.GetCurrentUserAsync();
         if (user == null)
             return RecipeResult.Failed("User not found");
 
-        var branch = await _uow.Branches.GetByIdAsync(brachId);
+        var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+        var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
         if (branch == null)
             return RecipeResult.Failed("Branch not found");
+
 
         var userCanManage = _authService.CanManageBranch(user, branch);
         if (!userCanManage)

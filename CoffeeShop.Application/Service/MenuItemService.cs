@@ -1,3 +1,4 @@
+using CoffeeShop.Application.Interface;
 using CoffeeShop.Application.Interface.IService;
 using CoffeeShop.Application.Interface.IUnitOfWork;
 using CoffeeShop.Domain.Entities;
@@ -11,10 +12,12 @@ namespace CoffeeShop.Application.Service
     {
         private readonly IUnitOfWork _uow;
         private readonly IAuthService _authService;
-        public MenuItemService(IUnitOfWork uow, IAuthService authService)
+        private readonly IBranchResolverService _branchResolver;
+        public MenuItemService(IUnitOfWork uow, IAuthService authService, IBranchResolverService branchResolverService )
         {
             _uow = uow;
             _authService = authService;
+            _branchResolver = branchResolverService;
         }
 
 
@@ -35,22 +38,7 @@ namespace CoffeeShop.Application.Service
         }
         public async Task<IEnumerable<MenuItem>> GetByCategoryAsync(int? branchId, string? category)
         {
-            var user = await _authService.GetCurrentUserAsync();
-            if (user == null)
-                throw new Exception("User not found");
-
-            int targetBranchId;
-            if (branchId.HasValue)
-                if (branchId.Value <= 0)
-                    throw new ArgumentException("Invalid branch ID.");
-                else
-                    targetBranchId = branchId.Value;
-            else if (user.BranchId.HasValue)
-                targetBranchId = user.BranchId.Value;
-            else
-                throw new Exception("No branch specified");
-
-
+           var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
             return await _uow.MenuItems.GetByBranchAndCategoryAsync(targetBranchId, category);
         }
 
@@ -79,7 +67,9 @@ namespace CoffeeShop.Application.Service
             if (user == null)
                 return MenuItemResult.Failed("User not found");
 
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+            var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
             if (branch == null)
                 return MenuItemResult.Failed("Branch not found");
 
@@ -110,7 +100,7 @@ namespace CoffeeShop.Application.Service
 
             var menuItem = new MenuItem
             {
-                BranchId = branchId,
+                BranchId = branch.BranchId,
                 Name = name.Trim(),
                 Price = price,
                 Category = string.IsNullOrWhiteSpace(category) ? null : category.Trim(),
@@ -130,7 +120,10 @@ namespace CoffeeShop.Application.Service
             var user = await _authService.GetCurrentUserAsync();
             if (user == null)
                 return MenuItemResult.Failed("User not found");
-            var branch = await _uow.Branches.GetByIdAsync(branchId);
+
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
+
+            var branch = await _uow.Branches.GetByIdAsync(targetBranchId);
             if (branch == null)
                 return MenuItemResult.Failed("Branch not found");
 
@@ -224,19 +217,7 @@ namespace CoffeeShop.Application.Service
 
         public async Task<IEnumerable<string>> GetCategoriesAsync(int? branchId)
         {
-            var user = await _authService.GetCurrentUserAsync();
-            if (user == null)
-                throw new Exception("User not found");
-
-            int targetBranchId;
-            if (branchId.HasValue)
-                targetBranchId = branchId.Value;
-            else if (user.BranchId.HasValue)
-                targetBranchId = user.BranchId.Value;
-            else
-                throw new Exception("No branch specified");
-
-
+            var targetBranchId = await _branchResolver.ResolveBranchIdAsync(branchId);
 
             var menuItems = await _uow.MenuItems.GetByBranchIdAsync(targetBranchId);
             return menuItems

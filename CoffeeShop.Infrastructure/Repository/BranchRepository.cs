@@ -36,7 +36,7 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet.AnyAsync(b => b.BusinessId == businessId && b.Name == name);
         }
 
-        public async Task<Branch?> GetByIdAsync(int branchId)
+        public async Task<Branch?> GetByIdAsync(int? branchId)
         {
            return await _dbSet.FirstOrDefaultAsync(b => b.BranchId == branchId);
         }

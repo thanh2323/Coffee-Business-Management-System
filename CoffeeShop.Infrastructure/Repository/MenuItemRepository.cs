@@ -12,7 +12,7 @@ namespace CoffeeShop.Infrastructure.Repository
         {
         }
 
-        public async Task<IEnumerable<MenuItem>> GetByBranchIdAsync(int branchId)
+        public async Task<IEnumerable<MenuItem>> GetByBranchIdAsync(int? branchId)
         {
             return await _context.MenuItems
                 .Where(m => m.BranchId == branchId && !m.IsDeleted)
@@ -21,7 +21,7 @@ namespace CoffeeShop.Infrastructure.Repository
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<MenuItem>> GetByBranchAndCategoryAsync(int branchId, string? category)
+        public async Task<IEnumerable<MenuItem>> GetByBranchAndCategoryAsync(int? branchId, string? category)
         {
             var query = _context.MenuItems
                 .Where(m => m.BranchId == branchId && !m.IsDeleted);

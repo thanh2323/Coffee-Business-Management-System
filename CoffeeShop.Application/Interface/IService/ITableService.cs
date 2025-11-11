@@ -4,7 +4,7 @@ namespace CoffeeShop.Application.Interface.IService
 {
     public interface ITableService
     {
-        Task<IEnumerable<CafeTable>> GetByBranchAsync( int branchId);
+        Task<IEnumerable<CafeTable>> GetByBranchAsync( int? branchId);
         Task<TableResult> CreateAsync(int branchId, int tableNumber);
      
         Task<TableResult> DeleteAsync(int tableId);

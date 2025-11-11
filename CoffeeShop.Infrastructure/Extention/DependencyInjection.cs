@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using Microsoft.Extensions.DependencyInjection;
+using CoffeeShop.Application.Interface;
 
 
 namespace CoffeeShop.Infrastructure.Extention
@@ -59,7 +60,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<ITableService, TableService>();
             services.AddScoped<IMenuItemService, MenuItemService>();
             services.AddScoped<IIngredientService, IngredientService>();
-            services.AddScoped<IManageStaffService,ManageStaffService>();
+            services.AddScoped<IManageStaffService, ManageStaffService>();
             services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<IBranchService, BranchService>();
             services.AddScoped<IQrService, QrService>();
@@ -68,6 +69,8 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             services.AddScoped<IPaymentGateway, VNPayGateway>();
             services.AddScoped<IPaymentGateway, MoMoGateway>();
+            services.AddScoped<IBranchResolverService, BranchResolverService>();
+
 
 
             services.AddHttpContextAccessor();
