@@ -1,5 +1,9 @@
-﻿@{
+﻿﻿@{
     ViewBag.Title = "Dashboard Layout - Café Dashboard";
+}
+
+@{
+    var position = User.FindFirst("Position")?.Value;
 }
 
 <!DOCTYPE html>
@@ -11,14 +15,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
 
     <style>
+        :root {
+            --blue: #007AFF;
+            --light-blue: #EAF3FF;
+            --text-gray: #555;
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #f4f6f8;
             margin: 0;
-            color: #555;
+            color: var(--text-gray);
         }
 
-        /* SIDEBAR */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -33,26 +43,44 @@
             padding: 20px 0;
         }
 
-            .sidebar a {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                color: #555;
-                font-size: 15px;
-                padding: 12px 20px;
-                text-decoration: none;
-                border-radius: 8px;
-                margin: 4px 10px;
-                transition: all 0.2s ease;
+        .sidebar-top .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px; /* khoảng cách giữa icon và chữ */
+            font-size: 23px; /* giảm nhẹ cho cân với icon và menu */
+            font-weight: 700;
+            color: #000;
+            height: 40px; /* giảm chiều cao để đẩy sát lên */
+            margin-top: 3px; /* kéo sát mép trên hơn */
+            text-align: center;
+        }
+
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-gray);
+            font-size: 16px; /* tăng nhẹ size chữ */
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 4px 10px;
+            transition: all 0.2s ease;
+        }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: var(--light-blue);
+                color: var(--blue);
             }
 
-                .sidebar a:hover,
-                .sidebar a.active {
-                    background: #dbeaff;
-                    color: #007AFF;
-                }
+            .sidebar a i {
+                color: var(--blue);
+            }
 
-        /* TOP NAV */
+        /* ===== TOP NAV ===== */
         .top-nav {
             position: fixed;
             top: 0;
@@ -66,21 +94,46 @@
             justify-content: space-between;
             padding: 0 25px;
             z-index: 1000;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         }
+
+            .top-nav .brand {
+                font-size: 24px;
+                font-weight: 700;
+                color: #000;
+                letter-spacing: 0.3px;
+            }
 
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 18px;
         }
 
+            .nav-actions i {
+                color: var(--blue);
+                font-size: 18px;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+                .nav-actions i:hover {
+                    transform: scale(1.1);
+                }
+
         .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid #ddd;
+            border: 2px solid var(--blue);
+            cursor: pointer;
+            transition: 0.25s;
         }
+
+            .user-avatar:hover {
+                box-shadow: 0 0 8px rgba(0, 122, 255, 0.3);
+            }
 
         .main-content {
             margin-left: 220px;
@@ -88,14 +141,14 @@
             padding: 25px;
         }
 
-        /* POPUP CÀI ĐẶT */
+        /* ===== SETTINGS POPUP ===== */
         .settings-popup {
             animation: fadeIn 0.25s ease-in-out;
             border-radius: 12px;
             background: #fff;
             transition: all 0.2s ease;
             border: none;
-            box-shadow: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: absolute;
             bottom: 60px;
             left: 25px;
@@ -114,8 +167,8 @@
         }
 
             .dropdown-item-custom:hover {
-                background-color: #f0f6ff;
-                color: #007AFF;
+                background-color: var(--light-blue);
+                color: var(--blue);
             }
 
             .dropdown-item-custom i {
@@ -124,7 +177,7 @@
             }
 
             .dropdown-item-custom:hover i {
-                color: #007AFF;
+                color: var(--blue);
             }
 
             .dropdown-item-custom.text-danger {
@@ -133,23 +186,20 @@
             }
 
                 .dropdown-item-custom.text-danger:hover {
-                    color: #007AFF !important;
-                    background-color: #f0f6ff !important;
+                    color: var(--blue) !important;
+                    background-color: var(--light-blue) !important;
                 }
 
         @@keyframes fadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(8px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -162,24 +212,26 @@
         {
             <div class="sidebar">
                 <div class="sidebar-top">
-                    <div class="brand">☕ Café</div>
+                    <div class="brand">
+                        <i class="bi bi-cup-hot-fill"></i> Café
+                    </div>
+
 
                     <a asp-controller="Business" asp-action="My"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                    <a asp-controller="Owner" asp-action="Revenue"><i class="bi bi-cash-stack"></i> Doanh thu</a>
+                    <a asp-controller="Dashboard" asp-action="Index"><i class="bi bi-cash-stack"></i> Doanh thu</a>
                     <a asp-controller="Branch" asp-action="Index"><i class="bi bi-shop"></i> Chi nhánh</a>
+@*                     <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
                     <a asp-controller="Customer" asp-action="Index"><i class="bi bi-person-badge"></i> Khách hàng</a>
-                    <a asp-controller="ManageStaff" asp-action="Index"><i class="bi bi-people"></i> Nhân viên</a>
+                    <a asp-controller="ManageStaff" asp-action="Index"><i class="bi bi-people"></i> Nhân viên</a> *@
                 </div>
 
                 <div class="sidebar-bottom position-relative">
-                    <a href="#" id="settingsBtnOwner" class="d-flex align-items-center">
-                        <i class="bi bi-gear"></i> Cài đặt
-                    </a>
+                    <a href="#" id="settingsBtnOwner"><i class="bi bi-gear"></i> Cài đặt</a>
 
                     <div id="settingsPopupOwner" class="settings-popup">
                         <ul class="list-unstyled mb-0">
-                            <li><a href="/Account/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
-                            <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li>
+                            <li><a href="/Auth/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
+                         
                             <li>
                                 <form id="logoutFormOwner" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
                                 <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
@@ -196,7 +248,7 @@
                 <div class="brand">☕ Café</div>
                 <div class="nav-actions">
                     <i class="bi bi-bell fs-5"></i>
-                    <img src="https://i.pravatar.cc/40" class="user-avatar" />
+                    <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
                     <span>@User.Identity.Name</span>
                 </div>
             </div>
@@ -207,22 +259,22 @@
         {
             <div class="sidebar">
                 <div class="sidebar-top">
-                    <div class="brand">☕ Café</div>
+                    <div class="brand">
+                        <i class="bi bi-cup-hot-fill"></i> Café
+                    </div>
+
                     <a asp-controller="Admin" asp-action="Index"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                    <a asp-controller="Admin" asp-action="UserList"><i class="bi bi-person-lines-fill"></i> Người dùng</a>
                     <a asp-controller="Admin" asp-action="Package"><i class="bi bi-box2-heart"></i> Gói dịch vụ</a>
                     <a asp-controller="Admin" asp-action="Post"><i class="bi bi-file-post"></i> Bài đăng</a>
                 </div>
 
                 <div class="sidebar-bottom position-relative">
-                    <a href="#" id="settingsBtnAdmin" class="d-flex align-items-center">
-                        <i class="bi bi-gear"></i> Cài đặt
-                    </a>
+                    <a href="#" id="settingsBtnAdmin"><i class="bi bi-gear"></i> Cài đặt</a>
 
                     <div id="settingsPopupAdmin" class="settings-popup">
                         <ul class="list-unstyled mb-0">
-                            <li><a href="/Account/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
-                            <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li>
+                            <li><a href="/Auth/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
+                            
                             <li>
                                 <form id="logoutFormAdmin" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
                                 <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
@@ -239,7 +291,7 @@
                 <div class="brand">☕ Café</div>
                 <div class="nav-actions">
                     <i class="bi bi-bell fs-5"></i>
-                    <img src="https://i.pravatar.cc/40" class="user-avatar" />
+                    <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
                 </div>
             </div>
         }
@@ -247,45 +299,87 @@
         <!-- ========== STAFF ========== -->
         @if (User.IsInRole("Staff"))
         {
-            <div class="sidebar">
-                <div class="sidebar-top">
-                    <div class="brand">☕ Café</div>
-                    <a href="#"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                    <a href="#"><i class="bi bi-clipboard-data"></i> Báo cáo</a>
-                    <a href="#"><i class="bi bi-receipt"></i> Đơn hàng</a>
-                    <a href="#"><i class="bi bi-cup-straw"></i> Sản phẩm</a>
-                    <a href="#"><i class="bi bi-box-seam"></i> Kho hàng</a>
-                    <a href="#"><i class="bi bi-person-badge"></i> Khách hàng</a>
-                </div>
+            @if (position == "Manager")
+            {
+                <div class="sidebar">
+                    <div class="sidebar-top">
+                        <div class="brand">
+                            <i class="bi bi-cup-hot-fill"></i> Café
+                        </div>
 
-                <div class="sidebar-bottom position-relative">
-                    <a href="#" id="settingsBtnStaff" class="d-flex align-items-center">
-                        <i class="bi bi-gear"></i> Cài đặt
-                    </a>
+                        <a asp-controller="Order" asp-action="Index"><i class="bi bi-cutoff"></i> Đơn Hàng</a>
+                        <a asp-controller="Tables" asp-action="Index"><i class="bi bi-table"></i> Bàn</a>
+                        <a asp-controller="MenuItems" asp-action="Index"><i class="bi bi-cup-hot"></i> Sản phẩm</a>
+                        <a asp-controller="Ingredients" asp-action="Index"><i class="bi bi-archive"></i> Kho hàng</a>
+                        <a asp-controller="ManageStaff" asp-action="Index"><i class="bi bi-people"></i> Nhân viên</a>
+                    </div>
 
-                    <div id="settingsPopupStaff" class="settings-popup">
-                        <ul class="list-unstyled mb-0">
-                            <li><a href="/Account/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
-                            <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li>
-                            <li>
-                                <form id="logoutFormStaff" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
-                                <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
-                                   onclick="event.preventDefault(); document.getElementById('logoutFormStaff').submit();">
-                                    <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
-                                </a>
-                            </li>
-                        </ul>
+                    <div class="sidebar-bottom position-relative">
+                        <a href="#" id="settingsBtnStaff"><i class="bi bi-gear"></i> Cài đặt</a>
+                        <div id="settingsPopupStaff" class="settings-popup">
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="/Auth/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
+                               
+                                <li>
+                                    <form id="logoutFormStaff" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
+                                    <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
+                                       onclick="event.preventDefault(); document.getElementById('logoutFormStaff').submit();">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="top-nav">
-                <div class="brand">☕ Café</div>
-                <div class="nav-actions">
-                    <i class="bi bi-bell fs-5"></i>
-                    <img src="https://i.pravatar.cc/40" class="user-avatar" />
+                <div class="top-nav">
+                    <div class="brand">☕ Café</div>
+                    <div class="nav-actions">
+                        <i class="bi bi-bell fs-5"></i>
+                        <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
+                    </div>
                 </div>
-            </div>
+            }
+
+            @if (position == "Cashier" || position == "Barista")
+            {
+                <div class="sidebar">
+                    <div class="sidebar-top">
+                        <div class="brand">
+                            <i class="bi bi-cup-hot-fill"></i> Café
+                        </div>
+
+                      
+                        <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
+                    </div>
+
+                    <div class="sidebar-bottom position-relative">
+                        <a href="#" id="settingsBtnStaff"><i class="bi bi-gear"></i> Cài đặt</a>
+
+                        <div id="settingsPopupStaff" class="settings-popup">
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="/Auth/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
+                                <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li>
+                                <li>
+                                    <form id="logoutFormStaff" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
+                                    <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
+                                       onclick="event.preventDefault(); document.getElementById('logoutFormStaff').submit();">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="top-nav">
+                    <div class="brand">☕ Café</div>
+                    <div class="nav-actions">
+                        <i class="bi bi-bell fs-5"></i>
+                        <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
+                    </div>
+                </div>
+            }
         }
     }
 
@@ -296,12 +390,21 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
+            // highlight link
+            const path = window.location.pathname.toLowerCase();
+            $(".sidebar a").each(function () {
+                const href = $(this).attr("href");
+                if (href && path.startsWith(href.toLowerCase())) {
+                    $(this).addClass("active");
+                }
+            });
+
+            // toggle settings
             const pairs = [
                 { btn: "#settingsBtnOwner", popup: "#settingsPopupOwner" },
                 { btn: "#settingsBtnAdmin", popup: "#settingsPopupAdmin" },
                 { btn: "#settingsBtnStaff", popup: "#settingsPopupStaff" }
             ];
-
             pairs.forEach(({ btn, popup }) => {
                 const popupEl = $(popup);
                 $(btn).on("click", function (e) {
@@ -316,7 +419,15 @@
                     $(".settings-popup").fadeOut(100);
                 }
             });
+
+            // avatar click → Auth/Profile
+            $("#avatarProfile").on("click", function () {
+                window.location.href = "/Auth/Profile";
+            });
         });
     </script>
+
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

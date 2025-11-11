@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\css\login.css" />
+    <None Include="wwwroot\css\site.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CoffeeShop.Application\CoffeeShop.Application.csproj" />
     <ProjectReference Include="..\CoffeeShop.Infrastructure\CoffeeShop.Infrastructure.csproj" />
   </ItemGroup>

@@ -69,7 +69,7 @@ namespace CoffeeShop.Web.Controllers
                     if (position == "Manager")
                         return RedirectToAction("Index", "Manager");
                     else
-                        return RedirectToAction("Index", "Staff");
+                        return RedirectToAction("Index", "Order");
 
                 default:
                     return RedirectToAction("Index", "Home");
