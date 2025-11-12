@@ -16,30 +16,6 @@ namespace CoffeeShop.Infrastructure.Repository
         {
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
-        {
-            return await _dbSet.Where(o => o.CustomerId == customerId).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
-        {
-            return await _dbSet.Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(OrderStatus status)
-        {
-            return await _dbSet.Where(o => o.CurrentStatus == status).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Order>> GetOrdersByPaymentStatusAsync(PaymentStatus paymentStatus)
-        {
-            return await _dbSet.Where(o => o.PaymentStatus == paymentStatus).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Order>> GetOrdersByPaymentMethodAsync(PaymentMethod paymentMethod)
-        {
-            return await _dbSet.Where(o => o.PaymentMethod == paymentMethod).ToListAsync();
-        }
 
         public async Task<IEnumerable<Order>> GetOrdersByBranchAsync(int branchId)
         {
@@ -58,42 +34,14 @@ namespace CoffeeShop.Infrastructure.Repository
             return await _dbSet
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
+                        .ThenInclude(mi => mi.MenuItemRecipes)
+                            .ThenInclude(mr => mr.Ingredient)
                 .Include(o => o.Customer)
                 .Include(o => o.CafeTable)
                 .Include(o => o.Branch)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
         }
-
-        public async Task<IEnumerable<Order>> GetOrdersWithItemsByCustomerIdAsync(int customerId)
-        {
-            return await _dbSet
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.MenuItem)
-                .Include(o => o.Customer)
-                .Include(o => o.CafeTable)
-                .Include(o => o.Branch)
-                .Include(o => o.User)
-                .Where(o => o.CustomerId == customerId)
-                .ToListAsync();
-        }
-
-        // OrderItem CRUD methods (since OrderItem is part of Order aggregate)
-        public async Task<IEnumerable<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
-        {
-            return await _context.OrderItems
-                .Include(oi => oi.MenuItem)
-                .Where(oi => oi.OrderId == orderId)
-                .ToListAsync();
-        }
-
-        public async Task<OrderItem?> GetOrderItemByIdAsync(int orderItemId)
-        {
-            return await _context.OrderItems
-                .Include(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(oi => oi.OrderItemId == orderItemId);
-        }
-
         public void AddOrderItem(OrderItem orderItem)
         {
             _context.OrderItems.Add(orderItem);

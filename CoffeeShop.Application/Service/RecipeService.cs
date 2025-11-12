@@ -1,3 +1,4 @@
+
 using CoffeeShop.Application.Interface;
 using CoffeeShop.Application.Interface.IRepo;
 using CoffeeShop.Application.Interface.IService;
@@ -79,6 +80,8 @@ public class RecipeService : IRecipeService
             if (ingredient == null)
                 return RecipeResult.Failed("Ingredient not found");
 
+
+
             if (ingredient.BranchId != menuItem.BranchId)
                 return RecipeResult.Failed("Ingredient must belong to the same branch as menu item");
 
@@ -89,7 +92,7 @@ public class RecipeService : IRecipeService
             var recipe = new MenuItemRecipe
             {
                 MenuItemId = menuItemId,
-                IngredientId = ingredientId,
+                IngredientId = ingredientId,    
                 Quantity = quantity,
 
             };

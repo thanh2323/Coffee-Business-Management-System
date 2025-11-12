@@ -70,6 +70,7 @@ namespace CoffeeShop.Infrastructure.Extention
             services.AddScoped<IPaymentGateway, VNPayGateway>();
             services.AddScoped<IPaymentGateway, MoMoGateway>();
             services.AddScoped<IBranchResolverService, BranchResolverService>();
+            services.AddScoped<IInventoryService, InventoryService>();
 
 
 

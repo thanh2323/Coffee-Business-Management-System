@@ -16,12 +16,14 @@ namespace CoffeeShop.Application.Service
         private readonly IUnitOfWork _uow;
         private readonly ITempOrderRepository _tempOrderRepo;
         private readonly IOrderRealtimeService _orderRealtimeService;
+        private readonly IInventoryService _inventoryService;
 
-        public OrderPaymentService(IUnitOfWork uow, ITempOrderRepository tempOrderRepo , IOrderRealtimeService orderRealtimeService)
+        public OrderPaymentService(IUnitOfWork uow, ITempOrderRepository tempOrderRepo , IOrderRealtimeService orderRealtimeService, IInventoryService inventoryService)
         {
             _orderRealtimeService = orderRealtimeService;
             _uow = uow;
             _tempOrderRepo = tempOrderRepo;
+            _inventoryService = inventoryService;
         }
         public async Task<bool> ConvertTempOrderToRealOrderAsync(string tempOrderId, PaymentGateway gateway)
         {
@@ -88,6 +90,7 @@ namespace CoffeeShop.Application.Service
                 }
 
                 await _uow.SaveChangesAsync();
+                await _inventoryService.DeductInventoryFromOrderAsync(order);
 
                 // 5. Remove TempOrder from Redis
                 await _tempOrderRepo.DeleteAsync(tempOrderId);

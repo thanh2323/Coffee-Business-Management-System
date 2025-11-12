@@ -21,12 +21,14 @@ namespace CoffeeShop.Application.Service
         private readonly IOrderRealtimeService _realtimeService;
         private readonly IAuthService _authService;
         private readonly IBranchResolverService _branchResolver;
-        public OrderService(IUnitOfWork uow, IAuthService authService, IOrderRealtimeService orderRealtimeService, IBranchResolverService branchResolver)
+        private readonly IInventoryService _inventoryService;
+        public OrderService(IUnitOfWork uow, IAuthService authService, IOrderRealtimeService orderRealtimeService, IBranchResolverService branchResolver, IInventoryService inventoryService)
         {
             _branchResolver = branchResolver;
             _authService = authService;
             _realtimeService = orderRealtimeService;
             _uow = uow;
+            _inventoryService = inventoryService;
         }
 
         public async Task<OrderResult> CreateOrderAsync(int branchId, string name, string? phone, bool isTakeAway, List<OrderItem> orderItems)
@@ -57,7 +59,7 @@ namespace CoffeeShop.Application.Service
             // Tạo Order
             var order = new Order
             {
-                
+
                 BranchId = branch.BranchId,
                 Customer = customer,
                 CurrentStatus = OrderStatus.Pending,
@@ -100,22 +102,52 @@ namespace CoffeeShop.Application.Service
             if (!OrderRules.CanChangeStatus(order.CurrentStatus, newStatus))
                 throw new InvalidOperationException($"Cannot change status");
 
-            order.CurrentStatus = newStatus;
-            order.UpdatedAt = DateTime.UtcNow;
+            // Kiểm tra nếu order đã Completed rồi thì không cho phép update status (OrderRules đã kiểm tra)
+            // Chỉ trừ kho khi chuyển sang Completed lần đầu
 
-
+            // Trừ kho tự động khi order thành công
             if (newStatus == OrderStatus.Completed)
             {
-                order.PaymentStatus = PaymentStatus.Completed;
-            }
+                // Sử dụng transaction để đảm bảo atomicity
+                // Nếu trừ kho lỗi, không update order status
+                await _uow.BeginTransactionAsync();
+                try
+                {
+                    // Trừ kho trước
+                    await _inventoryService.DeductInventoryFromOrderAsync(order);
 
-            _uow.Orders.Update(order);
-            await _uow.SaveChangesAsync();
+                    // Sau đó mới update order status
+                    order.CurrentStatus = newStatus;
+                    order.PaymentStatus = PaymentStatus.Completed;
+                    order.UpdatedAt = DateTime.UtcNow;
+
+                    _uow.Orders.Update(order);
+                    await _uow.SaveChangesAsync();
+                    await _uow.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _uow.RollbackTransactionAsync();
+                    throw;
+                }
+            }
+            else
+            {
+                order.CurrentStatus = newStatus;
+                order.UpdatedAt = DateTime.UtcNow;
+                _uow.Orders.Update(order);
+                await _uow.SaveChangesAsync();
+            }
 
             await _realtimeService.BroadcastOrderStatusAsync(orderId, newStatus.ToString(), order.BranchId);
 
             return true;
         }
+
+        /// <summary>
+        /// Trừ kho tự động dựa trên recipe của các menu item trong order
+        /// </summary>
+     
 
     }
 }
