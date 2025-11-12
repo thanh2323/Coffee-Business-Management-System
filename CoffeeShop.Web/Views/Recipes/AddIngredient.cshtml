@@ -1,93 +1,93 @@
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Add Ingredient to Recipe";
-	var branchId = ViewBag.BranchId as int?;
+    ViewData["Title"] = "Thêm nguyên liệu vào công thức";
+    var branchId = ViewBag.BranchId as int?;
     var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
     var availableIngredients = ViewBag.AvailableIngredients as IEnumerable<CoffeeShop.Domain.Entities.Ingredient>;
 }
 
 <div class="container mt-4">
-	<div class="mb-4">
-		<h2 class="mb-1">Add Ingredient to Recipe</h2>
-		<p class="text-muted mb-0">
-			<i class="fas fa-utensils me-1"></i>@menuItem?.Name
-		</p>
-	</div>
+    <div class="mb-4">
+        <h2 class="mb-1">Thêm nguyên liệu vào công thức</h2>
+        <p class="text-muted mb-0">
+            <i class="fas fa-utensils me-1"></i>@menuItem?.Name
+        </p>
+    </div>
 
-	@if (TempData["Error"] != null)
-	{
-		<div class="alert alert-danger alert-dismissible fade show" role="alert">
-			<i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>
-	}
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    }
 
-	<div class="row justify-content-center">
-		<div class="col-lg-8">
-			<div class="card shadow-sm border-0">
-				<div class="card-body p-4">
-					<div class="mb-4">
-						<h4 class="card-title mb-2">
-							<i class="fas fa-list-ul text-primary me-2"></i>Recipe Ingredient
-						</h4>
-						<p class="text-muted small mb-0">Add an ingredient to the recipe.</p>
-					</div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h4 class="card-title mb-2">
+                            <i class="fas fa-list-ul text-primary me-2"></i>Nguyên liệu công thức
+                        </h4>
+                        <p class="text-muted small mb-0">Thêm một nguyên liệu vào công thức món này.</p>
+                    </div>
 
-					<form method="post" action="@Url.Action("AddIngredient")">
-						<input type="hidden" name="branchId" value="@branchId" />
-						<input type="hidden" name="menuItemId" value="@ViewBag.MenuItemId" />
-						
-						<div class="mb-3">
-							<label for="ingredientId" class="form-label fw-semibold">
-								<i class="fas fa-leaf me-2 text-success"></i>Ingredient <span class="text-danger">*</span>
-							</label>
-							<select class="form-select form-select-lg" id="ingredientId" name="ingredientId" r	equired>
-								<option value="">Select an ingredient...</option>
-								@if (availableIngredients != null)
-								{
-									@foreach (var ingredient in availableIngredients)
-									{
-										<option value="@ingredient.IngredientId" data-unit="@ingredient.BaseUnit">
-											@ingredient.Name (@ingredient.BaseUnit)
-										</option>
-									}
-								}
-							</select>
-							<small class="form-text text-muted">Choose an ingredient from your inventory.</small>
-						</div>
+                    <form method="post" action="@Url.Action("AddIngredient")">
+                        <input type="hidden" name="branchId" value="@branchId" />
+                        <input type="hidden" name="menuItemId" value="@ViewBag.MenuItemId" />
 
-						<div class="mb-3">
-							<label for="quantity" class="form-label fw-semibold">
-								<i class="fas fa-weight me-2 text-info"></i>Quantity <span class="text-danger">*</span>
-							</label>
-							<div class="input-group input-group-lg">
-								<input type="number" class="form-control" id="quantity" name="quantity" 
-									   step="0.01" min="0.01" required placeholder="Enter quantity">
-								<span class="input-group-text" id="unitDisplay">-</span>
-							</div>
-							<small class="form-text text-muted">Enter the amount needed for this recipe.</small>
-						</div>
+                        <div class="mb-3">
+                            <label for="ingredientId" class="form-label fw-semibold">
+                                <i class="fas fa-leaf me-2 text-success"></i>Nguyên liệu <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-select-lg" id="ingredientId" name="ingredientId" required>
+                                <option value="">Chọn nguyên liệu...</option>
+                                @if (availableIngredients != null)
+                                {
+                                    @foreach (var ingredient in availableIngredients)
+                                    {
+                                        <option value="@ingredient.IngredientId" data-unit="@ingredient.BaseUnit">
+                                            @ingredient.Name (@ingredient.BaseUnit)
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <small class="form-text text-muted">Chọn nguyên liệu có trong kho của bạn.</small>
+                        </div>
 
-						<hr class="my-4 bg-light" />
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label fw-semibold">
+                                <i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" class="form-control" id="quantity" name="quantity"
+                                       step="0.01" min="0.01" required placeholder="Nhập số lượng cần dùng">
+                                <span class="input-group-text" id="unitDisplay">-</span>
+                            </div>
+                            <small class="form-text text-muted">Nhập lượng nguyên liệu cần thiết cho công thức này.</small>
+                        </div>
 
-						<div class="d-flex justify-content-between align-items-center">
-							<a href="@Url.Action("Index", new { branchId,menuItemId = ViewBag.MenuItemId })" 
-							   class="btn btn-outline-secondary">
-								<i class="fas fa-times me-2"></i> Cancel
-							</a>
-							<button type="submit" class="btn btn-primary btn-lg px-4">
-								<i class="fas fa-check me-2"></i> Add to Recipe
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <hr class="my-4 bg-light" />
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="@Url.Action("Index", new { branchId, menuItemId = ViewBag.MenuItemId })"
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-check me-2"></i> Thêm vào công thức
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Auto-fill unit display based on selected ingredient
+    // Tự động hiển thị đơn vị khi chọn nguyên liệu
     document.getElementById('ingredientId').addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const unitDisplay = document.getElementById('unitDisplay');
@@ -99,7 +99,3 @@
         }
     });
 </script>
-
-
-
-

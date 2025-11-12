@@ -2,119 +2,199 @@
 @{
     Layout = "_Layout";
     ViewData["HideHeader"] = true;
-    ViewData["Title"] = "Cart";
+    ViewData["Title"] = "Giỏ hàng";
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
     var totalAmount = ViewBag.TotalAmount as decimal? ?? 0m;
-
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h2>Your Cart - Table @table?.TableNumber</h2>
-        </div>
+<style>
+    body {
+        background-color: #F5FAFF;
+    }
+
+    .cart-header {
+        background: #fff;
+        border-bottom: 1px solid #dce9ff;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+    }
+
+    .card-summary {
+        background: #fff;
+        border: 1px solid #e6f0ff;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+    }
+
+    .table thead th {
+        color: #004aad;
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: .85rem;
+    }
+
+    .qty-group .btn {
+        min-width: 34px;
+    }
+
+    .btn-outline-secondary {
+        border-color: #cde3ff;
+    }
+
+        .btn-outline-secondary:hover {
+            background: #eaf4ff;
+        }
+
+    .empty-state {
+        background: #fff;
+        border: 1px dashed #cde3ff;
+        border-radius: 12px;
+        padding: 28px;
+    }
+</style>
+
+<div class="container py-3">
+
+    <!-- tiêu đề -->
+    <div class="cart-header d-flex align-items-center justify-content-between">
+        <h4 class="mb-0">
+            Giỏ hàng — Chi nhánh: @branch?.Name
+            <small class="text-muted"> | Bàn @table?.TableNumber</small>
+        </h4>
+        <a href="@Url.Action("Index", "Menu", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+           class="btn btn-outline-primary">
+            ← Về menu
+        </a>
     </div>
+
+    @* token ẩn để JS lấy khi gọi fetch *@
+    <form id="af-form">@Html.AntiForgeryToken()</form>
 
     @if (Model != null && Model.Any())
     {
-        <div class="row">
-            <div class="col-12">
+        <div class="row g-3">
+            <!-- Bảng giỏ hàng -->
+            <div class="col-12 col-lg-8">
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table align-middle bg-white rounded-3 overflow-hidden">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Action</th>
+                                <th>Món</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-end">Thành tiền</th>
+                                <th class="text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@item.MenuItemName</td>
-                                    <td>@item.UnitPrice.ToString("N0")</td>
                                     <td>
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                                    onclick="updateCartItem(@item.MenuItemId, @item.Quantity - 1)">
-                                                -
+                                        <div class="fw-semibold">@item.MenuItemName</div>
+                                        @* Bạn có thể hiển thị thêm mô tả/nguyên liệu ở đây nếu có *@
+                                    </td>
+                                    <td class="text-end">@item.UnitPrice.ToString("N0") ₫</td>
+                                    <td class="text-center">
+                                        <div class="btn-group qty-group" role="group" aria-label="Điều chỉnh số lượng">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                    onclick="updateCartItem(@item.MenuItemId, @item.Quantity - 1)"
+                                                    @(item.Quantity <= 0 ? "disabled" : "")>
+                                                −
                                             </button>
-                                            <span class="btn btn-outline-secondary btn-sm">@item.Quantity</span>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                            <span class="btn btn-outline-secondary btn-sm disabled">@item.Quantity</span>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm"
                                                     onclick="updateCartItem(@item.MenuItemId, @item.Quantity + 1)">
                                                 +
                                             </button>
                                         </div>
                                     </td>
-                                    <td>@item.TotalPrice.ToString("N0")</td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger btn-sm" 
+                                    <td class="text-end fw-semibold">@item.TotalPrice.ToString("N0") ₫</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-sm"
                                                 onclick="removeFromCart(@item.MenuItemId)">
-                                            Remove
+                                            Xóa
                                         </button>
                                     </td>
                                 </tr>
                             }
                         </tbody>
-                        <tfoot>
+                        <tfoot class="table-light">
                             <tr>
-                                <th colspan="3">Total</th>
-                                <th>@totalAmount.ToString("N0")</th>
+                                <th colspan="3" class="text-end">Tổng cộng</th>
+                                <th class="text-end fw-bold">@totalAmount.ToString("N0") ₫</th>
                                 <th></th>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex justify-content-between">
-                    <a href="@Url.Action("Index", new { tableId = table?.TableId, branchId = branch?.BranchId })" 
-                       class="btn btn-secondary">Continue Shopping</a>
-                    <a href="@Url.Action("Checkout", new { tableId = table?.TableId, branchId = branch?.BranchId })" 
-                       class="btn btn-primary">Proceed to Checkout</a>
+            <!-- Tổng kết + nút -->
+            <div class="col-12 col-lg-4">
+                <div class="card-summary p-3">
+                    <h5 class="mb-3">Tóm tắt đơn</h5>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Tạm tính</span>
+                        <strong>@totalAmount.ToString("N0") ₫</strong>
+                    </div>
+                    @* nếu có phí dịch vụ/thuế, thêm vào đây *@
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold">Tổng thanh toán</span>
+                        <span class="fs-5 fw-bold text-primary">@totalAmount.ToString("N0") ₫</span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("Index", "Menu", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                           class="btn btn-outline-secondary">
+                            Tiếp tục chọn món
+                        </a>
+                        <a href="@Url.Action("Checkout", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                           class="btn btn-primary">
+                            Tiến hành thanh toán
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     }
     else
     {
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-info">
-                    <h4>Your cart is empty</h4>
-                    <p>Add some items to your cart to continue.</p>
-                    <a href="@Url.Action("Index", new { tableId = table?.TableId, branchId = branch?.BranchId })" 
-                       class="btn btn-primary">Browse Menu</a>
-                </div>
-            </div>
+        <!-- empty state -->
+        <div class="empty-state text-center">
+            <h5 class="mb-2">Giỏ hàng của bạn đang trống</h5>
+            <p class="text-muted mb-3">Hãy thêm vài món để tiếp tục đặt.</p>
+            <a href="@Url.Action("Index", "Menu", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+               class="btn btn-primary">
+                Xem menu
+            </a>
         </div>
     }
 </div>
 
 <script>
+    function getToken() {
+        return document.querySelector('#af-form input[name="__RequestVerificationToken"]')?.value;
+    }
+
     function updateCartItem(menuItemId, newQuantity) {
         if (newQuantity < 0) return;
-        
+
         fetch('@Url.Action("UpdateCart")', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                'RequestVerificationToken': getToken()
             },
             body: `menuItemId=${menuItemId}&quantity=${newQuantity}&tableId=@table?.TableId&branchId=@branch?.BranchId`
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                location.reload();
-            }
+            if (data?.success) location.reload();
         });
     }
 
@@ -122,5 +202,3 @@
         updateCartItem(menuItemId, 0);
     }
 </script>
-
-

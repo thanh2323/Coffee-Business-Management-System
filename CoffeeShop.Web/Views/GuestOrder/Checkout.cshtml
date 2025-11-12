@@ -1,90 +1,158 @@
-@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
+﻿@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
 @{
     ViewData["HideHeader"] = true;
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Thanh toán";
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
     var totalAmount = (decimal)ViewBag.TotalAmount;
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h2>Checkout - Table @table?.TableNumber</h2>
-        </div>
+<style>
+    body {
+        background-color: #F5FAFF;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .checkout-header {
+        background: #fff;
+        padding: 18px 24px;
+        border-bottom: 1px solid #dce9ff;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+        .checkout-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #004aad;
+        }
+
+    .summary-card, .customer-card {
+        background: #fff;
+        border: 1px solid #e6f0ff;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    table thead th {
+        color: #004aad;
+        text-transform: uppercase;
+        font-size: .9rem;
+        border-bottom: 2px solid #dce9ff;
+    }
+
+    table tbody td {
+        vertical-align: middle;
+    }
+
+    .btn-primary {
+        background-color: #007AFF;
+        border-color: #007AFF;
+    }
+
+        .btn-primary:hover {
+            background-color: #0068d9;
+        }
+
+    .table tfoot th {
+        background: #f2f7ff;
+        border-top: 2px solid #dce9ff;
+    }
+
+    .card-header {
+        background: #F5FAFF;
+        border-bottom: 1px solid #e6f0ff;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="checkout-header d-flex justify-content-between align-items-center">
+        <h3>Thanh toán — Bàn @table?.TableNumber</h3>
+        <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+           class="btn btn-outline-primary">
+            ← Quay lại giỏ hàng
+        </a>
     </div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <h4>Order Summary</h4>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
+    <div class="row g-4">
+        <!-- Order Summary -->
+        <div class="col-lg-8">
+            <div class="summary-card p-3">
+                <h5 class="mb-3 text-primary">Tóm tắt đơn hàng</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
                             <tr>
-                                <td>@item.MenuItemName</td>
-                                <td>@item.UnitPrice.ToString("N0")</td>
-                                <td>@item.Quantity</td>
-                                <td>@item.TotalPrice.ToString("N0")</td>
+                                <th>Món</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-end">Thành tiền</th>
                             </tr>
-                        }
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="3">Total</th>
-                            <th>@totalAmount.ToString("N0")</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.MenuItemName</td>
+                                    <td class="text-end">@item.UnitPrice.ToString("N0") ₫</td>
+                                    <td class="text-center">@item.Quantity</td>
+                                    <td class="text-end fw-semibold">@item.TotalPrice.ToString("N0") ₫</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end">Tổng cộng</th>
+                                <th class="text-end text-primary fs-5">@totalAmount.ToString("N0") ₫</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Customer Information</h5>
+        <!-- Customer Info -->
+        <div class="col-lg-4">
+            <div class="customer-card card p-3">
+                <div class="card-header bg-white border-bottom-0 mb-3">
+                    <h5>Thông tin khách hàng</h5>
                 </div>
                 <div class="card-body">
                     <form asp-action="Checkout" method="post">
                         <input type="hidden" name="tableId" value="@table?.TableId" />
                         <input type="hidden" name="branchId" value="@branch?.BranchId" />
-                        
+
                         <div class="mb-3">
-                            <label for="customerName" class="form-label">Name *</label>
+                            <label for="customerName" class="form-label fw-semibold">Họ tên *</label>
                             <input type="text" class="form-control" id="customerName" name="customerName" required />
                         </div>
-                        
+
                         <div class="mb-3">
-                            <label for="customerPhone" class="form-label">Phone (Optional)</label>
+                            <label for="customerPhone" class="form-label fw-semibold">Số điện thoại</label>
                             <input type="tel" class="form-control" id="customerPhone" name="customerPhone" />
-                            <div class="form-text">Provide phone number to earn loyalty points</div>
+                            <div class="form-text">Nhập số điện thoại để tích điểm thành viên</div>
                         </div>
+
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" value="" id="isTakeAway">
+                            <input class="form-check-input" type="checkbox" id="isTakeAway" name="isTakeAway" />
                             <label class="form-check-label" for="isTakeAway">
-                                Take away
+                                Mang đi (Take away)
                             </label>
                         </div>
+
                         <div class="mb-3">
-                            <label for="gateway" class="form-label">Payment Method</label>
+                            <label for="gateway" class="form-label fw-semibold">Phương thức thanh toán</label>
                             <select class="form-select" id="gateway" name="gateway" required>
                                 <option value="1">VNPay</option>
                                 <option value="2">MoMo</option>
+                                <option value="3">Tiền mặt</option>
                             </select>
                         </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                Place Order & Pay
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-credit-card me-2"></i> Đặt hàng & Thanh toán
                             </button>
                         </div>
                     </form>
@@ -93,5 +161,3 @@
         </div>
     </div>
 </div>
-
-

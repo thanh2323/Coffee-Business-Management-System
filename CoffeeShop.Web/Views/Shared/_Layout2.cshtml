@@ -139,6 +139,9 @@
             margin-left: 220px;
             margin-top: 60px;
             padding: 25px;
+            background-color: #F5FAFF; /* Màu xanh nhạt dịu mắt */
+            min-height: 100vh; /* đảm bảo luôn phủ kín chiều cao màn hình */
+            border-top: 1px solid #d0e4ff; /* nhẹ nhàng phân tách với top-nav */
         }
 
         /* ===== SETTINGS POPUP ===== */
@@ -221,10 +224,10 @@
 
 
                     <a asp-controller="Business" asp-action="My"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                    <a asp-controller="Owner" asp-action="Revenue"><i class="bi bi-cash-stack"></i> Doanh thu</a>
+                    <a asp-controller="Dashboard" asp-action="Index"><i class="bi bi-cash-stack"></i> Doanh thu</a>
                     <a asp-controller="Branch" asp-action="Index"><i class="bi bi-shop"></i> Chi nhánh</a>
                     <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
-                    <a asp-controller="Customer" asp-action="Index"><i class="bi bi-person-badge"></i> Khách hàng</a>
+                    
                     <a asp-controller="ManageStaff" asp-action="Index"><i class="bi bi-people"></i> Nhân viên</a>
                 </div>
 
@@ -266,8 +269,8 @@
                         <i class="bi bi-cup-hot-fill"></i> Café
                     </div>
 
-                    <a asp-controller="Admin" asp-action="Index"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                    <a asp-controller="Admin" asp-action="UserList"><i class="bi bi-person-lines-fill"></i> Người dùng</a>
+                    <a asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-speedometer2"></i> Tổng quan</a>
+                    <a asp-controller="Admin" asp-action="Index"><i class="bi bi-person-lines-fill"></i> Người dùng</a>
                     <a asp-controller="Admin" asp-action="Package"><i class="bi bi-box2-heart"></i> Gói dịch vụ</a>
                     <a asp-controller="Admin" asp-action="Post"><i class="bi bi-file-post"></i> Bài đăng</a>
                 </div>
@@ -311,13 +314,12 @@
                             <i class="bi bi-cup-hot-fill"></i> Café
                         </div>
 
-                        <a asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2"></i> Tổng quan</a>
-                        <a asp-controller="Report" asp-action="Index"><i class="bi bi-bar-chart"></i> Báo cáo</a>
+                        
                         <a asp-controller="Tables" asp-action="Index"><i class="bi bi-table"></i> Bàn</a>
                         <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
                         <a asp-controller="MenuItems" asp-action="Index"><i class="bi bi-cup-hot"></i> Sản phẩm</a>
                         <a asp-controller="Ingredients" asp-action="Index"><i class="bi bi-archive"></i> Kho hàng</a>
-                        <a asp-controller="Customer" asp-action="Index"><i class="bi bi-people"></i> Khách hàng</a>
+                        
                         <a asp-controller="ManageStaff" asp-action="Index"><i class="bi bi-people"></i> Nhân viên</a>
                     </div>
 
@@ -356,7 +358,7 @@
                             <i class="bi bi-cup-hot-fill"></i> Café
                         </div>
 
-                        <a asp-controller="Tables" asp-action="Index"><i class="bi bi-table"></i> Bàn</a>
+                        <a asp-controller="MenuItems" asp-action="Index"><i class="bi bi-table"></i> Menu</a>
                         <a asp-controller="Order" asp-action="Index"><i class="bi bi-receipt-cutoff"></i> Đơn hàng</a>
                     </div>
 
@@ -397,42 +399,65 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
-            // highlight link
-            const path = window.location.pathname.toLowerCase();
-            $(".sidebar a").each(function () {
-                const href = $(this).attr("href");
-                if (href && path.startsWith(href.toLowerCase())) {
-                    $(this).addClass("active");
-                }
-            });
+          // ============== HIGHLIGHT LINK ==============
+          // Ưu tiên link khớp dài nhất để tránh "Người dùng (/Admin)" sáng khi đang ở "/Admin/Package"
+          const path = window.location.pathname.toLowerCase();
 
-            // toggle settings
-            const pairs = [
-                { btn: "#settingsBtnOwner", popup: "#settingsPopupOwner" },
-                { btn: "#settingsBtnAdmin", popup: "#settingsPopupAdmin" },
-                { btn: "#settingsBtnStaff", popup: "#settingsPopupStaff" }
-            ];
-            pairs.forEach(({ btn, popup }) => {
-                const popupEl = $(popup);
-                $(btn).on("click", function (e) {
-                    e.preventDefault();
-                    $(".settings-popup").not(popupEl).fadeOut(100);
-                    popupEl.fadeToggle(120);
-                });
-            });
+          let $best = null;
+          let bestLen = -1;
 
-            $(document).on("click", function (e) {
-                if (!$(e.target).closest(".settings-popup, [id^='settingsBtn']").length) {
-                    $(".settings-popup").fadeOut(100);
-                }
-            });
+          $(".sidebar a").each(function () {
+            let href = $(this).attr("href");
+            if (!href) return;
 
-            // avatar click → Auth/Profile
-            $("#avatarProfile").on("click", function () {
-                window.location.href = "/Auth/Profile";
+            // bỏ query/hash nếu có
+            href = href.split("#")[0].split("?")[0].toLowerCase();
+
+            // KHỚP CHÍNH XÁC hoặc KHỚP LÀ TIỀN TỐ + "/"
+            const exact = (path === href);
+            const isPrefix = (path.startsWith(href + "/"));
+
+            if (exact || isPrefix) {
+              if (href.length > bestLen) { // chọn link đặc hiệu (dài) nhất
+                bestLen = href.length;
+                $best = $(this);
+              }
+            }
+          });
+
+          if ($best) $best.addClass("active");
+
+          // ============== POPUP CÀI ĐẶT ==============
+          const pairs = [
+            { btn: "#settingsBtnOwner", popup: "#settingsPopupOwner" },
+            { btn: "#settingsBtnAdmin", popup: "#settingsPopupAdmin" },
+            { btn: "#settingsBtnStaff", popup: "#settingsPopupStaff" }
+          ];
+
+          pairs.forEach(({ btn, popup }) => {
+            const $popup = $(popup);
+            $(btn).on("click", function (e) {
+              e.preventDefault();
+              $(".settings-popup").not($popup).fadeOut(100);
+              $popup.fadeToggle(120);
             });
+          });
+
+          // đóng popup khi click ra ngoài
+          $(document).on("click", function (e) {
+            if (!$(e.target).closest(".settings-popup, [id^='settingsBtn']").length) {
+              $(".settings-popup").fadeOut(100);
+            }
+          });
+
+          // avatar → Profile
+          $("#avatarProfile").on("click", function () {
+            window.location.href = "/Auth/Profile";
+          });
         });
     </script>
+
+
 
     @RenderSection("Scripts", required: false)
 

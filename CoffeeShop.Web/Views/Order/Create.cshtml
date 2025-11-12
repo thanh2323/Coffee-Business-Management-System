@@ -1,56 +1,60 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Create Order";
+    ViewData["Title"] = "Tạo đơn hàng";
     var branchId = ViewBag.BranchId;
     var menuItems = ViewBag.MenuItems as List<CoffeeShop.Domain.Entities.MenuItem>;
 }
 
 <div class="container-fluid">
-    <h2>Create New Order</h2>
+    <h2>Tạo đơn hàng mới</h2>
 
     <div class="row">
-        <!-- Customer Info -->
+        <!-- Thông tin khách hàng -->
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-header bg-primary text-white">
-                    Customer Info
+                    Thông tin khách hàng
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label>Name <span class="text-danger">*</span></label>
-                        <input type="text" id="customerName" class="form-control" required>
+                        <label>Họ tên <span class="text-danger">*</span></label>
+                        <input type="text" id="customerName" class="form-control" required placeholder="Nhập họ tên khách hàng">
                     </div>
                     <div class="mb-3">
-                        <label>Phone</label>
-                        <input type="tel" id="customerPhone" class="form-control" placeholder="Optional">
+                        <label>Số điện thoại</label>
+                        <input type="tel" id="customerPhone" class="form-control" placeholder="Không bắt buộc">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="isTakeAway">
-                            <label class="form-check-label">Take Away</label>
+                            <label class="form-check-label">Mang đi</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Menu Items -->
+        <!-- Danh sách món -->
         <div class="col-md-8">
             <div class="card mb-3">
-                <div class="card-header bg-success text-white">Menu Items</div>
+                <div class="card-header bg-success text-white">Danh sách món</div>
                 <div class="card-body">
                     <div class="row">
                         @foreach (var item in menuItems)
                         {
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100">
-                                    <img src="@Url.Content(item.ImagePath)"alt="@item.Name" class="card-img-top"style="height: 150px; object-fit: cover;" onerror="this.src='/images/no-image.png';" />
+                                    <img src="@Url.Content(item.ImagePath)"
+                                         alt="@item.Name"
+                                         class="card-img-top"
+                                         style="height: 150px; object-fit: cover;"
+                                         onerror="this.src='/images/no-image.png';" />
                                     <div class="card-body text-center">
                                         <h6>@item.Name</h6>
                                         <p class="text-primary fw-bold">@item.Price.ToString("N0") đ</p>
                                         <button class="btn btn-sm btn-success w-100"
                                                 onclick="addItem(@item.MenuItemId, '@item.Name', @item.Price)">
-                                            Add
+                                            Thêm
                                         </button>
                                     </div>
                                 </div>
@@ -60,34 +64,34 @@
                 </div>
             </div>
 
-            <!-- Order Summary -->
+            <!-- Tóm tắt đơn hàng -->
             <div class="card">
-                <div class="card-header bg-info text-white">Order Summary</div>
+                <div class="card-header bg-info text-white">Tóm tắt đơn hàng</div>
                 <div class="card-body">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th>Qty</th>
-                                <th>Subtotal</th>
+                                <th>Món</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tạm tính</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody id="orderSummary">
                             <tr>
-                                <td colspan="5" class="text-center text-muted">No items</td>
+                                <td colspan="5" class="text-center text-muted">Chưa có món nào</td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="3">Total</th>
+                                <th colspan="3">Tổng cộng</th>
                                 <th colspan="2"><h4 id="totalAmount">0 đ</h4></th>
                             </tr>
                         </tfoot>
                     </table>
                     <button class="btn btn-success btn-lg w-100" onclick="submitOrder()">
-                        Create Order
+                        Tạo đơn hàng
                     </button>
                 </div>
             </div>
@@ -129,7 +133,7 @@
             tbody.empty();
 
             if (selectedItems.length === 0) {
-                tbody.append('<tr><td colspan="5" class="text-center text-muted">No items</td></tr>');
+                tbody.append('<tr><td colspan="5" class="text-center text-muted">Chưa có món nào</td></tr>');
                 $('#totalAmount').text('0 đ');
                 return;
             }
@@ -159,51 +163,51 @@
             $('#totalAmount').text(total.toLocaleString('vi-VN') + ' đ');
         }
 
-            function submitOrder() {
-                const customerName = $('#customerName').val().trim();
-                const customerPhone = $('#customerPhone').val().trim();
-                const isTakeAway = $('#isTakeAway').is(':checked');
+        function submitOrder() {
+            const customerName = $('#customerName').val().trim();
+            const customerPhone = $('#customerPhone').val().trim();
+            const isTakeAway = $('#isTakeAway').is(':checked');
 
-                if (!customerName) {
-                    alert('Enter customer name');
-                    return;
-                }
-
-                if (selectedItems.length === 0) {
-                    alert('Add items');
-                    return;
-                }
-
-                const orderData = {
-                    branchId: branchId,
-                    customerName: customerName,
-                    customerPhone: customerPhone || null,
-                    isTakeAway: isTakeAway,
-                    orderItems: selectedItems.map(item => ({
-                        menuItemId: item.menuItemId,
-                        quantity: item.quantity,
-                        price: item.price,
-                        subtotal: item.price * item.quantity
-                    }))
-                };
-
-                $.ajax({
-                    url: '/Order/Create',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(orderData),
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Order created!');
-                            window.location.href = `/Order/Index?branchId=${branchId}`;
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('Error occurred');
-                    }
-                });
+            if (!customerName) {
+                alert('Vui lòng nhập tên khách hàng');
+                return;
             }
-        </script>
-}   
+
+            if (selectedItems.length === 0) {
+                alert('Vui lòng thêm ít nhất một món vào đơn hàng');
+                return;
+            }
+
+            const orderData = {
+                branchId: branchId,
+                customerName: customerName,
+                customerPhone: customerPhone || null,
+                isTakeAway: isTakeAway,
+                orderItems: selectedItems.map(item => ({
+                    menuItemId: item.menuItemId,
+                    quantity: item.quantity,
+                    price: item.price,
+                    subtotal: item.price * item.quantity
+                }))
+            };
+
+            $.ajax({
+                url: '/Order/Create',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(orderData),
+                success: function(response) {
+                    if (response.success) {
+                        alert('✅ Tạo đơn hàng thành công!');
+                        window.location.href = `/Order/Index?branchId=${branchId}`;
+                    } else {
+                        alert('❌ ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('❌ Có lỗi xảy ra khi tạo đơn hàng');
+                }
+            });
+        }
+    </script>
+}

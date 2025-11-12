@@ -1,120 +1,114 @@
-@using CoffeeShop.Domain.Entities
+﻿@using CoffeeShop.Domain.Entities
 @model CoffeeShop.Domain.Entities.Business
 @{
-	Layout = "~/Views/Shared/_Layout2.cshtml";
-	ViewData["Title"] = "My Business";
-	var branches = ViewBag.Branches as IEnumerable<Branch> ?? new List<Branch>();
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Doanh nghiệp của tôi";
+    var branches = ViewBag.Branches as IEnumerable<Branch> ?? new List<Branch>();
 }
 
 <div class="container mt-4">
-	@if (TempData["Error"] != null)
-	{
-		<div class="alert alert-danger">@TempData["Error"]</div>
-	}
-	@if (TempData["Success"] != null)
-	{
-		<div class="alert alert-success">@TempData["Success"]</div>
-	}
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
 </div>
 
 <div class="card shadow-sm">
-	<div class="card-body">
-		<h3 class="mb-4">@Model.Name</h3>
+    <div class="card-body">
+        <h3 class="mb-4">@Model.Name</h3>
 
-		<div class="row mb-3">
-			<div class="col-md-6">
-				<p><strong>Business ID:</strong> @Model.BusinessId</p>
-				<p><strong>Phone:</strong> @(Model.Phone ?? "-")</p>
-				<p><strong>Monthly Fee:</strong> @Model.MonthlyFee.ToString("N0") VND</p>
-			</div>
-			<div class="col-md-6">
-				<p>
-					<strong>Status:</strong>
-					<span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
-						@(Model.IsActive ? "Active" : "Inactive")
-					</span>
-				</p>
-				<p><strong>Subscription End:</strong> @(Model.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
-				<p><strong>Payment Reference:</strong> @(Model.PaymentReference ?? "-")</p>
-			</div>
-		</div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Mã doanh nghiệp:</strong> @Model.BusinessId</p>
+                <p><strong>Số điện thoại:</strong> @(Model.Phone ?? "-")</p>
+                <p><strong>Phí duy trì hàng tháng:</strong> @Model.MonthlyFee.ToString("N0") ₫</p>
+            </div>
+            <div class="col-md-6">
+                <p>
+                    <strong>Trạng thái:</strong>
+                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                        @(Model.IsActive ? "Đang hoạt động" : "Ngừng hoạt động")
+                    </span>
+                </p>
+                <p><strong>Ngày hết hạn gói:</strong> @(Model.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+                <p><strong>Mã thanh toán:</strong> @(Model.PaymentReference ?? "-")</p>
+            </div>
+        </div>
 
-		@if (!string.IsNullOrEmpty(Model.Address))
-		{
-			<p><strong>Address:</strong> @Model.Address</p>
-		}
+        @if (!string.IsNullOrEmpty(Model.Address))
+        {
+            <p><strong>Địa chỉ:</strong> @Model.Address</p>
+        }
 
-		@if (!Model.IsActive)
-		{
-			<div class="alert alert-warning mt-3">
-				<strong>Payment Required:</strong> Please complete payment to activate your business.
-			</div>
-			<form method="post" asp-controller="Business" asp-action="Pay" class="mt-3">
-				<input type="hidden" name="businessId" value="@Model.BusinessId" />
-				<div class="input-group">
-					<select name="gateway" class="form-select w-auto">
-						<option value="VNPay">VNPay</option>
-						<option value="MoMo">MoMo</option>
-					</select>
-					<button type="submit" class="btn btn-success">Pay Now</button>
-				</div>
-			</form>
-		}
+        @if (!Model.IsActive)
+        {
+            <div class="alert alert-warning mt-3">
+                <strong>Yêu cầu thanh toán:</strong> Vui lòng hoàn tất thanh toán để kích hoạt doanh nghiệp của bạn.
+            </div>
+            <form method="post" asp-controller="Business" asp-action="Pay" class="mt-3">
+                <input type="hidden" name="businessId" value="@Model.BusinessId" />
+                <div class="input-group">
+                    <select name="gateway" class="form-select w-auto">
+                        <option value="VNPay">VNPay</option>
+                        <option value="MoMo">MoMo</option>
+                    </select>
+                    <button type="submit" class="btn btn-success">Thanh toán ngay</button>
+                </div>
+            </form>
+        }
 
-		<hr class="my-4" />
+        <hr class="my-4" />
 
-		<h5 class="mb-3">Business Statistics</h5>
-		<div class="row">
-			<div class="col-md-4">
-				<div class="card bg-light">
-					<div class="card-body text-center">
-						<h4 class="text-primary">@ViewBag.BranchCount</h4>
-						<p class="mb-0">Total Branches</p>
-					</div>
-				</div>
-			</div>
-		</div>
+        <h5 class="mb-3">Thống kê doanh nghiệp</h5>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h4 class="text-primary">@ViewBag.BranchCount</h4>
+                        <p class="mb-0">Tổng số chi nhánh</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		@if (branches.Any())
-		{
-			<div class="mt-4">
-				<h5 class="mb-3">Branches</h5>
-				<div class="table-responsive">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Branch Name</th>
-								<th>Address</th>
-								<th>Opening Hours</th>
-								<th>Created Date</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var branch in branches)
-							{
-								<tr>
-									<td>@branch.Name</td>
-									<td>@(branch.Address ?? "-")</td>
-									<td>@branch.OpenTime.ToString(@"hh\:mm") - @branch.CloseTime.ToString(@"hh\:mm")</td>
-									<td>@branch.CreatedAt.ToString("yyyy-MM-dd")</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		}
-		else
-		{
-			<div class="alert alert-info mt-3">
-				No branches created yet. Create your first branch to get started.
-			</div>
-		}
-	</div>
+        @if (branches.Any())
+        {
+            <div class="mt-4">
+                <h5 class="mb-3">Danh sách chi nhánh</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Tên chi nhánh</th>
+                                <th>Địa chỉ</th>
+                                <th>Giờ mở cửa</th>
+                                <th>Ngày tạo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var branch in branches)
+                            {
+                                <tr>
+                                    <td>@branch.Name</td>
+                                    <td>@(branch.Address ?? "-")</td>
+                                    <td>@branch.OpenTime.ToString(@"hh\:mm") - @branch.CloseTime.ToString(@"hh\:mm")</td>
+                                    <td>@branch.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mt-3">
+                Chưa có chi nhánh nào được tạo. Hãy tạo chi nhánh đầu tiên để bắt đầu quản lý.
+            </div>
+        }
+    </div>
 </div>
-
-<div class="mt-3">
-	<a class="btn btn-secondary" href="/">Back to Home</a>
-</div>
-
-

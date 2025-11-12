@@ -1,63 +1,95 @@
 ﻿@model IEnumerable<CoffeeShop.Domain.Entities.MenuItem>
 @{
-    Layout = null; // Disable default layout
+    Layout = null;
     ViewData["Title"] = "Menu";
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>@branch?.Name - Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
 
     <style>
         body {
-            background-color: #f9f9f9;
+            background-color: #F5FAFF;
             font-family: 'Segoe UI', sans-serif;
+            color: #333;
         }
 
         .menu-header {
             background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #dce9ff;
             padding: 15px 20px;
             position: sticky;
             top: 0;
             z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
             .menu-header h2 {
+                font-weight: 700;
+                color: #004aad;
                 margin: 0;
-                font-weight: 600;
             }
 
         .cart-btn {
             position: relative;
+            font-weight: 500;
         }
 
-        .badge {
-            font-size: 0.8rem;
-            margin-bottom: 10px;
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, #EAF4FF 0%, #F5FAFF 100%);
+        }
+
+            .hero h1 {
+                font-weight: 800;
+                color: #003d99;
+            }
+
+            .hero p {
+                color: #555;
+                max-width: 650px;
+                margin: 0 auto;
+                font-size: 17px;
+            }
+
+        .section-title {
+            font-weight: 700;
+            color: #004aad;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-left: 5px solid #007bff;
+            padding-left: 10px;
         }
 
         .card {
             border: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             border-radius: 15px;
             overflow: hidden;
-            transition: transform 0.2s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            background-color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
             .card:hover {
                 transform: translateY(-4px);
+                box-shadow: 0 6px 14px rgba(0,0,0,0.12);
             }
 
             .card img {
                 width: 100%;
-                height: 180px;
+                height: 220px;
                 object-fit: cover;
             }
 
@@ -69,70 +101,170 @@
             min-width: 35px;
         }
 
- 
-
-        .menu-header h2 {
-            margin-bottom: 10px;
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            color: #666;
+            font-size: 14px;
         }
 
- 
-        
+        /* Category + Search on same row */
+        .menu-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .category-filter button {
+            border-radius: 20px;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 280px;
+        }
+
+            .search-bar input {
+                width: 100%;
+                border: 1px solid #cde3ff;
+                border-radius: 25px;
+                padding: 10px 40px 10px 15px;
+                outline: none;
+                transition: 0.2s;
+                background-color: #fff;
+            }
+
+                .search-bar input:focus {
+                    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+                    border-color: #007bff;
+                }
+
+            .search-bar i {
+                position: absolute;
+                right: 15px;
+                top: 10px;
+                color: #007bff;
+                font-size: 18px;
+            }
     </style>
 </head>
 
 <body>
 
-    <div class="menu-header d-flex justify-content-between align-items-center">
-        <h2>@branch?.Name - Table @table?.TableNumber</h2>
-        <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })"
-           class="btn btn-primary cart-btn">
-            Cart
+    <!-- Header -->
+    <div class="menu-header">
+        <h2>@branch?.Name - Bàn @table?.TableNumber</h2>
+        <a href="#" class="btn btn-primary cart-btn">
+            <i class="bi bi-cart3"></i> Giỏ hàng
             <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 0
             </span>
         </a>
     </div>
 
-    <div class="container mt-3 text-right">
-        <div class="btn-group flex-wrap" role="group">
-            <button class="btn btn-outline-primary active" onclick="filterCategory('all')">All</button>
-            @foreach (var cat in Model.Select(m => m.Category).Distinct())
-            {
-                <button class="btn btn-outline-primary" onclick="filterCategory('@cat')">@cat</button>
-            }
-        </div>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Chào mừng đến với @branch?.Name ☕</h1>
+        <p>
+            Thưởng thức hương vị cà phê đậm đà và không gian thư giãn nhẹ nhàng.
+            Chúng tôi mang đến cho bạn trải nghiệm tuyệt vời với đồ uống tươi mát mỗi ngày.
+        </p>
     </div>
 
+    <div class="container">
 
-    <div class="container py-4">
+        <!-- Best Seller -->
+        <h4 class="section-title">Best Seller</h4>
         <div class="row g-3">
+            @{
+                var bestSeller = new[]
+                {
+                        new { Name = "Cà phê đen", Price = 15000, Img="/images/coffee_black.jpg" },
+                        new { Name = "Bạc xỉu", Price = 30000, Img="/images/bacxiu.jpg" },
+                        new { Name = "Orange Americano", Price = 45000, Img="/images/orange_americano.jpg" }
+                        };
+            }
+            @foreach (var item in bestSeller)
+            {
+                <div class="col-12 col-md-4">
+                    <div class="card h-100">
+                        <img src="@item.Img" alt="@item.Name" onerror="this.src='/images/no-image.png';" />
+                        <div class="card-body">
+                            <h6 class="card-title">@item.Name</h6>
+                            <p class="text-muted mb-2">@item.Price.ToString("N0") ₫</p>
+                            <button class="btn btn-sm btn-primary w-100">
+                                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- New Items -->
+        <h4 class="section-title">Món mới</h4>
+        <div class="row g-3">
+            @{
+                var newItems = new[]
+                {
+                        new { Name = "Mocha", Price = 42000, Img="/images/mocha.jpg" },
+                        new { Name = "Matcha Latte", Price = 48000, Img="/images/matcha_latte.jpg" },
+                        new { Name = "Cold Brew", Price = 50000, Img="/images/coldbrew.jpg" }
+                        };
+            }
+            @foreach (var item in newItems)
+            {
+                <div class="col-12 col-md-4">
+                    <div class="card h-100">
+                        <img src="@item.Img" alt="@item.Name" onerror="this.src='/images/no-image.png';" />
+                        <div class="card-body">
+                            <h6 class="card-title">@item.Name</h6>
+                            <p class="text-muted mb-2">@item.Price.ToString("N0") ₫</p>
+                            <button class="btn btn-sm btn-success w-100">
+                                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Menu -->
+        <h4 class="section-title">Thực đơn</h4>
+
+        <div class="menu-toolbar">
+            <div class="category-filter btn-group flex-wrap">
+                <button class="btn btn-outline-primary active" onclick="filterCategory('all', event)">Tất cả</button>
+                @foreach (var cat in Model.Select(m => m.Category).Distinct())
+                {
+                    <button class="btn btn-outline-primary" onclick="filterCategory('@cat', event)">@cat</button>
+                }
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Tìm món..." onkeyup="searchMenu()">
+                <i class="bi bi-search"></i>
+            </div>
+        </div>
+
+        <div class="row g-3" id="menu-list">
             @foreach (var item in Model)
             {
-
-                <div class="col-6 col-md-4 col-lg-3 menu-item" data-category="@item.Category">
+                <div class="col-12 col-md-4 menu-item" data-category="@item.Category" data-name="@item.Name.ToLower()">
                     <div class="card h-100">
-                        <img loading="lazy" src="@Url.Content(item.ImagePath)" alt="@item.Name" onerror="this.src='/images/no-image.png';" />
+                        <img src="@Url.Content(item.ImagePath)" alt="@item.Name" onerror="this.src='/images/no-image.png';" />
                         <div class="card-body d-flex flex-column justify-content-between">
                             <div>
-                                <h6 class="card-title fw-semibold">@item.Name</h6>
+                                <h6 class="card-title">@item.Name</h6>
                                 <p class="text-muted mb-2">@item.Price.ToString("N0") ₫</p>
                                 <span class="badge bg-secondary">@item.Category</span>
                             </div>
-
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm"
-                                            onclick="updateQuantity(@item.MenuItemId, -1)">−</button>
-                                    <span id="qty-@item.MenuItemId" class="btn btn-outline-secondary btn-sm">0</span>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm"
-                                            onclick="updateQuantity(@item.MenuItemId, 1)"> + </button>
-                                </div>
-
-                                <button type="button" class="btn btn-primary btn-sm"
-                                        onclick="addToCart(@item.MenuItemId)">
-                                    Add
-                                </button>
-                            </div>
+                            <button type="button" class="btn btn-primary btn-sm mt-2">
+                                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -140,15 +272,14 @@
         </div>
     </div>
 
+    <footer>© 2025 @branch?.Name Coffee | Cảm ơn bạn đã ghé thăm ☕</footer>
+
     <script>
-
-                   function filterCategory(category, event) {
+        function filterCategory(category, event) {
             const allItems = document.querySelectorAll('.menu-item');
-            const buttons = document.querySelectorAll('.btn-group button');
-
+            const buttons = document.querySelectorAll('.category-filter .btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-
             allItems.forEach(item => {
                 if (category === 'all' || item.dataset.category === category)
                     item.style.display = 'block';
@@ -157,42 +288,13 @@
             });
         }
 
-        function updateQuantity(menuItemId, change) {
-            const qtyElement = document.getElementById('qty-' + menuItemId);
-            let currentQty = parseInt(qtyElement.textContent) || 0;
-            qtyElement.textContent = Math.max(0, currentQty + change);
-        }
-
-        function addToCart(menuItemId) {
-            const qtyElement = document.getElementById('qty-' + menuItemId);
-            const quantity = parseInt(qtyElement.textContent) || 0;
-
-            if (quantity <= 0) {
-                alert('Please select quantity first.');
-                return;
-            }
-
-            fetch('@Url.Action("AddToCart")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-                },
-                body: `menuItemId=${menuItemId}&quantity=${quantity}&tableId=@table?.TableId&branchId=@branch?.BranchId`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    qtyElement.textContent = '0';
-                    updateCartCount();
-                }
+        function searchMenu() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const items = document.querySelectorAll(".menu-item");
+            items.forEach(item => {
+                const name = item.dataset.name;
+                item.style.display = name.includes(input) ? "block" : "none";
             });
-        }
-
-        function updateCartCount() {
-            const cartCount = document.getElementById('cart-count');
-            const current = parseInt(cartCount.textContent) || 0;
-            cartCount.textContent = current + 1;
         }
     </script>
 

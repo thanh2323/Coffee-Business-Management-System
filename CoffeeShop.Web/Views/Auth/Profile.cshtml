@@ -1,7 +1,7 @@
-@model CoffeeShop.Domain.Entities.User
+﻿@model CoffeeShop.Domain.Entities.User
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Hồ sơ cá nhân";
 }
 
 <style>
@@ -112,37 +112,22 @@
     </div>
 
     <div class="info-list">
-        <div class="info-label">User ID</div>
-        <div class="info-value">@Model.UserId</div>
-
-        <div class="info-label">Role</div>
+        <div class="info-label">Vai trò</div>
         <div><span class="badge-role">@Model.Role</span></div>
 
-        @if (Model.BusinessId.HasValue)
-        {
-            <div class="info-label">Business ID</div>
-            <div class="info-value">@Model.BusinessId</div>
-        }
-
-        @if (Model.BranchId.HasValue)
-        {
-            <div class="info-label">Branch ID</div>
-            <div class="info-value">@Model.BranchId</div>
-        }
-
-        <div class="info-label">Created At</div>
+        <div class="info-label">Ngày tạo</div>
         <div class="info-value">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
 
         @if (Model.UpdatedAt.HasValue)
         {
-            <div class="info-label">Updated At</div>
+            <div class="info-label">Cập nhật lần cuối</div>
             <div class="info-value">@Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")</div>
         }
     </div>
 
     <div class="actions">
         <form method="post" action="@Url.Action("Logout")">
-            <button type="submit" class="btn-logout">Logout</button>
+            <button type="submit" class="btn-logout">Đăng xuất</button>
         </form>
     </div>
 </div>

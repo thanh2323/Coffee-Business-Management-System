@@ -1,172 +1,168 @@
-@model IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>
+﻿@model IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Recipe Management";
+    ViewData["Title"] = "Quản lý công thức";
     var branchId = ViewBag.BranchId as int?;
     var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
     var recipes = ViewBag.Recipes as IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>;
 }
 
 <div class="container mt-4">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<div>
-			<h2 class="mb-1">Recipe Management</h2>
-			<p class="text-muted mb-0">
-				<i class="fas fa-utensils me-1"></i>@menuItem?.Name
-				@if (!string.IsNullOrEmpty(menuItem?.Category))
-				{
-					<span class="badge bg-secondary ms-2">@menuItem.Category</span>
-				}
-			</p>
-		</div>
-		<div>
-			<a href="@Url.Action("AddIngredient", new {branchId = branchId, menuItemId = ViewBag.MenuItemId })" 
-			   class="btn btn-primary">
-				<i class="fas fa-plus me-1"></i> Add Ingredient
-			</a>
-			<form method="post" action="@Url.Action("Validate", new { branchId ,menuItemId = ViewBag.MenuItemId })" class="d-inline ms-2">
-				<button type="submit" class="btn btn-success">
-					<i class="fas fa-check me-1"></i> Validate Recipe
-				</button>
-			</form>
-		</div>
-	</div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Quản lý công thức</h2>
+            <p class="text-muted mb-0">
+                <i class="fas fa-utensils me-1"></i>@menuItem?.Name
+                @if (!string.IsNullOrEmpty(menuItem?.Category))
+                {
+                    <span class="badge bg-secondary ms-2">@menuItem.Category</span>
+                }
+            </p>
+        </div>
+        <div>
+            <a href="@Url.Action("AddIngredient", new { branchId = branchId, menuItemId = ViewBag.MenuItemId })"
+               class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Thêm nguyên liệu
+            </a>
+            <form method="post" action="@Url.Action("Validate", new { branchId, menuItemId = ViewBag.MenuItemId })" class="d-inline ms-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check me-1"></i> Xác thực công thức
+                </button>
+            </form>
+        </div>
+    </div>
 
-	@if (TempData["Success"] != null)
-	{
-		<div class="alert alert-success alert-dismissible fade show" role="alert">
-			<i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>
-	}
-	@if (TempData["Error"] != null)
-	{
-		<div class="alert alert-danger alert-dismissible fade show" role="alert">
-			<i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>
-	}
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    }
 
-	@if (recipes != null && recipes.Any())
-	{
-		<div class="card shadow-sm border-0 mb-4">
-			<div class="card-body">
-				<div class="row text-center">
-					<div class="col-md-4">
-						<div class="border-end border-md-0 pb-3 pb-md-0">
-							<h3 class="text-primary mb-1">@recipes.Count()</h3>
-							<small class="text-muted">Ingredients</small>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="border-end border-md-0 pb-3 pb-md-0">
-							<h3 class="text-success mb-1">@menuItem?.Price.ToString("N0")</h3>
-							<small class="text-muted">Price (VND)</small>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<h3 class="text-info mb-1">
-							<i class="fas fa-utensils"></i>
-						</h3>
-						<small class="text-muted">Recipe Steps</small>
-					</div>
-				</div>
-			</div>
-		</div>
+    @if (recipes != null && recipes.Any())
+    {
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border-end border-md-0 pb-3 pb-md-0">
+                            <h3 class="text-primary mb-1">@recipes.Count()</h3>
+                            <small class="text-muted">Nguyên liệu</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border-end border-md-0 pb-3 pb-md-0">
+                            <h3 class="text-success mb-1">@menuItem?.Price.ToString("N0")</h3>
+                            <small class="text-muted">Giá món (VND)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-info mb-1">
+                            <i class="fas fa-utensils"></i>
+                        </h3>
+                        <small class="text-muted">Các bước chế biến</small>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<div class="card shadow-sm border-0">
-			<div class="card-header bg-light">
-				<h5 class="mb-0">
-					<i class="fas fa-list-check me-2 text-primary"></i>Ingredient List
-				</h5>
-			</div>
-			<div class="card-body">
-				<p class="text-muted mb-3">
-					<i class="fas fa-info-circle me-2"></i>
-					To make <strong>1 serving of @menuItem?.Name</strong>, you will need the following ingredients:
-				</p>
-				<div class="table-responsive">
-					<table class="table table-hover mb-0">
-						<thead class="table-light">
-							<tr>
-								<th style="width: 50px;">#</th>
-								<th><i class="fas fa-leaf me-1"></i> Ingredient</th>
-								<th class="text-end"><i class="fas fa-weight me-1"></i> Required Quantity</th>
-								<th class="text-center"><i class="fas fa-cog me-1"></i> Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							@{
-								int index = 1;
-							}
-							@foreach (var recipe in recipes)
-							{
-								<tr>
-									<td>
-										<span class="badge bg-secondary">@index</span>
-									</td>
-									<td>
-										<div class="d-flex align-items-center">
-											<div class="flex-shrink-0 me-3">
-												<i class="fas fa-leaf text-success fa-lg"></i>
-											</div>
-											<div>
-												<strong class="d-block">@recipe.Ingredient?.Name</strong>
-												<small class="text-muted">Base Unit: @recipe.Ingredient?.BaseUnit</small>
-											</div>
-										</div>
-									</td>
-									<td class="text-end">
-										<span class="badge bg-info fs-6 px-3 py-2" d-flex justify-content-end align-items-center"
-											  style="width: 100px;">
-											@recipe.Quantity @recipe.Ingredient?.BaseUnit
-										</span>
-									</td>
-									<td>
-										<div class="d-flex gap-1 justify-content-center">
-											<a href="@Url.Action("EditIngredient", new { branchId, menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
-											   class="btn btn-sm btn-outline-primary" title="Edit Quantity">
-												<i class="fas fa-edit"></i>
-											</a>
-											<form method="post" action="@Url.Action("RemoveIngredient", new { branchId ,menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
-												  class="d-inline" onsubmit="return confirm('Are you sure you want to remove this ingredient from the recipe?')">
-												<button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">
-													<i class="fas fa-trash"></i>
-												</button>
-											</form>
-										</div>
-									</td>
-								</tr>
-								index++;
-							}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	}
-	else
-	{
-		<div class="card shadow-sm border-0">
-			<div class="card-body text-center py-5">
-				<i class="fas fa-list-ul fa-4x text-muted mb-3"></i>
-				<h5>No ingredients in recipe</h5>
-				<p class="text-muted mb-4">Add ingredients to create a recipe for this menu item.</p>
-				<a href="@Url.Action("AddIngredient", new { branchId = branchId,menuItemId = ViewBag.MenuItemId })"
-				   class="btn btn-primary">
-					<i class="fas fa-plus me-1"></i> Add First Ingredient
-				</a>
-			</div>
-		</div>
-	}
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-check me-2 text-primary"></i>Danh sách nguyên liệu
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Để pha chế <strong>1 phần @menuItem?.Name</strong>, bạn cần các nguyên liệu sau:
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th><i class="fas fa-leaf me-1"></i> Nguyên liệu</th>
+                                <th class="text-end"><i class="fas fa-weight me-1"></i> Số lượng cần</th>
+                                <th class="text-center"><i class="fas fa-cog me-1"></i> Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int index = 1;
+                            }
+                            @foreach (var recipe in recipes)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">@index</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-3">
+                                                <i class="fas fa-leaf text-success fa-lg"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block">@recipe.Ingredient?.Name</strong>
+                                                <small class="text-muted">Đơn vị: @recipe.Ingredient?.BaseUnit</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge bg-info fs-6 px-3 py-2"
+                                              style="width: 100px;">
+                                            @recipe.Quantity @recipe.Ingredient?.BaseUnit
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            <a href="@Url.Action("EditIngredient", new { branchId, menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
+                                               class="btn btn-sm btn-outline-primary" title="Chỉnh sửa số lượng">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="post" action="@Url.Action("RemoveIngredient", new { branchId, menuItemId = ViewBag.MenuItemId, ingredientId = recipe.IngredientId })"
+                                                  class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa nguyên liệu này khỏi công thức không?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-list-ul fa-4x text-muted mb-3"></i>
+                <h5>Chưa có nguyên liệu trong công thức</h5>
+                <p class="text-muted mb-4">Hãy thêm nguyên liệu để tạo công thức cho món này.</p>
+                <a href="@Url.Action("AddIngredient", new { branchId = branchId, menuItemId = ViewBag.MenuItemId })"
+                   class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Thêm nguyên liệu đầu tiên
+                </a>
+            </div>
+        </div>
+    }
 
-	<div class="mt-4">
-		<a href="@Url.Action("Index", "MenuItems",new {branchId = branchId})" class="btn btn-outline-secondary">
-			<i class="fas fa-arrow-left me-1"></i> Back to Menu Items
-		</a>
-	</div>
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "MenuItems", new { branchId = branchId })" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách món
+        </a>
+    </div>
 </div>
-
-
-
-

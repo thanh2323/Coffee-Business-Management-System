@@ -1,17 +1,17 @@
-@model IEnumerable<CoffeeShop.Domain.Entities.CafeTable>
+﻿@model IEnumerable<CoffeeShop.Domain.Entities.CafeTable>
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Tables";
+    ViewData["Title"] = "Quản lý bàn";
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1">Tables Management</h2>
-            <p class="text-muted mb-0">Manage cafe tables and QR codes</p>
+            <h2 class="mb-1">Quản lý bàn</h2>
+            <p class="text-muted mb-0">Quản lý bàn cà phê và mã QR</p>
         </div>
         <a class="btn btn-primary" asp-action="Create" asp-route-branchId="@ViewBag.BranchId">
-            <i class="fas fa-plus me-1"></i> Add Table
+            <i class="fas fa-plus me-1"></i> Thêm bàn mới
         </a>
     </div>
 
@@ -19,14 +19,14 @@
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     }
 
@@ -41,18 +41,18 @@
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
                                     <h5 class="card-title mb-1">
-                                        <i class="fas fa-table text-primary me-2"></i>Table #@t.TableNumber
+                                        <i class="fas fa-table text-primary me-2"></i>Bàn số @t.TableNumber
                                     </h5>
                                     @if (t.IsActive)
                                     {
                                         <span class="badge bg-success">
-                                            <i class="fas fa-check-circle me-1"></i>Active
+                                            <i class="fas fa-check-circle me-1"></i>Đang hoạt động
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-secondary">
-                                            <i class="fas fa-times-circle me-1"></i>Inactive
+                                            <i class="fas fa-times-circle me-1"></i>Ngừng hoạt động
                                         </span>
                                     }
                                 </div>
@@ -63,13 +63,13 @@
                                 {
                                     <div class="bg-light p-3 rounded">
                                         <img src="@Url.Action("QrCode", new { tableId = t.TableId })"
-                                             alt="QR Code"
+                                             alt="Mã QR"
                                              width="120"
                                              height="120"
                                              class="img-fluid" />
                                     </div>
                                     <small class="text-muted">
-                                        <i class="fas fa-check-circle text-success me-1"></i>QR Code Generated
+                                        <i class="fas fa-check-circle text-success me-1"></i>Đã tạo mã QR
                                     </small>
                                 }
                                 else
@@ -77,13 +77,13 @@
                                     <div class="bg-light p-4 rounded">
                                         <i class="fas fa-qrcode fa-4x text-muted"></i>
                                     </div>
-                                    <small class="text-muted d-block mb-2">No QR Code Yet</small>
+                                    <small class="text-muted d-block mb-2">Chưa có mã QR</small>
 
                                     <form method="post" asp-action="GenerateQr" class="d-inline">
                                         <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
                                         <input type="hidden" name="tableId" value="@t.TableId" />
                                         <button type="submit" class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-qrcode me-1"></i> Generate QR
+                                            <i class="fas fa-qrcode me-1"></i> Tạo mã QR
                                         </button>
                                     </form>
                                 }
@@ -96,16 +96,16 @@
                                         <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
                                         <input type="hidden" name="tableId" value="@t.TableId" />
                                         <button type="submit" class="btn btn-outline-primary btn-sm w-100">
-                                            <i class="fas fa-sync-alt me-1"></i> Regenerate QR
+                                            <i class="fas fa-sync-alt me-1"></i> Tạo lại mã QR
                                         </button>
                                     </form>
                                 }
 
                                 <form method="post" asp-action="Delete" class="d-inline"
-                                      onsubmit="return confirm('Are you sure you want to delete table @t.TableNumber?')">
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa bàn số @t.TableNumber không?')">
                                     <input type="hidden" name="tableId" value="@t.TableId" />
                                     <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                        <i class="fas fa-trash me-1"></i> Delete Table
+                                        <i class="fas fa-trash me-1"></i> Xóa bàn
                                     </button>
                                 </form>
                             </div>
@@ -120,10 +120,10 @@
         <div class="card shadow-sm border-0">
             <div class="card-body text-center py-5">
                 <i class="fas fa-table fa-4x text-muted mb-3"></i>
-                <h5>No tables yet</h5>
-                <p class="text-muted mb-4">Create tables for your branch to get started.</p>
+                <h5>Chưa có bàn nào</h5>
+                <p class="text-muted mb-4">Tạo bàn đầu tiên cho chi nhánh của bạn để bắt đầu quản lý.</p>
                 <a class="btn btn-primary" asp-action="Create" asp-route-branchId="@ViewBag.BranchId">
-                    <i class="fas fa-plus me-1"></i> Create Your First Table
+                    <i class="fas fa-plus me-1"></i> Tạo bàn đầu tiên
                 </a>
             </div>
         </div>

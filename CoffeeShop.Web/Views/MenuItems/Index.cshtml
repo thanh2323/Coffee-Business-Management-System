@@ -1,184 +1,169 @@
-@model IEnumerable<CoffeeShop.Domain.Entities.MenuItem>
+﻿@model IEnumerable<CoffeeShop.Domain.Entities.MenuItem>
 
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Menu Items";
+    ViewData["Title"] = "Danh sách món ăn";
     var branchId = ViewBag.BranchId as int?;
     var categories = ViewBag.Categories as IEnumerable<string> ?? new List<string>();
     var selectedCategory = ViewBag.SelectedCategory as string;
 }
 
 <div class="container mt-4">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<div>
-			<h2 class="mb-1">Menu Items</h2>
-			<p class="text-muted mb-0">Manage your menu items and categories</p>
-		</div>
-		<a href="@Url.Action("Create", new { branchId })" class="btn btn-primary">
-			<i class="fas fa-plus me-1"></i> Add Menu Item
-		</a>
-	</div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Menu</h2>
+            <p class="text-muted mb-0">Quản lý danh mục sản phẩm đồ uống của chi nhánh</p>
+        </div>
+        <a href="@Url.Action("Create", new { branchId })" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Thêm món
+        </a>
+    </div>
 
-	@if (TempData["SuccessMessage"] != null)
-	{
-		<div class="alert alert-success alert-dismissible fade show" role="alert">
-			@TempData["SuccessMessage"]
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>
-	}
-	@if (TempData["ErrorMessage"] != null)
-	{
-		<div class="alert alert-danger alert-dismissible fade show" role="alert">
-			@TempData["ErrorMessage"]
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>
-	}
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    }
 
-	<!-- Category Filter -->
-	@if (categories.Any())
-	{
-		<div class="card shadow-sm border-0 mb-4">
-			<div class="card-body py-3">
-				<div class="d-flex align-items-center gap-2">
-					<strong class="text-muted me-2">Filter by:</strong>
-					<div class="btn-group btn-group-sm" role="group">
-						<a href="@Url.Action("Index", new { branchId })" 
-						   class="btn @(string.IsNullOrEmpty(selectedCategory) ? "btn-primary" : "btn-outline-primary")">
-							All
-						</a>
-						@foreach (var category in categories)
-						{
-							<a href="@Url.Action("Index", new { branchId, category })" 
-							   class="btn @(selectedCategory == category ? "btn-primary" : "btn-outline-primary")">
-								@category
-							</a>
-						}
-					</div>
-				</div>
-			</div>
-		</div>
-	}
+    <!-- Bộ lọc theo danh mục -->
+    @if (categories.Any())
+    {
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <strong class="text-muted me-2">Lọc theo:</strong>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="@Url.Action("Index", new { branchId })"
+                           class="btn @(string.IsNullOrEmpty(selectedCategory) ? "btn-primary" : "btn-outline-primary")">
+                            Tất cả
+                        </a>
+                        @foreach (var category in categories)
+                        {
+                            <a href="@Url.Action("Index", new { branchId, category })"
+                               class="btn @(selectedCategory == category ? "btn-primary" : "btn-outline-primary")">
+                                @category
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
-	@if (Model.Any())
-	{
-		<div class="row g-4">
-			@foreach (var item in Model)
-			{
-				<div class="col-md-6 col-lg-4">
-					<div class="card shadow-sm h-100 border-0">
-						
-						@if (!string.IsNullOrEmpty(item.ImagePath))
-						{
-							<img src="@Url.Content(item.ImagePath)" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
-						}
-						else
-						{
-							<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-								<i class="fas fa-utensils fa-4x text-muted"></i>
-							</div>
-						}
-						<div class="card-body">
-							<div class="d-flex justify-content-between align-items-start mb-2">
-								<div>
-									<h5 class="card-title mb-1">@item.Name</h5>
-									@if (!string.IsNullOrEmpty(item.Category))
-									{
-										<span class="badge bg-secondary">@item.Category</span>
-									}
-								</div>
-								<div class="dropdown">
-									<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-										<i class="fas fa-ellipsis-v"></i>
-									</button>
-									<ul class="dropdown-menu dropdown-menu-end">
-										<li>
-											<a href="@Url.Action("Edit", new { id = item.MenuItemId })" class="dropdown-item">
-												<i class="fas fa-edit me-2"></i> Edit
-											</a>
-										</li>
-										<li>
-											<a href="@Url.Action("Index", "Recipes", new {branchId ,menuItemId = item.MenuItemId })" class="dropdown-item">
-												<i class="fas fa-list me-2"></i> Recipe
-											</a>
-										</li>
-										<li><hr class="dropdown-divider" /></li>
-										<li>
-											<form method="post" action="@Url.Action("ToggleAvailability", new { id = item.MenuItemId })" class="d-inline">
-												@Html.AntiForgeryToken()
-												<button type="submit" class="dropdown-item @(item.IsAvailable ? "text-warning" : "text-success")" onclick="return confirm('Are you sure?')">
-													<i class="fas @(item.IsAvailable ? "fa-eye-slash" : "fa-eye") me-2"></i>@(item.IsAvailable ? "Hide" : "Show")
-												</button>
-											</form>
-										</li>
-										<li>
-											<form method="post" action="@Url.Action("Delete", new { id = item.MenuItemId })" class="d-inline">
-												@Html.AntiForgeryToken()
-												<button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this menu item?')">
-													<i class="fas fa-trash me-2"></i> Delete
-												</button>
-											</form>
-										</li>
-									</ul>
-								</div>
-							</div>
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 border-0">
 
-							<div class="d-flex justify-content-between align-items-center mt-3">
-								<div>
-									<span class="fs-4 fw-bold text-success">@item.Price.ToString("N0")</span>
-									<span class="text-muted small">VND</span>
-								</div>
-								@if (item.IsAvailable)
-								{
-									<span class="badge bg-success">
-										<i class="fas fa-check-circle me-1"></i>Available
-									</span>
-								}
-								else
-								{
-									<span class="badge bg-danger">
-										<i class="fas fa-times-circle me-1"></i>Unavailable
-									</span>
-								}
-							</div>
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@Url.Content(item.ImagePath)" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-utensils fa-4x text-muted"></i>
+                            </div>
+                        }
 
-							<div class="mt-3">
-								<a href="@Url.Action("Edit", new { id = item.MenuItemId })" class="btn btn-outline-primary btn-sm w-100">
-									<i class="fas fa-edit me-1"></i> Manage Item
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			}
-		</div>
-	}
-	else
-	{
-		<div class="card shadow-sm border-0">
-			<div class="card-body text-center py-5">
-				<i class="fas fa-utensils fa-4x text-muted mb-3"></i>
-				<h5>No menu items yet</h5>
-				<p class="text-muted mb-4">
-					@if (!string.IsNullOrEmpty(selectedCategory))
-					{
-						<span>No items found in the <strong>@selectedCategory</strong> category.</span>
-					}
-					else
-					{
-						<span>Get started by creating your first menu item.</span>
-					}
-				</p>
-				<a href="@Url.Action("Create", new { branchId })" class="btn btn-primary">
-					<i class="fas fa-plus me-1"></i> Create Your First Menu Item
-				</a>
-			</div>
-		</div>
-	}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h5 class="card-title mb-1">@item.Name</h5>
+                                    @if (!string.IsNullOrEmpty(item.Category))
+                                    {
+                                        <span class="badge bg-secondary">@item.Category</span>
+                                    }
+                                </div>
+                            </div>
 
-	<div class="mt-4">
-		<a href="@Url.Action("Index", "Branch")" class="btn btn-outline-secondary">
-			<i class="fas fa-arrow-left me-1"></i> Back to Branches
-		</a>
-	</div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    <span class="fs-4 fw-bold text-success">@item.Price.ToString("N0")</span>
+                                    <span class="text-muted small">VND</span>
+                                </div>
+                                @if (item.IsAvailable)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i> Đang bán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times-circle me-1"></i> Tạm ẩn
+                                    </span>
+                                }
+                            </div>
+
+                            <!-- 3 nút hành động -->
+                            <div class="mt-3 d-flex justify-content-between gap-2">
+                                <a href="@Url.Action("Edit", new { id = item.MenuItemId })"
+                                   class="btn btn-outline-primary btn-sm flex-fill text-truncate">
+                                    <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                                </a>
+
+                                <a href="@Url.Action("Index", "Recipes", new { branchId, menuItemId = item.MenuItemId })"
+                                   class="btn btn-outline-secondary btn-sm flex-fill text-truncate">
+                                    <i class="fas fa-list me-1"></i> Công thức
+                                </a>
+
+                                <form method="post" action="@Url.Action("Delete", new { id = item.MenuItemId })" class="flex-fill">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-truncate"
+                                            onclick="return confirm('Bạn có chắc muốn xóa món ăn này không?')">
+                                        <i class="fas fa-trash me-1"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-utensils fa-4x text-muted mb-3"></i>
+                <h5>Chưa có đồ uống nào</h5>
+                <p class="text-muted mb-4">
+                    @if (!string.IsNullOrEmpty(selectedCategory))
+                    {
+                        <span>Không tìm thấy món trong danh mục <strong>@selectedCategory</strong>.</span>
+                    }
+                    else
+                    {
+                        <span>Hãy bắt đầu bằng cách thêm đồ uống đầu tiên của bạn.</span>
+                    }
+                </p>
+                <a href="@Url.Action("Create", new { branchId })" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Thêm món
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- Chỉ hiện nút quay lại nếu là chủ sở hữu -->
+    <div class="mt-4">
+        @if (User.IsInRole("Owner"))
+        {
+            <a href="@Url.Action("Index", "Branch")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách chi nhánh
+            </a>
+        }
+    </div>
 </div>
-

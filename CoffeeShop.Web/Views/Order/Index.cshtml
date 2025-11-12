@@ -3,23 +3,23 @@
 
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Quản lý đơn hàng";
 }
 
 <div class="container-fluid">
-    @Html.AntiForgeryToken() <!-- 🔹 thêm token để xác thực POST -->
+    @Html.AntiForgeryToken()
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Orders Management</h2>
+        <h2>Quản lý đơn hàng</h2>
         @if (ViewBag.BranchId != null)
         {
             <a asp-action="Create" asp-route-branchId="@ViewBag.BranchId" class="btn btn-primary">
-                <i class="fas fa-plus"></i> New Order
+                <i class="fas fa-plus"></i> Tạo đơn mới
             </a>
         }
     </div>
 
-    <!-- Filter -->
+    <!-- Bộ lọc -->
     <div class="card mb-3">
         <div class="card-body">
             <form method="get" class="row g-3">
@@ -28,9 +28,9 @@
                     <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
                 }
                 <div class="col-md-4">
-                    <label>Filter by Status</label>
+                    <label>Lọc theo trạng thái</label>
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All Orders</option>
+                        <option value="">Tất cả đơn hàng</option>
                         @foreach (var s in Enum.GetValues(typeof(OrderStatus)))
                         {
                             <option value="@s">@s</option>
@@ -41,21 +41,21 @@
         </div>
     </div>
 
-    <!-- Orders Table -->
+    <!-- Bảng đơn hàng -->
     <div class="card">
         <div class="card-body">
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Order #</th>
-                        <th>Branch</th>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Total</th>
-                        <th>Date</th>
-                        <th>Actions</th>
+                        <th>Mã đơn</th>
+                        <th>Chi nhánh</th>
+                        <th>Khách hàng</th>
+                        <th>SĐT</th>
+                        <th>Hình thức</th>
+                        <th>Trạng thái</th>
+                        <th>Tổng tiền</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,10 +65,10 @@
                             <td><strong>#@order.OrderId</strong></td>
                             <td>@(order.Branch?.Name ?? "—")</td>
                             <td>@order.Customer.Name</td>
-                            <td>@(order.Customer.Phone ?? "N/A")</td>
+                            <td>@(order.Customer.Phone ?? "Không có")</td>
                             <td>
                                 <span class="badge bg-@(order.IsTakeAway ? "info" : "secondary")">
-                                    @(order.IsTakeAway ? "Take Away" : "Dine In")
+                                    @(order.IsTakeAway ? "Mang đi" : "Dùng tại quán")
                                 </span>
                             </td>
                             <td>
@@ -84,23 +84,23 @@
                                     <div class="btn-group" role="group">
                                         @if (order.CurrentStatus == OrderStatus.Pending)
                                         {
-                                            <button class="btn btn-sm btn-success" onclick="updateStatus(@order.OrderId, 'Confirmed')">Confirm</button>
+                                            <button class="btn btn-sm btn-success" onclick="updateStatus(@order.OrderId, 'Confirmed')">Xác nhận</button>
                                         }
                                         @if (order.CurrentStatus == OrderStatus.Confirmed)
                                         {
-                                            <button class="btn btn-sm btn-warning" onclick="updateStatus(@order.OrderId, 'Preparing')">Prepare</button>
+                                            <button class="btn btn-sm btn-warning" onclick="updateStatus(@order.OrderId, 'Preparing')">Đang pha chế</button>
                                         }
                                         @if (order.CurrentStatus == OrderStatus.Preparing)
                                         {
-                                            <button class="btn btn-sm btn-primary" onclick="updateStatus(@order.OrderId, 'Ready')">Ready</button>
+                                            <button class="btn btn-sm btn-primary" onclick="updateStatus(@order.OrderId, 'Ready')">Hoàn tất</button>
                                         }
                                         @if (order.CurrentStatus == OrderStatus.Ready)
                                         {
-                                            <button class="btn btn-sm btn-success" onclick="updateStatus(@order.OrderId, 'Completed')">Complete</button>
+                                            <button class="btn btn-sm btn-success" onclick="updateStatus(@order.OrderId, 'Completed')">Hoàn thành</button>
                                         }
                                         @if (order.CurrentStatus != OrderStatus.Completed && order.CurrentStatus != OrderStatus.Cancelled)
                                         {
-                                            <button class="btn btn-sm btn-danger" onclick="updateStatus(@order.OrderId, 'Cancelled')">Cancel</button>
+                                            <button class="btn btn-sm btn-danger" onclick="updateStatus(@order.OrderId, 'Cancelled')">Hủy</button>
                                         }
                                     </div>
                                 }
@@ -132,7 +132,7 @@
 @section Scripts {
     <script>
         async function updateStatus(orderId, newStatus) {
-            if (!confirm(`Are you sure to change status to ${newStatus}?`)) return;
+            if (!confirm(`Bạn có chắc muốn chuyển trạng thái sang "${newStatus}" không?`)) return;
 
             try {
                 const response = await fetch('/Order/UpdateStatus', {
@@ -157,7 +157,7 @@
                         badge.className = "badge bg-" + getStatusColor(result.newStatus);
                     }
 
-                    // ✅ Cập nhật nhóm nút hành động
+                    // ✅ Cập nhật lại nhóm nút hành động
                     const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
                     if (row) {
                         const actionTd = row.querySelector('td:last-child');
@@ -170,7 +170,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert('❌ Failed to update status.');
+                alert('❌ Không thể cập nhật trạng thái.');
             }
         }
 
@@ -196,28 +196,28 @@
             switch (status) {
                 case 'Pending':
                     return `<div class="btn-group">
-                                <button class="btn btn-sm btn-success" onclick="updateStatus(${orderId}, 'Confirmed')">Confirm</button>
-                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Cancel</button>
+                                <button class="btn btn-sm btn-success" onclick="updateStatus(${orderId}, 'Confirmed')">Xác nhận</button>
+                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Hủy</button>
                             </div>`;
                 case 'Confirmed':
                     return `<div class="btn-group">
-                                <button class="btn btn-sm btn-warning" onclick="updateStatus(${orderId}, 'Preparing')">Prepare</button>
-                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Cancel</button>
+                                <button class="btn btn-sm btn-warning" onclick="updateStatus(${orderId}, 'Preparing')">Đang pha chế</button>
+                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Hủy</button>
                             </div>`;
                 case 'Preparing':
                     return `<div class="btn-group">
-                                <button class="btn btn-sm btn-primary" onclick="updateStatus(${orderId}, 'Ready')">Ready</button>
-                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Cancel</button>
+                                <button class="btn btn-sm btn-primary" onclick="updateStatus(${orderId}, 'Ready')">Hoàn tất</button>
+                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Hủy</button>
                             </div>`;
                 case 'Ready':
                     return `<div class="btn-group">
-                                <button class="btn btn-sm btn-success" onclick="updateStatus(${orderId}, 'Completed')">Complete</button>
-                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Cancel</button>
+                                <button class="btn btn-sm btn-success" onclick="updateStatus(${orderId}, 'Completed')">Hoàn thành</button>
+                                <button class="btn btn-sm btn-danger" onclick="updateStatus(${orderId}, 'Cancelled')">Hủy</button>
                             </div>`;
                 case 'Completed':
-                    return `<span class="text-success">✅ Completed</span>`;
+                    return `<span class="text-success">✅ Đã hoàn thành</span>`;
                 case 'Cancelled':
-                    return `<span class="text-danger">❌ Cancelled</span>`;
+                    return `<span class="text-danger">❌ Đã hủy</span>`;
                 default:
                     return '';
             }
