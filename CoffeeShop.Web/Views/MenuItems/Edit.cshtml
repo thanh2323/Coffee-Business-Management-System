@@ -1,14 +1,14 @@
-@model CoffeeShop.Domain.Entities.MenuItem
+﻿@model CoffeeShop.Domain.Entities.MenuItem
 
 @{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Edit Menu Item";
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Sửa món";
 }
 
 <div class="container mt-4">
 	<div class="mb-4">
-		<h2 class="mb-1">Edit Menu Item</h2>
-		<p class="text-muted mb-0">Update menu item information</p>
+		<h2 class="mb-1">Sửa món</h2>
+		<p class="text-muted mb-0">Cập nhật thông tin món</p>
 	</div>
 
 	@if (TempData["SuccessMessage"] != null)
@@ -34,7 +34,7 @@
 						<h4 class="card-title mb-2">
 							<i class="fas fa-utensils text-primary me-2"></i>@Model.Name
 						</h4>
-						<p class="text-muted small mb-0">Update menu item information and settings.</p>
+						<p class="text-muted small mb-0">Cập nhật thông tin và cài đặt của món.</p>
 					</div>
 
 					<form method="post" asp-action="Edit" enctype="multipart/form-data">
@@ -44,7 +44,7 @@
 						<div class="row">
 							<div class="col-md-12 mb-3">
 								<label for="name" class="form-label fw-semibold">
-									<i class="fas fa-tag me-2 text-primary"></i>Item Name <span class="text-danger">*</span>
+									<i class="fas fa-tag me-2 text-primary"></i>Tên món <span class="text-danger">*</span>
 								</label>
 								<input type="text" 
 									   class="form-control form-control-lg" 
@@ -53,15 +53,15 @@
 									   value="@Model.Name"
 									   required 
 									   maxlength="200"
-									   placeholder="Enter menu item name">
-								<small class="form-text text-muted">Choose a clear, descriptive name for this item.</small>
+									   placeholder="Nhập tên món">
+								<small class="form-text text-muted">Chọn một tên rõ ràng, dễ mô tả cho món này.</small>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col-md-6 mb-3">
 								<label for="price" class="form-label fw-semibold">
-									<i class="fas fa-tags me-2 text-success"></i>Price (VND) <span class="text-danger">*</span>
+									<i class="fas fa-tags me-2 text-success"></i>Giá (VND) <span class="text-danger">*</span>
 								</label>
 								<div class="input-group input-group-lg">
 									<input type="number" 
@@ -73,14 +73,14 @@
 										   min="1000" 
 										   max="500000" 
 										   step="1000"
-										   placeholder="Enter price">
+										   placeholder="Nhập giá">
 									<span class="input-group-text">VND</span>
 								</div>
-								<small class="form-text text-muted">Price must be between 1,000 and 500,000 VND</small>
+								<small class="form-text text-muted">Giá phải từ 1.000 đến 500.000 VND</small>
 							</div>
 							<div class="col-md-6 mb-3">
 								<label for="category" class="form-label fw-semibold">
-									<i class="fas fa-folder me-2 text-info"></i>Category
+									<i class="fas fa-folder me-2 text-info"></i>Danh mục
 								</label>
 								<input type="text" 
 									   class="form-control form-control-lg" 
@@ -88,29 +88,29 @@
 									   name="category" 
 									   value="@Model.Category"
 									   maxlength="100"
-									   placeholder="e.g., Coffee, Tea, Pastry">
-								<small class="form-text text-muted">Optional: Group similar items together</small>
+									   placeholder="Ví dụ: Cà phê, Trà, Bánh">
+								<small class="form-text text-muted">Tùy chọn: Dùng để nhóm các món tương tự</small>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col-md-6 mb-3">
 								<label for="imageFile" class="form-label fw-semibold">
-									<i class="fas fa-image me-2 text-warning"></i>Product Image
+									<i class="fas fa-image me-2 text-warning"></i>Hình ảnh sản phẩm
 								</label>
 								<input type="file" class="form-control form-control-lg" id="imageFile" name="imageFile" accept="image/*"/>
-								<small class="form-text text-muted">Upload an image (JPG, PNG, WEBP). Optional but recommended.</small>
+								<small class="form-text text-muted">Tải lên hình ảnh (JPG, PNG, WEBP). Không bắt buộc nhưng nên có.</small>
 								@if (!string.IsNullOrEmpty(Model.ImagePath))
 								{
 									<div class="mt-2">
-										<small class="text-muted">Current image:</small>
+										<small class="text-muted">Hình ảnh hiện tại:</small>
 										<img src="/@Model.ImagePath" alt="@Model.Name" class="img-thumbnail mt-1" style="max-width: 150px;">
 									</div>
 								}
 							</div>
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold d-block mb-2">
-									<i class="fas fa-toggle-on me-2 text-success"></i>Availability
+									<i class="fas fa-toggle-on me-2 text-success"></i>Trạng thái
 								</label>
 								<div class="form-check form-switch mt-2">
 									<input type="checkbox" 
@@ -121,10 +121,10 @@
 										   @(Model.IsAvailable ? "checked" : "")
 										   style="width: 3em; height: 1.5em;">
 									<label class="form-check-label ms-2" for="isAvailable">
-										Available for ordering
+										Có sẵn để đặt hàng
 									</label>
 								</div>
-								<small class="form-text text-muted">Uncheck if this item is temporarily unavailable</small>
+								<small class="form-text text-muted">Bỏ chọn nếu món này tạm thời không có sẵn</small>
 							</div>
 						</div>
 
@@ -132,10 +132,10 @@
 
 						<div class="d-flex justify-content-between align-items-center">
 							<a href="@Url.Action("Index", new { branchId = Model.BranchId })" class="btn btn-outline-secondary">
-								<i class="fas fa-times me-2"></i> Cancel
+								<i class="fas fa-times me-2"></i> Hủy
 							</a>
 							<button type="submit" class="btn btn-primary btn-lg px-4">
-								<i class="fas fa-check me-2"></i> Update Menu Item
+								<i class="fas fa-check me-2"></i> Cập nhật món
 							</button>
 						</div>
 					</form>
@@ -144,4 +144,3 @@
 		</div>
 	</div>
 </div>
-

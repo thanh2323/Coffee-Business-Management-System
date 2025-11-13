@@ -1,8 +1,8 @@
-@using CoffeeShop.Domain.Entities
+﻿@using CoffeeShop.Domain.Entities
 @model CoffeeShop.Domain.Entities.Business
 @{
 	Layout = "~/Views/Shared/_Layout2.cshtml";
-	ViewData["Title"] = "My Business";
+	ViewData["Title"] = "Doanh nghiệp của tôi";
 	var branches = ViewBag.Branches as IEnumerable<Branch> ?? new List<Branch>();
 }
 
@@ -23,31 +23,31 @@
 
 		<div class="row mb-3">
 			<div class="col-md-6">
-				<p><strong>Business ID:</strong> @Model.BusinessId</p>
-				<p><strong>Phone:</strong> @(Model.Phone ?? "-")</p>
-				<p><strong>Monthly Fee:</strong> @Model.MonthlyFee.ToString("N0") VND</p>
+				<p><strong>Mã doanh nghiệp:</strong> @Model.BusinessId</p>
+				<p><strong>Điện thoại:</strong> @(Model.Phone ?? "-")</p>
+				<p><strong>Phí hàng tháng:</strong> @Model.MonthlyFee.ToString("N0") VNĐ</p>
 			</div>
 			<div class="col-md-6">
 				<p>
-					<strong>Status:</strong>
+					<strong>Trạng thái:</strong>
 					<span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
-						@(Model.IsActive ? "Active" : "Inactive")
+						@(Model.IsActive ? "Đang hoạt động" : "Không hoạt động")
 					</span>
 				</p>
-				<p><strong>Subscription End:</strong> @(Model.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
-				<p><strong>Payment Reference:</strong> @(Model.PaymentReference ?? "-")</p>
+				<p><strong>Ngày hết hạn gói:</strong> @(Model.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+				<p><strong>Mã tham chiếu thanh toán:</strong> @(Model.PaymentReference ?? "-")</p>
 			</div>
 		</div>
 
 		@if (!string.IsNullOrEmpty(Model.Address))
 		{
-			<p><strong>Address:</strong> @Model.Address</p>
+			<p><strong>Địa chỉ:</strong> @Model.Address</p>
 		}
 
 		@if (!Model.IsActive)
 		{
 			<div class="alert alert-warning mt-3">
-				<strong>Payment Required:</strong> Please complete payment to activate your business.
+				<strong>Yêu cầu thanh toán:</strong> Vui lòng hoàn tất thanh toán để kích hoạt doanh nghiệp của bạn.
 			</div>
 			<form method="post" asp-controller="Business" asp-action="Pay" class="mt-3">
 				<input type="hidden" name="businessId" value="@Model.BusinessId" />
@@ -56,20 +56,20 @@
 						<option value="VNPay">VNPay</option>
 						<option value="MoMo">MoMo</option>
 					</select>
-					<button type="submit" class="btn btn-success">Pay Now</button>
+					<button type="submit" class="btn btn-success">Thanh toán ngay</button>
 				</div>
 			</form>
 		}
 
 		<hr class="my-4" />
 
-		<h5 class="mb-3">Business Statistics</h5>
+		<h5 class="mb-3">Thống kê doanh nghiệp</h5>
 		<div class="row">
 			<div class="col-md-4">
 				<div class="card bg-light">
 					<div class="card-body text-center">
 						<h4 class="text-primary">@ViewBag.BranchCount</h4>
-						<p class="mb-0">Total Branches</p>
+						<p class="mb-0">Tổng số chi nhánh</p>
 					</div>
 				</div>
 			</div>
@@ -78,15 +78,15 @@
 		@if (branches.Any())
 		{
 			<div class="mt-4">
-				<h5 class="mb-3">Branches</h5>
+				<h5 class="mb-3">Các chi nhánh</h5>
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<thead>
 							<tr>
-								<th>Branch Name</th>
-								<th>Address</th>
-								<th>Opening Hours</th>
-								<th>Created Date</th>
+								<th>Tên chi nhánh</th>
+								<th>Địa chỉ</th>
+								<th>Giờ mở cửa</th>
+								<th>Ngày tạo</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -107,14 +107,12 @@
 		else
 		{
 			<div class="alert alert-info mt-3">
-				No branches created yet. Create your first branch to get started.
+				Chưa có chi nhánh nào được tạo. Hãy tạo chi nhánh đầu tiên để bắt đầu.
 			</div>
 		}
 	</div>
 </div>
 
 <div class="mt-3">
-	<a class="btn btn-secondary" href="/">Back to Home</a>
+	<a class="btn btn-secondary" href="/">Quay về Trang chủ</a>
 </div>
-
-

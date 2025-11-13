@@ -141,6 +141,9 @@
             margin-left: 220px;
             margin-top: 60px;
             padding: 25px;
+            background-color: #F5FAFF; /* Màu xanh nhạt dịu mắt */
+            min-height: 100vh; /* đảm bảo luôn phủ kín chiều cao màn hình */
+            border-top: 1px solid #d0e4ff; /* nhẹ nhàng phân tách với top-nav */
         }
 
         /* ===== SETTINGS POPUP ===== */
@@ -266,6 +269,7 @@
                     </div>
 
                     <a asp-controller="Admin" asp-action="Index"><i class="bi bi-speedometer2"></i> Tổng quan</a>
+                    <a asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-cash-stack"></i> Doanh thu</a>
                     <a asp-controller="Admin" asp-action="Package"><i class="bi bi-box2-heart"></i> Gói dịch vụ</a>
                     <a asp-controller="Admin" asp-action="Post"><i class="bi bi-file-post"></i> Bài đăng</a>
                 </div>
@@ -309,7 +313,7 @@
                             <i class="bi bi-cup-hot-fill"></i> Café
                         </div>
 
-                        <a asp-controller="Order" asp-action="Index"><i class="bi bi-cutoff"></i> Đơn Hàng</a>
+                        <a asp-controller="Order" asp-action="Index"><i class="bi  bi-receipt-cutoff"></i> Đơn Hàng</a>
                         <a asp-controller="Tables" asp-action="Index"><i class="bi bi-table"></i> Bàn</a>
                         <a asp-controller="MenuItems" asp-action="Index"><i class="bi bi-cup-hot"></i> Sản phẩm</a>
                         <a asp-controller="Ingredients" asp-action="Index"><i class="bi bi-archive"></i> Kho hàng</a>

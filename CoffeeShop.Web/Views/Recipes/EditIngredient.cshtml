@@ -1,13 +1,13 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Edit Ingredient in Recipe";
+    ViewData["Title"] = "Sửa nguyên liệu trong công thức";
     var recipe = ViewBag.Recipe as CoffeeShop.Domain.Entities.MenuItemRecipe;
 }
 
 <div class="container mt-4">
 	<div class="mb-4">
-		<h2 class="mb-1">Edit Ingredient in Recipe</h2>
-		<p class="text-muted mb-0">Update quantity for recipe ingredient</p>
+		<h2 class="mb-1">Sửa nguyên liệu trong công thức</h2>
+		<p class="text-muted mb-0">Cập nhật số lượng cho nguyên liệu trong công thức</p>
 	</div>
 
 	@if (TempData["Error"] != null)
@@ -24,9 +24,9 @@
 				<div class="card-body p-4">
 					<div class="mb-4">
 						<h4 class="card-title mb-2">
-							<i class="fas fa-edit text-primary me-2"></i>Recipe Ingredient
+							<i class="fas fa-edit text-primary me-2"></i>Nguyên liệu công thức
 						</h4>
-						<p class="text-muted small mb-0">Update the quantity for this ingredient.</p>
+						<p class="text-muted small mb-0">Cập nhật số lượng cho nguyên liệu này.</p>
 					</div>
 
 					<form method="post" action="@Url.Action("EditIngredient", new { menuItemId = ViewBag.MenuItemId, ingredientId = ViewBag.IngredientId })">
@@ -34,22 +34,22 @@
 
 						<div class="mb-3">
 							<label class="form-label fw-semibold">
-								<i class="fas fa-leaf me-2 text-success"></i>Ingredient
+								<i class="fas fa-leaf me-2 text-success"></i>Nguyên liệu
 							</label>
 							<input type="text" class="form-control form-control-lg" value="@recipe?.Ingredient?.Name (@recipe?.Ingredient?.BaseUnit)" readonly>
-							<small class="form-text text-muted">This ingredient cannot be changed. Edit quantity below.</small>
+							<small class="form-text text-muted">Không thể thay đổi nguyên liệu này. Chỉ sửa số lượng bên dưới.</small>
 						</div>
 
 						<div class="mb-3">
 							<label for="quantity" class="form-label fw-semibold">
-								<i class="fas fa-weight me-2 text-info"></i>Quantity <span class="text-danger">*</span>
+								<i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
 							</label>
 							<div class="input-group input-group-lg">
 								<input type="number" class="form-control" id="quantity" name="quantity" 
 									   step="1" min="0" value="@recipe?.Quantity" required>
 								<span class="input-group-text">@recipe?.Ingredient?.BaseUnit</span>
 							</div>
-							<small class="form-text text-muted">Enter the amount needed for this recipe.</small>
+							<small class="form-text text-muted">Nhập số lượng cần thiết cho công thức này.</small>
 						</div>
 
 						<hr class="my-4 bg-light" />
@@ -57,10 +57,10 @@
 						<div class="d-flex justify-content-between align-items-center">
 							<a href="@Url.Action("Index", new { branchId = ViewBag.BranchId ,menuItemId = ViewBag.MenuItemId })"
 							   class="btn btn-outline-secondary">
-								<i class="fas fa-times me-2"></i> Cancel
+								<i class="fas fa-times me-2"></i> Hủy
 							</a>
 							<button type="submit" class="btn btn-primary btn-lg px-4">
-								<i class="fas fa-check me-2"></i> Update Recipe
+								<i class="fas fa-check me-2"></i> Cập nhật công thức
 							</button>
 						</div>
 					</form>
@@ -69,7 +69,3 @@
 		</div>
 	</div>
 </div>
-
-
-
-

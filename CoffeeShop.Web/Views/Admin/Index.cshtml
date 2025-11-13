@@ -1,59 +1,75 @@
-@model IEnumerable<CoffeeShop.Domain.Entities.Business>
+﻿@model IEnumerable<CoffeeShop.Domain.Entities.Business>
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Businesses";
+    ViewData["Title"] = "Các doanh nghiệp";
 }
 
 <div class="container mt-4">
-    <h3>Businesses</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-1">Quản lý Doanh nghiệp</h2>
+    </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     }
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Active</th>
-                <th>SubscriptionEnd</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var b in Model)
-        {
-            <tr>
-                <td>@b.BusinessId</td>
-                <td>@b.Name</td>
-                <td>@b.IsActive</td>
-                <td>@(b.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</td>
-                <td>
-                    @if (!b.IsActive)
-                    {
-                        <form method="post" asp-action="Activate" asp-controller="Admin" class="d-inline">
-                            <input type="hidden" name="id" value="@b.BusinessId" />
-                            <button class="btn btn-sm btn-success" type="submit">Activate</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-action="Deactivate" asp-controller="Admin" class="d-inline">
-                            <input type="hidden" name="id" value="@b.BusinessId" />
-                            <button class="btn btn-sm btn-warning" type="submit">Deactivate</button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã DN</th>
+                            <th>Tên</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày hết hạn</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model)
+                        {
+                            <tr>
+                                <td>#@b.BusinessId</td>
+                                <td><strong>@b.Name</strong></td>
+                                <td>
+                                    <span class="badge bg-@(b.IsActive ? "success" : "secondary")">
+                                        @(b.IsActive ? "Đang hoạt động" : "Ngừng")
+                                    </span>
+                                </td>
+                                <td>@(b.SubscriptionEndDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                                <td>
+                                    @if (!b.IsActive)
+                                    {
+                                        <form method="post" asp-action="Activate" asp-controller="Admin" class="d-inline">
+                                            <input type="hidden" name="id" value="@b.BusinessId" />
+                                            <button class="btn btn-sm btn-success" type="submit">Kích hoạt</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-action="Deactivate" asp-controller="Admin" class="d-inline">
+                                            <input type="hidden" name="id" value="@b.BusinessId" />
+                                            <button class="btn btn-sm btn-warning" type="submit">Vô hiệu hóa</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-
-

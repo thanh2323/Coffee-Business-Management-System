@@ -1,14 +1,14 @@
-@using CoffeeShop.Domain.Enums
+﻿@using CoffeeShop.Domain.Enums
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Create Staff";
+    ViewData["Title"] = "Tạo nhân viên";
     var positions = ViewBag.Positions as Array;
 }
 
 <div class="container mt-4">
 	<div class="mb-4">
-		<h2 class="mb-1">Create New Staff Member</h2>
-		<p class="text-muted mb-0">Add a new staff member to your branch</p>
+		<h2 class="mb-1">Tạo nhân viên mới</h2>
+		<p class="text-muted mb-0">Thêm nhân viên mới vào chi nhánh của bạn</p>
 	</div>
 
 	@if (TempData["ErrorMessage"] != null)
@@ -25,9 +25,9 @@
 				<div class="card-body p-4">
 					<div class="mb-4">
 						<h4 class="card-title mb-2">
-							<i class="fas fa-user-plus text-primary me-2"></i>Staff Information
+							<i class="fas fa-user-plus text-primary me-2"></i>Thông tin nhân viên
 						</h4>
-						<p class="text-muted small mb-0">Enter the details for the new staff member.</p>
+						<p class="text-muted small mb-0">Nhập thông tin chi tiết cho nhân viên mới.</p>
 					</div>
 
 					<form asp-action="Create" method="post">
@@ -35,31 +35,31 @@
 						
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="username">
-								<i class="fas fa-user me-2 text-primary"></i>Username <span class="text-danger">*</span>
+								<i class="fas fa-user me-2 text-primary"></i>Tên đăng nhập <span class="text-danger">*</span>
 							</label>
-							<input type="text" name="username" id="username" class="form-control form-control-lg" required placeholder="Enter username"/>
-							<small class="form-text text-muted">Enter a unique username for this staff member.</small>
+							<input type="text" name="username" id="username" class="form-control form-control-lg" required placeholder="Nhập tên đăng nhập"/>
+							<small class="form-text text-muted">Nhập tên đăng nhập duy nhất cho nhân viên này.</small>
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="email">
 								<i class="fas fa-envelope me-2 text-info"></i>Email <span class="text-danger">*</span>
 							</label>
-							<input type="email" name="email" id="email" class="form-control form-control-lg" required placeholder="Enter email address"/>
-							<small class="form-text text-muted">Enter a valid email address.</small>
+							<input type="email" name="email" id="email" class="form-control form-control-lg" required placeholder="Nhập địa chỉ email"/>
+							<small class="form-text text-muted">Nhập địa chỉ email hợp lệ.</small>
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="password">
-								<i class="fas fa-lock me-2 text-warning"></i>Password <span class="text-danger">*</span>
+								<i class="fas fa-lock me-2 text-warning"></i>Mật khẩu <span class="text-danger">*</span>
 							</label>
-							<input type="password" name="password" id="password" class="form-control form-control-lg" required placeholder="Enter password"/>
-							<small class="form-text text-muted">Enter a secure password.</small>
+							<input type="password" name="password" id="password" class="form-control form-control-lg" required placeholder="Nhập mật khẩu"/>
+							<small class="form-text text-muted">Nhập mật khẩu an toàn.</small>
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="position">
-								<i class="fas fa-briefcase me-2 text-success"></i>Position <span class="text-danger">*</span>
+								<i class="fas fa-briefcase me-2 text-success"></i>Vị trí <span class="text-danger">*</span>
 							</label>
 							<select name="position" id="position" class="form-select form-select-lg">
 								@foreach (var pos in positions!)
@@ -67,17 +67,17 @@
 									<option value="@pos">@pos</option>
 								}
 							</select>
-							<small class="form-text text-muted">Select the staff member's role.</small>
+							<small class="form-text text-muted">Chọn vai trò của nhân viên.</small>
 						</div>
 
 						<hr class="my-4 bg-light" />
 
 						<div class="d-flex justify-content-between align-items-center">
 							<a asp-action="Index" asp-route-branchId="@ViewBag.BranchId" class="btn btn-outline-secondary">
-								<i class="fas fa-times me-2"></i> Cancel
+								<i class="fas fa-times me-2"></i> Hủy
 							</a>
 							<button type="submit" class="btn btn-primary btn-lg px-4">
-								<i class="fas fa-check me-2"></i> Create Staff
+								<i class="fas fa-check me-2"></i> Tạo nhân viên
 							</button>
 						</div>
 					</form>
@@ -86,11 +86,3 @@
 		</div>
 	</div>
 </div>
-
-
-
-
-
-
-
-

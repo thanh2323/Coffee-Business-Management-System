@@ -1,13 +1,13 @@
 @model CoffeeShop.Domain.Entities.Ingredient
 @{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Edit Ingredient";
+    ViewData["Title"] = "Sửa nguyên liệu";
 }
 
 <div class="container mt-4">
 	<div class="mb-4">
-		<h2 class="mb-1">Edit Ingredient</h2>
-		<p class="text-muted mb-0">Update ingredient information</p>
+		<h2 class="mb-1">Sửa nguyên liệu</h2>
+		<p class="text-muted mb-0">Cập nhật thông tin nguyên liệu</p>
 	</div>
 
 	@if (TempData["Error"] != null)
@@ -26,7 +26,7 @@
 						<h4 class="card-title mb-2">
 							<i class="fas fa-box text-primary me-2"></i>@Model.Name
 						</h4>
-						<p class="text-muted small mb-0">Update ingredient information and settings.</p>
+						<p class="text-muted small mb-0">Cập nhật thông tin và cài đặt của nguyên liệu.</p>
 					</div>
 
 					<form method="post" asp-action="Edit">
@@ -35,21 +35,21 @@
 						
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="name">
-								<i class="fas fa-tag me-2 text-primary"></i>Ingredient Name <span class="text-danger">*</span>
+								<i class="fas fa-tag me-2 text-primary"></i>Tên nguyên liệu <span class="text-danger">*</span>
 							</label>
 							<input class="form-control form-control-lg" 
 								   name="name" 
 								   id="name"
 								   value="@Model.Name" 
 								   required 
-								   placeholder="e.g., Coffee Beans, Milk, Sugar"/>
-							<small class="form-text text-muted">Enter the name of the ingredient.</small>
+								   placeholder="Ví dụ: Hạt cà phê, Sữa, Đường"/>
+							<small class="form-text text-muted">Nhập tên của nguyên liệu.</small>
 						</div>
 
 						<div class="row">
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold" for="quantity">
-									<i class="fas fa-weight me-2 text-info"></i>Quantity <span class="text-danger">*</span>
+									<i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
 								</label>
 								<input class="form-control form-control-lg" 
 									   name="quantity" 
@@ -59,11 +59,11 @@
 									   min="0" 
 									   value="@Model.Quantity" 
 									   required />
-								<small class="form-text text-muted">Current stock quantity.</small>
+								<small class="form-text text-muted">Số lượng tồn kho hiện tại.</small>
 							</div>
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold" for="unitCost">
-									<i class="fas fa-tags me-2 text-success"></i>Unit Cost (VND) <span class="text-danger">*</span>
+									<i class="fas fa-tags me-2 text-success"></i>Giá / Đơn vị (VND) <span class="text-danger">*</span>
 								</label>
 								<div class="input-group input-group-lg">
 									<input class="form-control" 
@@ -76,22 +76,22 @@
 										   required />
 									<span class="input-group-text">VND</span>
 								</div>
-								<small class="form-text text-muted">Cost per unit.</small>
+								<small class="form-text text-muted">Giá cho mỗi đơn vị.</small>
 							</div>
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="displayUnit">
-								<i class="fas fa-box-open me-2 text-warning"></i>Package Size
+								<i class="fas fa-box-open me-2 text-warning"></i>Kích thước đóng gói
 							</label>
 							<input class="form-control form-control-lg" 
 								   name="displayUnit" 
 								   id="displayUnit"
 								   value="@Model.DisplayUnit" 
-								   placeholder="e.g., 1l, 500ml, 5kg, 10pcs" />
+								   placeholder="Ví dụ: 1l, 500ml, 5kg, 10pcs" />
 							<small class="form-text text-muted">
 								<i class="fas fa-info-circle me-1"></i>
-								System will auto-detect unit type. Examples: "1l" → 1000ml, "5kg" → 5000g, "10pcs" → 10pcs
+								Hệ thống sẽ tự động phát hiện loại đơn vị. Ví dụ: "1l" → 1000ml, "5kg" → 5000g, "10pcs" → 10pcs
 							</small>
 						</div>
 
@@ -99,10 +99,10 @@
 
 						<div class="d-flex justify-content-between align-items-center">
 							<a class="btn btn-outline-secondary" asp-action="Index" asp-route-branchId="@ViewBag.BranchId">
-								<i class="fas fa-times me-2"></i> Cancel
+								<i class="fas fa-times me-2"></i> Hủy
 							</a>
 							<button class="btn btn-primary btn-lg px-4" type="submit">
-								<i class="fas fa-check me-2"></i> Update Ingredient
+								<i class="fas fa-check me-2"></i> Cập nhật nguyên liệu
 							</button>
 						</div>
 					</form>
@@ -111,5 +111,3 @@
 		</div>
 	</div>
 </div>
-
-

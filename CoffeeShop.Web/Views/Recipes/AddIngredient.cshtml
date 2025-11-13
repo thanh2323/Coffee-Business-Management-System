@@ -1,6 +1,6 @@
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Add Ingredient to Recipe";
+    ViewData["Title"] = "Thêm nguyên liệu vào công thức";
 	var branchId = ViewBag.BranchId as int?;
     var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
     var availableIngredients = ViewBag.AvailableIngredients as IEnumerable<CoffeeShop.Domain.Entities.Ingredient>;
@@ -8,7 +8,7 @@
 
 <div class="container mt-4">
 	<div class="mb-4">
-		<h2 class="mb-1">Add Ingredient to Recipe</h2>
+		<h2 class="mb-1">Thêm nguyên liệu vào công thức</h2>
 		<p class="text-muted mb-0">
 			<i class="fas fa-utensils me-1"></i>@menuItem?.Name
 		</p>
@@ -28,9 +28,9 @@
 				<div class="card-body p-4">
 					<div class="mb-4">
 						<h4 class="card-title mb-2">
-							<i class="fas fa-list-ul text-primary me-2"></i>Recipe Ingredient
+							<i class="fas fa-list-ul text-primary me-2"></i>Nguyên liệu cho công thức
 						</h4>
-						<p class="text-muted small mb-0">Add an ingredient to the recipe.</p>
+						<p class="text-muted small mb-0">Thêm một nguyên liệu vào công thức.</p>
 					</div>
 
 					<form method="post" action="@Url.Action("AddIngredient")">
@@ -39,10 +39,10 @@
 						
 						<div class="mb-3">
 							<label for="ingredientId" class="form-label fw-semibold">
-								<i class="fas fa-leaf me-2 text-success"></i>Ingredient <span class="text-danger">*</span>
+								<i class="fas fa-leaf me-2 text-success"></i>Nguyên liệu <span class="text-danger">*</span>
 							</label>
-							<select class="form-select form-select-lg" id="ingredientId" name="ingredientId" r	equired>
-								<option value="">Select an ingredient...</option>
+							<select class="form-select form-select-lg" id="ingredientId" name="ingredientId" required>
+								<option value="">Chọn một nguyên liệu...</option>
 								@if (availableIngredients != null)
 								{
 									@foreach (var ingredient in availableIngredients)
@@ -53,19 +53,19 @@
 									}
 								}
 							</select>
-							<small class="form-text text-muted">Choose an ingredient from your inventory.</small>
+							<small class="form-text text-muted">Chọn một nguyên liệu từ kho của bạn.</small>
 						</div>
 
 						<div class="mb-3">
 							<label for="quantity" class="form-label fw-semibold">
-								<i class="fas fa-weight me-2 text-info"></i>Quantity <span class="text-danger">*</span>
+								<i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
 							</label>
 							<div class="input-group input-group-lg">
 								<input type="number" class="form-control" id="quantity" name="quantity" 
-									   step="0.01" min="0.01" required placeholder="Enter quantity">
+									   step="0.01" min="0.01" required placeholder="Nhập số lượng">
 								<span class="input-group-text" id="unitDisplay">-</span>
 							</div>
-							<small class="form-text text-muted">Enter the amount needed for this recipe.</small>
+							<small class="form-text text-muted">Nhập số lượng cần thiết cho công thức này.</small>
 						</div>
 
 						<hr class="my-4 bg-light" />
@@ -73,10 +73,10 @@
 						<div class="d-flex justify-content-between align-items-center">
 							<a href="@Url.Action("Index", new { branchId,menuItemId = ViewBag.MenuItemId })" 
 							   class="btn btn-outline-secondary">
-								<i class="fas fa-times me-2"></i> Cancel
+								<i class="fas fa-times me-2"></i> Hủy
 							</a>
 							<button type="submit" class="btn btn-primary btn-lg px-4">
-								<i class="fas fa-check me-2"></i> Add to Recipe
+								<i class="fas fa-check me-2"></i> Thêm vào công thức
 							</button>
 						</div>
 					</form>
@@ -87,7 +87,7 @@
 </div>
 
 <script>
-    // Auto-fill unit display based on selected ingredient
+    // Tự động điền đơn vị hiển thị dựa trên nguyên liệu được chọn
     document.getElementById('ingredientId').addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const unitDisplay = document.getElementById('unitDisplay');
@@ -99,7 +99,3 @@
         }
     });
 </script>
-
-
-
-
