@@ -34,6 +34,7 @@
     <section class="dashboard-mockup-section">
         <img src="/images/dashboard-content.png" alt="Investment Dashboard Mockup" class="dashboard-image">
     </section>
+
     <section class="problem-solution-section">
         <h2 class="section-title">Chủ cửa hàng đau đầu với việc quản lý quán cafe, quán ăn</h2>
 
@@ -65,12 +66,11 @@
                           onclick="window.location.href='@Url.Action("Register", "Auth")'">
                         Đừng lo, đã có Café giúp bạn
                     </span>
-
-
                 </div>
             </div>
         </div>
     </section>
+
     <section class="features-section">
         <h2 class="section-title-pinpos">Phần mềm Café sẽ giúp bạn quản lý thông minh hơn!</h2>
 
@@ -119,38 +119,17 @@
 
         <button class="cta-pinpos-btn">Sử dụng miễn phí</button>
     </section>
+
+    <!-- ✨ LOGO SECTION - AJAX TỰ LOAD ✨ -->
     <section class="trusted-by-section">
         <h2 class="trusted-by-title">Sự lựa chọn của các chủ doanh nghiệp</h2>
 
         <div class="logo-carousel-container">
-            <div class="logo-track">
-                <img src="/images/logos/logo-1.png" alt="Logo Khách hàng 1">
-                <img src="/images/logos/logo-2.png" alt="Logo Khách hàng 2">
-                <img src="/images/logos/logo-3.png" alt="Logo Khách hàng 3">
-                <img src="/images/logos/logo-4.png" alt="Logo Khách hàng 4">
-                <img src="/images/logos/logo-5.png" alt="Logo Khách hàng 5">
-                <img src="/images/logos/logo-6.png" alt="Logo Khách hàng 6">
-                <img src="/images/logos/logo-7.png" alt="Logo Khách hàng 7">
-                <img src="/images/logos/logo-8.png" alt="Logo Khách hàng 8">
-                <img src="/images/logos/logo-9.png" alt="Logo Khách hàng 9">
-                <img src="/images/logos/logo-10.png" alt="Logo Khách hàng 10">
-                <img src="/images/logos/logo-11.png" alt="Logo Khách hàng 11">
-
-                <img src="/images/logos/logo-1.png" alt="Logo Khách hàng 1">
-                <img src="/images/logos/logo-2.png" alt="Logo Khách hàng 2">
-                <img src="/images/logos/logo-3.png" alt="Logo Khách hàng 3">
-                <img src="/images/logos/logo-4.png" alt="Logo Khách hàng 4">
-                <img src="/images/logos/logo-5.png" alt="Logo Khách hàng 5">
-                <img src="/images/logos/logo-6.png" alt="Logo Khách hàng 6">
-                <img src="/images/logos/logo-7.png" alt="Logo Khách hàng 7">
-                <img src="/images/logos/logo-8.png" alt="Logo Khách hàng 8">
-                <img src="/images/logos/logo-9.png" alt="Logo Khách hàng 9">
-                <img src="/images/logos/logo-10.png" alt="Logo Khách hàng 10">
-                <img src="/images/logos/logo-11.png" alt="Logo Khách hàng 11">
+            <div class="logo-track" id="logoTrack">
+                <!-- AJAX sẽ tự động đổ logo vào -->
             </div>
         </div>
     </section>
-
 
     <section class="fnb-suitability-section">
         <h2 class="section-title-fnb">Phù hợp với các cửa hàng kinh doanh ngành F&B</h2>
@@ -175,6 +154,7 @@
             </div>
         </div>
     </section>
+
     <section class="order-management-section">
         <div class="content-split-reverse">
 
@@ -202,6 +182,7 @@
             </div>
         </div>
     </section>
+
     <section class="testimonials-section">
         <h2 class="testimonials-title">Khách hàng của chúng tôi <span class="highlight-purple">cảm nhận như thế nào?</span></h2>
 
@@ -247,14 +228,28 @@
         </div>
     </section>
 </main>
-@* <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
 
-    <div class="text-center mt-3">
-        <p>Create Business by Owner <a href="@Url.Action("Create", "Business")">Create here</a></p>
-    </div>
+<!-- AJAX LOGO LOADER -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
-    <div class="text-center mt-3">
-        <p>Activate/Deactivate by Admin <a href="@Url.Action("Index", "Admin")">Manage here</a></p>
-    </div> *@
+        // 10 logo sử dụng CDN SimpleIcons (không cần ảnh cục bộ)
+        const logos = [
+            "https://cdn.simpleicons.org/coffee/4a4a4a",
+            "https://cdn.simpleicons.org/starbucks/026442",
+            "https://cdn.simpleicons.org/cafe24/333333",
+            "https://cdn.simpleicons.org/ubereats/00aa00",
+            "https://cdn.simpleicons.org/shopify/96bf48",
+            "https://cdn.simpleicons.org/square/000000",
+            "https://cdn.simpleicons.org/stripe/635bff",
+            "https://cdn.simpleicons.org/paypal/003087",
+            "https://cdn.simpleicons.org/google/ea4335",
+            "https://cdn.simpleicons.org/tiktok/000000"
+        ];
 
+        let track = document.getElementById("logoTrack");
+
+        logos.forEach(src => track.innerHTML += `<img src="${src}" alt="logo">`);
+        logos.forEach(src => track.innerHTML += `<img src="${src}" alt="logo">`);
+    });
+</script>

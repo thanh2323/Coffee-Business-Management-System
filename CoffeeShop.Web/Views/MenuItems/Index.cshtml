@@ -135,6 +135,8 @@
 									<i class="fas fa-edit me-1"></i> Quản lý món
 								</a>
 							</div>
+
+
 						</div>
 					</div>
 				</div>
@@ -163,10 +165,11 @@
 			</div>
 		</div>
 	}
-
-	<div class="mt-4">
-		<a href="@Url.Action("Index", "Branch")" class="btn btn-outline-secondary">
-			<i class="fas fa-arrow-left me-1"></i> Quay lại Chi nhánh
-		</a>
+	@if (User.IsInRole("Owner")){
+		<div class="mt-4">
+			<a href="@Url.Action("Index", "Branch")" class="btn btn-outline-secondary">
+				<i class="fas fa-arrow-left me-1"></i> Quay lại Chi nhánh
+			</a>
 	</div>
+	}
 </div>

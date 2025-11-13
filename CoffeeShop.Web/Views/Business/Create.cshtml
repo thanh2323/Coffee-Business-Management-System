@@ -3,46 +3,106 @@
     ViewData["Title"] = "Tạo doanh nghiệp";
 }
 
+<style>
+    body {
+        background: #e8f5ff;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-wrapper {
+        background: #fff;
+        padding: 35px 30px;
+        border-radius: 16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        border: 1px solid #d6eaff;
+    }
+
+    .form-title {
+        font-size: 28px;
+        font-weight: 900;
+        color: #0d304a;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #154c74;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        border: 1px solid #8fd1ff;
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+
+        .form-control:focus {
+            border-color: #38a4e0;
+            box-shadow: 0 0 0 3px rgba(56,164,224,0.25);
+        }
+
+    .btn-submit {
+        background: #38a4e0;
+        border: none;
+        padding: 12px 0;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+        .btn-submit:hover {
+            background: #1f8ac6;
+        }
+
+    .alert {
+        border-radius: 12px;
+    }
+</style>
+
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Tạo doanh nghiệp</h3>
-                </div>
-                <div class="card-body">
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            @TempData["Error"]
-                        </div>
-                    }
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success" role="alert">
-                            @TempData["Success"]
-                        </div>
-                    }
 
-                    <form method="post">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Tên doanh nghiệp</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" id="address" name="address">
-                        </div>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="phone" name="phone">
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Tạo</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="form-wrapper">
+
+                <h3 class="form-title">Tạo doanh nghiệp</h3>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @TempData["Error"]
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @TempData["Success"]
+                    </div>
+                }
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên doanh nghiệp</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" id="address" name="address">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="phone" name="phone">
+                    </div>
+
+                    <button type="submit" class="btn btn-submit w-100">Tạo doanh nghiệp</button>
+                </form>
             </div>
+
         </div>
     </div>
 </div>
