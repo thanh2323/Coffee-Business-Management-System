@@ -175,7 +175,9 @@
 									</tr>
 								</thead>
 								<tbody>
-									@{ int rank = 1; }
+									@{
+										int rank = 1;
+									}
 									@foreach (var item in topMenuItems)
 									{
 										<tr>
@@ -320,10 +322,11 @@
 <script>
 	// Biểu đồ đường doanh thu
 	const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-	const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(revenueTimeSeries.Select(ts => new {
-		Date = ts.Date.ToString("MM/dd"),
-		Revenue = ts.Revenue
-	})));
+	const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(revenueTimeSeries.Select(ts => new
+		{
+			Date = ts.Date.ToString("MM/dd"),
+			Revenue = ts.Revenue
+		})));
 
 	new Chart(revenueCtx, {
 		type: 'line',

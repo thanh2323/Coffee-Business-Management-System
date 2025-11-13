@@ -1,9 +1,9 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Thêm nguyên liệu vào công thức";
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Thêm nguyên liệu vào công thức";
 	var branchId = ViewBag.BranchId as int?;
-    var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
-    var availableIngredients = ViewBag.AvailableIngredients as IEnumerable<CoffeeShop.Domain.Entities.Ingredient>;
+	var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
+	var availableIngredients = ViewBag.AvailableIngredients as IEnumerable<CoffeeShop.Domain.Entities.Ingredient>;
 }
 
 <div class="container mt-4">
@@ -36,7 +36,7 @@
 					<form method="post" action="@Url.Action("AddIngredient")">
 						<input type="hidden" name="branchId" value="@branchId" />
 						<input type="hidden" name="menuItemId" value="@ViewBag.MenuItemId" />
-						
+
 						<div class="mb-3">
 							<label for="ingredientId" class="form-label fw-semibold">
 								<i class="fas fa-leaf me-2 text-success"></i>Nguyên liệu <span class="text-danger">*</span>
@@ -61,7 +61,7 @@
 								<i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
 							</label>
 							<div class="input-group input-group-lg">
-								<input type="number" class="form-control" id="quantity" name="quantity" 
+								<input type="number" class="form-control" id="quantity" name="quantity"
 									   step="0.01" min="0.01" required placeholder="Nhập số lượng">
 								<span class="input-group-text" id="unitDisplay">-</span>
 							</div>
@@ -71,7 +71,7 @@
 						<hr class="my-4 bg-light" />
 
 						<div class="d-flex justify-content-between align-items-center">
-							<a href="@Url.Action("Index", new { branchId,menuItemId = ViewBag.MenuItemId })" 
+							<a href="@Url.Action("Index", new { branchId,menuItemId = ViewBag.MenuItemId })"
 							   class="btn btn-outline-secondary">
 								<i class="fas fa-times me-2"></i> Hủy
 							</a>
@@ -87,15 +87,15 @@
 </div>
 
 <script>
-    // Tự động điền đơn vị hiển thị dựa trên nguyên liệu được chọn
-    document.getElementById('ingredientId').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const unitDisplay = document.getElementById('unitDisplay');
-        if (selectedOption.value) {
-            const unit = selectedOption.getAttribute('data-unit');
-            unitDisplay.textContent = unit || '-';
-        } else {
-            unitDisplay.textContent = '-';
-        }
-    });
+	// Tự động điền đơn vị hiển thị dựa trên nguyên liệu được chọn
+	document.getElementById('ingredientId').addEventListener('change', function() {
+		const selectedOption = this.options[this.selectedIndex];
+		const unitDisplay = document.getElementById('unitDisplay');
+		if (selectedOption.value) {
+			const unit = selectedOption.getAttribute('data-unit');
+			unitDisplay.textContent = unit || '-';
+		} else {
+			unitDisplay.textContent = '-';
+		}
+	});
 </script>

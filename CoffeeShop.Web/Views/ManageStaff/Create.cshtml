@@ -1,8 +1,8 @@
 ﻿@using CoffeeShop.Domain.Enums
 @{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Tạo nhân viên";
-    var positions = ViewBag.Positions as Array;
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Tạo nhân viên";
+	var positions = ViewBag.Positions as Array;
 }
 
 <div class="container mt-4">
@@ -32,20 +32,20 @@
 
 					<form asp-action="Create" method="post">
 						<input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-						
+
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="username">
-								<i class="fas fa-user me-2 text-primary"></i>Tên đăng nhập <span class="text-danger">*</span>
+								<i class="fas fa-user me-2 text-primary"></i>Tên nhân viên <span class="text-danger">*</span>
 							</label>
-							<input type="text" name="username" id="username" class="form-control form-control-lg" required placeholder="Nhập tên đăng nhập"/>
-							<small class="form-text text-muted">Nhập tên đăng nhập duy nhất cho nhân viên này.</small>
+							<input type="text" name="username" id="username" class="form-control form-control-lg" required placeholder="Nhập tên đăng nhập" />
+							
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="email">
 								<i class="fas fa-envelope me-2 text-info"></i>Email <span class="text-danger">*</span>
 							</label>
-							<input type="email" name="email" id="email" class="form-control form-control-lg" required placeholder="Nhập địa chỉ email"/>
+							<input type="email" name="email" id="email" class="form-control form-control-lg" required placeholder="Nhập địa chỉ email" />
 							<small class="form-text text-muted">Nhập địa chỉ email hợp lệ.</small>
 						</div>
 
@@ -53,7 +53,7 @@
 							<label class="form-label fw-semibold" for="password">
 								<i class="fas fa-lock me-2 text-warning"></i>Mật khẩu <span class="text-danger">*</span>
 							</label>
-							<input type="password" name="password" id="password" class="form-control form-control-lg" required placeholder="Nhập mật khẩu"/>
+							<input type="password" name="password" id="password" class="form-control form-control-lg" required placeholder="Nhập mật khẩu" />
 							<small class="form-text text-muted">Nhập mật khẩu an toàn.</small>
 						</div>
 

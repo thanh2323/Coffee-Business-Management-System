@@ -1,7 +1,7 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Sửa nguyên liệu trong công thức";
-    var recipe = ViewBag.Recipe as CoffeeShop.Domain.Entities.MenuItemRecipe;
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Sửa nguyên liệu trong công thức";
+	var recipe = ViewBag.Recipe as CoffeeShop.Domain.Entities.MenuItemRecipe;
 }
 
 <div class="container mt-4">
@@ -45,7 +45,7 @@
 								<i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
 							</label>
 							<div class="input-group input-group-lg">
-								<input type="number" class="form-control" id="quantity" name="quantity" 
+								<input type="number" class="form-control" id="quantity" name="quantity"
 									   step="1" min="0" value="@recipe?.Quantity" required>
 								<span class="input-group-text">@recipe?.Ingredient?.BaseUnit</span>
 							</div>

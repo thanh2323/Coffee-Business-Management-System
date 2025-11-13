@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>
 @{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Quản lý công thức";
-    var branchId = ViewBag.BranchId as int?;
-    var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
-    var recipes = ViewBag.Recipes as IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>;
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Quản lý công thức";
+	var branchId = ViewBag.BranchId as int?;
+	var menuItem = ViewBag.MenuItem as CoffeeShop.Domain.Entities.MenuItem;
+	var recipes = ViewBag.Recipes as IEnumerable<CoffeeShop.Domain.Entities.MenuItemRecipe>;
 }
 
 <div class="container mt-4">
@@ -20,7 +20,7 @@
 			</p>
 		</div>
 		<div>
-			<a href="@Url.Action("AddIngredient", new {branchId = branchId, menuItemId = ViewBag.MenuItemId })" 
+			<a href="@Url.Action("AddIngredient", new {branchId = branchId, menuItemId = ViewBag.MenuItemId })"
 			   class="btn btn-primary">
 				<i class="fas fa-plus me-1"></i> Thêm nguyên liệu
 			</a>

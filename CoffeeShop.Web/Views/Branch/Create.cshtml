@@ -1,14 +1,14 @@
-@{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Create Branch";
+﻿@{
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Tạo chi nhánh";
 }
 
 <div class="container mt-4">
 	<div class="d-flex justify-content-between align-items-center mb-4">
 		<div>
-			<h2 class="mb-1">Create New Branch</h2>
+			<h2 class="mb-1">Tạo chi nhánh mới</h2>
 			<p class="text-muted mb-0">
-				Business: <strong>@(ViewBag.BusinessName ?? "-")</strong> | Owner: <strong>@(ViewBag.OwnerName ?? "-")</strong>
+				Doanh nghiệp: <strong>@(ViewBag.BusinessName ?? "-")</strong> | Chủ sở hữu: <strong>@(ViewBag.OwnerName ?? "-")</strong>
 			</p>
 		</div>
 	</div>
@@ -27,43 +27,43 @@
 				<div class="card-body p-4">
 					<div class="mb-4">
 						<h4 class="card-title mb-2">
-							<i class="fas fa-store text-primary me-2"></i>Branch Information
+							<i class="fas fa-store text-primary me-2"></i>Thông tin chi nhánh
 						</h4>
-						<p class="text-muted small mb-0">Enter the details for your new branch location.</p>
+						<p class="text-muted small mb-0">Nhập thông tin chi tiết cho địa điểm chi nhánh mới của bạn.</p>
 					</div>
 
 					<form method="post">
 						<div class="row">
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold" for="name">
-									<i class="fas fa-store me-2 text-primary"></i> Branch Name <span class="text-danger">*</span>
+									<i class="fas fa-store me-2 text-primary"></i> Tên chi nhánh <span class="text-danger">*</span>
 								</label>
-								<input class="form-control form-control-lg" type="text" id="name" name="name" placeholder="e.g., Downtown Branch" required />
-								<small class="form-text text-muted">Choose a clear, identifiable name for this location.</small>
+								<input class="form-control form-control-lg" type="text" id="name" name="name" placeholder="Ví dụ: Chi nhánh Trung tâm" required />
+								<small class="form-text text-muted">Chọn một tên rõ ràng, dễ nhận biết cho địa điểm này.</small>
 							</div>
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold" for="address">
-									<i class="fas fa-map-marker-alt me-2 text-primary"></i> Address
+									<i class="fas fa-map-marker-alt me-2 text-primary"></i> Địa chỉ
 								</label>
-								<input class="form-control form-control-lg" type="text" id="address" name="address" placeholder="Street, City, Country" />
-								<small class="form-text text-muted">Full address of the branch location.</small>
+								<input class="form-control form-control-lg" type="text" id="address" name="address" placeholder="Đường, Thành phố, Quốc gia" />
+								<small class="form-text text-muted">Địa chỉ đầy đủ của chi nhánh.</small>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold" for="openTime">
-									<i class="fas fa-door-open me-2 text-success"></i> Opening Time <span class="text-danger">*</span>
+									<i class="fas fa-door-open me-2 text-success"></i> Giờ mở cửa <span class="text-danger">*</span>
 								</label>
 								<input class="form-control form-control-lg" type="time" id="openTime" name="openTime" required />
-								<small class="form-text text-muted">Daily opening time.</small>
+								<small class="form-text text-muted">Thời gian mở cửa hàng ngày.</small>
 							</div>
 							<div class="col-md-6 mb-3">
 								<label class="form-label fw-semibold" for="closeTime">
-									<i class="fas fa-door-closed me-2 text-danger"></i> Closing Time <span class="text-danger">*</span>
+									<i class="fas fa-door-closed me-2 text-danger"></i> Giờ đóng cửa <span class="text-danger">*</span>
 								</label>
 								<input class="form-control form-control-lg" type="time" id="closeTime" name="closeTime" required />
-								<small class="form-text text-muted">Daily closing time.</small>
+								<small class="form-text text-muted">Thời gian đóng cửa hàng ngày.</small>
 							</div>
 						</div>
 
@@ -71,10 +71,10 @@
 
 						<div class="d-flex justify-content-between align-items-center">
 							<a class="btn btn-outline-secondary" asp-action="Index">
-								<i class="fas fa-times me-2"></i> Cancel
+								<i class="fas fa-times me-2"></i> Hủy
 							</a>
 							<button class="btn btn-primary btn-lg px-4" type="submit">
-								<i class="fas fa-check me-2"></i> Create Branch
+								<i class="fas fa-check me-2"></i> Tạo chi nhánh
 							</button>
 						</div>
 					</form>
@@ -83,5 +83,3 @@
 		</div>
 	</div>
 </div>
-
-

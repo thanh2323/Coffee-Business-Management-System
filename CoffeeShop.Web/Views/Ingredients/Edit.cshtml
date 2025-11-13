@@ -1,7 +1,7 @@
 @model CoffeeShop.Domain.Entities.Ingredient
 @{
-    Layout = "~/Views/Shared/_Layout2.cshtml";
-    ViewData["Title"] = "Sửa nguyên liệu";
+	Layout = "~/Views/Shared/_Layout2.cshtml";
+	ViewData["Title"] = "Sửa nguyên liệu";
 }
 
 <div class="container mt-4">
@@ -32,17 +32,17 @@
 					<form method="post" asp-action="Edit">
 						<input type="hidden" name="branchId" value="@ViewBag.BranchId" />
 						<input type="hidden" name="ingredientName" value="@ViewBag.OriginalName" />
-						
+
 						<div class="mb-3">
 							<label class="form-label fw-semibold" for="name">
 								<i class="fas fa-tag me-2 text-primary"></i>Tên nguyên liệu <span class="text-danger">*</span>
 							</label>
-							<input class="form-control form-control-lg" 
-								   name="name" 
+							<input class="form-control form-control-lg"
+								   name="name"
 								   id="name"
-								   value="@Model.Name" 
-								   required 
-								   placeholder="Ví dụ: Hạt cà phê, Sữa, Đường"/>
+								   value="@Model.Name"
+								   required
+								   placeholder="Ví dụ: Hạt cà phê, Sữa, Đường" />
 							<small class="form-text text-muted">Nhập tên của nguyên liệu.</small>
 						</div>
 
@@ -51,13 +51,13 @@
 								<label class="form-label fw-semibold" for="quantity">
 									<i class="fas fa-weight me-2 text-info"></i>Số lượng <span class="text-danger">*</span>
 								</label>
-								<input class="form-control form-control-lg" 
-									   name="quantity" 
+								<input class="form-control form-control-lg"
+									   name="quantity"
 									   id="quantity"
-									   type="number" 
-									   step="1" 
-									   min="0" 
-									   value="@Model.Quantity" 
+									   type="number"
+									   step="1"
+									   min="0"
+									   value="@Model.Quantity"
 									   required />
 								<small class="form-text text-muted">Số lượng tồn kho hiện tại.</small>
 							</div>
@@ -66,13 +66,13 @@
 									<i class="fas fa-tags me-2 text-success"></i>Giá / Đơn vị (VND) <span class="text-danger">*</span>
 								</label>
 								<div class="input-group input-group-lg">
-									<input class="form-control" 
-										   name="unitCost" 
+									<input class="form-control"
+										   name="unitCost"
 										   id="unitCost"
-										   type="number" 
-										   step="1000" 
-										   min="0" 
-										   value="@Model.UnitCost" 
+										   type="number"
+										   step="1000"
+										   min="0"
+										   value="@Model.UnitCost"
 										   required />
 									<span class="input-group-text">VND</span>
 								</div>
@@ -84,10 +84,10 @@
 							<label class="form-label fw-semibold" for="displayUnit">
 								<i class="fas fa-box-open me-2 text-warning"></i>Kích thước đóng gói
 							</label>
-							<input class="form-control form-control-lg" 
-								   name="displayUnit" 
+							<input class="form-control form-control-lg"
+								   name="displayUnit"
 								   id="displayUnit"
-								   value="@Model.DisplayUnit" 
+								   value="@Model.DisplayUnit"
 								   placeholder="Ví dụ: 1l, 500ml, 5kg, 10pcs" />
 							<small class="form-text text-muted">
 								<i class="fas fa-info-circle me-1"></i>
