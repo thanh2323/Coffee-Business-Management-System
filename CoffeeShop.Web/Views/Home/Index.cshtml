@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
 <main class="content-wrapper">
@@ -31,10 +32,9 @@
 
     </section>
 
-    <section class="dashboard-mockup-section">
-        <img src="/images/dashboard-content.png" alt="Investment Dashboard Mockup" class="dashboard-image">
+    <section class="dashboard-mockup-section rounded-custom-top rounded-bottom-0">
+        <img src="/images/dashboardhome.png" alt="Investment Dashboard Mockup" class="dashboard-image rounded-custom-top rounded-bottom-0">
     </section>
-
     <section class="problem-solution-section">
         <h2 class="section-title">Chủ cửa hàng đau đầu với việc quản lý quán cafe, quán ăn</h2>
 
@@ -66,11 +66,12 @@
                           onclick="window.location.href='@Url.Action("Register", "Auth")'">
                         Đừng lo, đã có Café giúp bạn
                     </span>
+
+
                 </div>
             </div>
         </div>
     </section>
-
     <section class="features-section">
         <h2 class="section-title-pinpos">Phần mềm Café sẽ giúp bạn quản lý thông minh hơn!</h2>
 
@@ -90,7 +91,7 @@
 
             <div class="feature-box box-analytics">
                 <div class="box-image">
-                    <img src="/images/dashboard-analytics.png" alt="Analytics and report dashboard">
+                    <img src="/images/dashboardhome.png" alt="Analytics and report dashboard">
                 </div>
                 <div class="box-content">
                     <h3>Nắm bắt tình hình doanh thu trong nháy mắt</h3>
@@ -119,17 +120,38 @@
 
         <button class="cta-pinpos-btn">Sử dụng miễn phí</button>
     </section>
-
-    <!-- ✨ LOGO SECTION - AJAX TỰ LOAD ✨ -->
     <section class="trusted-by-section">
         <h2 class="trusted-by-title">Sự lựa chọn của các chủ doanh nghiệp</h2>
 
         <div class="logo-carousel-container">
-            <div class="logo-track" id="logoTrack">
-                <!-- AJAX sẽ tự động đổ logo vào -->
+            <div class="logo-track">
+                <img src="/images/logos/logo1.jpg" alt="Logo Khách hàng 1">
+                <img src="/images/logos/logo2.jpg" alt="Logo Khách hàng 2">
+                <img src="/images/logos/logo3.jpg" alt="Logo Khách hàng 3">
+                <img src="/images/logos/logo4.jpg" alt="Logo Khách hàng 4">
+                <img src="/images/logos/logo5.jpg" alt="Logo Khách hàng 5">
+                <img src="/images/logos/logo6.jpg" alt="Logo Khách hàng 6">
+                <img src="/images/logos/logo7.jpg" alt="Logo Khách hàng 7">
+                <img src="/images/logos/logo8.jpg" alt="Logo Khách hàng 8">
+                <img src="/images/logos/logo9.jpg" alt="Logo Khách hàng 9">
+                <img src="/images/logos/logo10.jpg" alt="Logo Khách hàng 10">
+                <img src="/images/logos/logo11.jpg" alt="Logo Khách hàng 11">
+
+                <img src="/images/logos/logo1.jpg" alt="Logo Khách hàng 1">
+                <img src="/images/logos/logo2.jpg" alt="Logo Khách hàng 2">
+                <img src="/images/logos/logo3.jpg" alt="Logo Khách hàng 3">
+                <img src="/images/logos/logo4.jpg" alt="Logo Khách hàng 4">
+                <img src="/images/logos/logo5.jpg" alt="Logo Khách hàng 5">
+                <img src="/images/logos/logo6.jpg" alt="Logo Khách hàng 6">
+                <img src="/images/logos/logo7.jpg" alt="Logo Khách hàng 7">
+                <img src="/images/logos/logo8.jpg" alt="Logo Khách hàng 8">
+                <img src="/images/logos/logo9.jpg" alt="Logo Khách hàng 9">
+                <img src="/images/logos/logo10.jpg" alt="Logo Khách hàng 10">
+                <img src="/images/logos/logo11.jpg" alt="Logo Khách hàng 11">
             </div>
         </div>
     </section>
+
 
     <section class="fnb-suitability-section">
         <h2 class="section-title-fnb">Phù hợp với các cửa hàng kinh doanh ngành F&B</h2>
@@ -154,12 +176,11 @@
             </div>
         </div>
     </section>
-
     <section class="order-management-section">
         <div class="content-split-reverse">
 
             <div class="image-container-cafe">
-                <img src="/images/cafe-order-mockup.jpg" alt="Nhân viên pha chế và giao diện order" class="cafe-image">
+                <img src="/images/barista.jpg" alt="Nhân viên pha chế và giao diện order" class="cafe-image">
             </div>
 
             <div class="features-list-container">
@@ -182,7 +203,6 @@
             </div>
         </div>
     </section>
-
     <section class="testimonials-section">
         <h2 class="testimonials-title">Khách hàng của chúng tôi <span class="highlight-purple">cảm nhận như thế nào?</span></h2>
 
@@ -229,27 +249,4 @@
     </section>
 </main>
 
-<!-- AJAX LOGO LOADER -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
 
-        // 10 logo sử dụng CDN SimpleIcons (không cần ảnh cục bộ)
-        const logos = [
-            "https://cdn.simpleicons.org/coffee/4a4a4a",
-            "https://cdn.simpleicons.org/starbucks/026442",
-            "https://cdn.simpleicons.org/cafe24/333333",
-            "https://cdn.simpleicons.org/ubereats/00aa00",
-            "https://cdn.simpleicons.org/shopify/96bf48",
-            "https://cdn.simpleicons.org/square/000000",
-            "https://cdn.simpleicons.org/stripe/635bff",
-            "https://cdn.simpleicons.org/paypal/003087",
-            "https://cdn.simpleicons.org/google/ea4335",
-            "https://cdn.simpleicons.org/tiktok/000000"
-        ];
-
-        let track = document.getElementById("logoTrack");
-
-        logos.forEach(src => track.innerHTML += `<img src="${src}" alt="logo">`);
-        logos.forEach(src => track.innerHTML += `<img src="${src}" alt="logo">`);
-    });
-</script>

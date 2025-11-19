@@ -7,9 +7,13 @@
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
 
     var allItems = Model.ToList();
-    var bestSeller = allItems.Take(4).ToList();
+    // Giữ 4 món nổi bật (Featured)
+    var featuredItems = allItems.Take(4).ToList();
+    // 4 món mới
     var newItems = allItems.TakeLast(4).ToList();
     var categories = allItems.Select(m => m.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct();
+
+    // ĐÃ BỎ: var branchImagePath KHÔNG CÒN TỒN TẠI
 }
 
 <!DOCTYPE html>
@@ -23,7 +27,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-
+        /* BASE */
         body {
             background: #e8f5ff;
             font-family: 'Segoe UI', sans-serif;
@@ -34,6 +38,9 @@
             background: white;
             border-bottom: 1px solid #cce5f7;
             padding: 18px 22px;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
         }
 
             .menu-header h2 {
@@ -42,93 +49,164 @@
                 color: #154c74;
             }
 
-        /* INTRO */
-        .branch-intro {
-            text-align: left;
-            padding: 35px 20px 10px 20px;
+        /* Nút Giỏ Hàng - Xanh Pastel */
+        .btn-pastel-blue {
+            background-color: #8fd1ff !important; /* Xanh Pastel */
+            border-color: #8fd1ff !important;
+            color: white !important;
+            font-weight: 700 !important;
         }
 
-            .branch-intro h1 {
-                font-size: 42px;
-                font-weight: 900;
-                color: #0d304a; /* xanh đậm gần như đen */
-                margin-bottom: 14px;
+            .btn-pastel-blue:hover {
+                background-color: #5ea8e0 !important; /* Xanh đậm hơn khi hover */
+                border-color: #5ea8e0 !important;
             }
 
-            .branch-intro .slogan {
-                font-size: 15px;
-                line-height: 1.6;
-                color: #4f6775;
-                max-width: 780px;
-                margin: 0 0 22px 0; /* Căn TRÁI hoàn toàn */
+        /* BANNER / INTRO: SỬ DỤNG THẺ IMG - ĐÃ KHÔI PHỤC CHIỀU CAO */
+        .branch-banner {
+            position: relative;
+            height: 335px; /* KHÔI PHỤC: Chiều cao cố định của banner */
+            overflow: hidden;
+            background-color: #154c74;
+        }
+
+            /* Thẻ IMG bên trong banner */
+            .branch-banner img {
+                width: 100%;
+                height: 100%; /* ĐÃ SỬA: Chiếm 100% chiều cao của div cha */
+                object-fit: cover;
+                /* ĐÃ SỬA: Dùng absolute để ảnh không chiếm không gian và bị lớp phủ bao phủ */
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+            }
+
+            /* Overlay và Nội dung */
+            .branch-banner .banner-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                padding: 40px 20px;
+                color: white;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+                z-index: 2;
                 text-align: left;
+                display: flex;
+                flex-direction: column;
             }
 
+            .branch-banner h1 {
+                font-size: 44px;
+                font-weight: 900;
+                margin-bottom: 12px;
+            }
 
-            .branch-intro .info {
+            .branch-banner .slogan {
+                font-size: 16px;
+                line-height: 1.6;
+                color: #e0f0ff;
+                max-width: 780px;
+                margin: 0 0 20px 0;
+            }
+
+            .branch-banner .info {
                 font-size: 17px;
-                color: #334b5a;
                 line-height: 1.9;
             }
 
-        .info i {
-            margin-right: 6px;
-        }
+                .branch-banner .info i {
+                    margin-right: 8px;
+                }
 
         /* SECTION TITLE */
         .section-title {
-            font-size: 23px;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 800;
             color: #154c74;
-            margin: 28px 0 14px;
+            margin: 32px 0 16px;
+            text-align: center;
         }
 
-        /* FILTER SEARCH */
+        /* ======================================= */
+        /* START: GIAO DIỆN TÌM KIẾM MỚI */
+        /* ======================================= */
+
         .filter-search-row {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             padding: 6px 4px;
             margin-bottom: 18px;
+            gap: 15px;
         }
 
-        .category-buttons .btn {
-            border-radius: 20px;
-            border-color: #8fd1ff;
-            color: #154c74;
-            font-size: 15px;
-            padding: 6px 14px;
+        /* FILTER BUTTONS: Ưu tiên nằm bên trái và chiếm nhiều không gian hơn */
+        .category-buttons {
+            order: 1; /* Nằm bên trái */
+            flex-grow: 1; /* Chiếm hết không gian có thể */
+            min-width: 50%;
         }
 
-            .category-buttons .btn.active,
-            .category-buttons .btn:hover {
-                background: #8fd1ff;
-                color: #083a59;
+            .category-buttons .btn {
+                border-radius: 25px;
+                border-color: #cce5f7;
+                color: #154c74;
+                font-size: 15px;
+                padding: 8px 16px;
+                background: white;
+                font-weight: 600;
+                transition: .2s;
             }
 
-        /* SEARCH */
+                .category-buttons .btn.active,
+                .category-buttons .btn:hover {
+                    background: #8fd1ff;
+                    border-color: #8fd1ff;
+                    color: white;
+                }
+
+        /* SEARCH BAR: Nằm bên phải và bị thu ngắn */
         .search-wrapper {
             position: relative;
+            flex-grow: 0; /* KHÔNG chiếm hết không gian */
+            width: 180px; /* Chiều rộng cố định, ngắn hơn */
+            order: 2; /* Nằm bên phải */
         }
 
             .search-wrapper i {
                 position: absolute;
                 top: 50%;
-                left: 10px;
+                left: 14px;
                 transform: translateY(-50%);
                 color: #7aa7c7;
+                font-size: 16px;
             }
 
             .search-wrapper input {
-                width: 190px;
-                padding-left: 32px;
-                border-radius: 14px;
-                border: 1px solid #8fd1ff;
-                padding-top: 6px;
-                padding-bottom: 6px;
+                width: 100%;
+                padding: 10px 15px 10px 40px;
+                border-radius: 25px;
+                border: 1px solid #cce5f7;
+                background: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                font-size: 15px;
+                transition: .2s;
             }
 
-        /* CARD */
+                .search-wrapper input:focus {
+                    border-color: #8fd1ff;
+                    box-shadow: 0 0 0 3px rgba(143, 209, 255, 0.5);
+                    outline: none;
+                }
+
+        /* END: GIAO DIỆN TÌM KIẾM MỚI */
+        /* ======================================= */
+        /* CARD CHUNG */
         .card {
             border: none;
             border-radius: 18px;
@@ -137,25 +215,33 @@
             transition: .2s;
         }
 
-            .card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 6px 16px rgba(0,0,0,0.16);
-            }
-
+        /* Khôi phục style cho nội dung card thông thường (New & All Items) */
         .placeholder-img {
             height: 170px;
             background: #dff1ff;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #7aa7c7;
             font-size: 22px;
+            overflow: hidden;
+        }
+
+        .card img.card-img-top {
+            height: 170px;
+            object-fit: cover;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
         }
 
         .card h6 {
             font-size: 18px;
             font-weight: 700;
             color: #000;
+            height: 2.5em;
+            overflow: hidden;
         }
 
         .price-label {
@@ -164,7 +250,6 @@
             font-weight: 600;
         }
 
-        /* PRICE + QTY */
         .price-qty-row {
             display: flex;
             justify-content: space-between;
@@ -178,13 +263,6 @@
             align-items: center;
         }
 
-            .qty-box button {
-                width: 30px;
-                height: 30px;
-                border-radius: 8px;
-                padding: 0;
-            }
-
             .qty-box span {
                 width: 40px;
                 border-radius: 8px;
@@ -194,117 +272,212 @@
                 border: 1px solid #8fd1ff;
             }
 
+            .qty-box button {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                padding: 0;
+                font-size: 18px;
+            }
+
+
+        /* Nút Thêm (CTA) - Xanh Pastel thống nhất */
         .btn-add {
             width: 100%;
             border-radius: 12px;
-            background: #38a4e0;
+            background: #8fd1ff; /* Xanh Pastel */
             border: none;
             padding: 8px 0;
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 10px;
+            color: white;
+            transition: .2s;
         }
 
             .btn-add:hover {
-                background: #1f8ac6;
+                background: #5ea8e0; /* Xanh đậm hơn khi hover */
             }
 
-        /* FIXED ITEMS */
-        .fixed-item {
-            display: block !important;
+        /* Promotions / Services Card */
+        .card.promo-card {
+            padding-top: 100%;
+            min-height: 250px;
+            background-color: #154c74;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 0 !important;
         }
 
+            .card.promo-card > .card-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: flex-start;
+                padding: 15px;
+                background-color: rgba(0, 0, 0, 0.4); /* Tối hơn chút để chữ nổi bật */
+                border-radius: 18px;
+                text-align: left;
+            }
+
+            .card.promo-card h5 {
+                color: white; /* Đảm bảo màu trắng */
+                font-size: 24px;
+                font-weight: 900;
+                text-shadow: 1px 1px 4px rgba(0, 0, 0, 1.0); /* Tăng độ đậm của shadow */
+                margin-bottom: 5px;
+            }
+
+            /* Chữ P */
+            .card.promo-card p {
+                color: #f0f0f0; /* Màu trắng nhạt hơn cho đoạn văn */
+                font-size: 14px;
+                line-height: 1.4;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8); /* Shadow cho đoạn văn */
+            }
+
+        /* Featured Items (Food Items) */
+        .card.featured-item {
+            min-height: 250px;
+            background-color: #154c74;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+            .card.featured-item .card-img-overlay {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
+                padding: 15px;
+                background-color: rgba(0, 0, 0, 0.4);
+                border-radius: 18px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+
+            /* FIX: Đảm bảo số lượng và nút +/- hiển thị rõ trên nền ảnh */
+            .card.featured-item .qty-box button {
+                color: white;
+                border: 1px solid white;
+                background: rgba(255, 255, 255, 0.15);
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                padding: 0;
+                font-size: 18px;
+            }
+
+            .card.featured-item .qty-box span {
+                color: white;
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid white;
+                width: 40px;
+                border-radius: 8px;
+                text-align: center;
+                padding: 3px 0;
+            }
+
+            .card.featured-item h6 {
+                color: white;
+                font-weight: 700;
+                height: auto;
+            }
+
+            .card.featured-item .price-label {
+                color: #e0f0ff;
+            }
+
+            /* Cập nhật màu nút thêm trong Featured Item */
+            .card.featured-item .btn-add {
+                background: #8fd1ff; /* Xanh Pastel */
+            }
+
+                .card.featured-item .btn-add:hover {
+                    background: #5ea8e0; /* Xanh đậm hơn khi hover */
+                }
+
+            /* Ẩn các phần tử mặc định của card */
+            .card.featured-item img.card-img-top,
+            .card.featured-item .placeholder-img,
+            .card.promo-card img.card-img-top,
+            .card.promo-card .placeholder-img {
+                display: none !important;
+            }
+
+        /* MEDIA QUERIES */
+        @@media (max-width: 768px) {
+            .branch-banner h1 {
+                font-size: 38px;
+            }
+
+            .filter-search-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .card.promo-card {
+                padding-top: 50%;
+                min-height: 200px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- HEADER -->
     <div class="menu-header d-flex justify-content-between align-items-center">
         <h2>@branch?.Name — Bàn @table?.TableNumber</h2>
 
         <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })"
-           class="btn btn-primary position-relative">
+           class="btn btn-pastel-blue position-relative">
             <i class="fas fa-shopping-cart me-1"></i>
             Giỏ hàng
             <span id="cart-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">0</span>
         </a>
     </div>
 
-    <!-- INTRO -->
-    <div class="container">
-        <div class="branch-intro">
+    <div class="branch-banner">
+        <img src="/images/anhquancaphe.jpg" alt="Ảnh quán cà phê" />
 
-            <h1>@branch?.Name</h1>
+        <div class="banner-content">
+            <div class="container">
+                <h1>@branch?.Name</h1>
 
-            <div class="slogan">
-                “Không chỉ là quán cà phê, chúng tôi mong muốn trở thành nơi kết nối cảm xúc,
-                tạo ra những khoảnh khắc đẹp trong ngày của bạn. Mỗi món nước, mỗi món ăn
-                đều được chuẩn bị với sự tỉ mỉ, chất lượng và trái tim của người làm nghề.”
+                <div class="slogan">
+                    “Không chỉ là quán cà phê, chúng tôi mong muốn trở thành nơi kết nối cảm xúc,
+                    tạo ra những khoảnh khắc đẹp trong ngày của bạn. Mỗi món nước, mỗi món ăn
+                    đều được chuẩn bị với sự tỉ mỉ, chất lượng và trái tim của người làm nghề.”
+                </div>
+
+                <div class="info">
+                    <div><i class="fas fa-map-pin" style="color:#ff4d6d;"></i>@branch?.Address</div>
+                    <div><i class="fas fa-clock" style="color:#7a90a4;"></i>7:00 – 22:00 mỗi ngày</div>
+                    <div><i class="fas fa-phone-alt" style="color:#ff2f5e;"></i>Hotline: 0123 456 789</div>
+                </div>
             </div>
-
-            <div class="info">
-                <div><i class="fas fa-map-pin" style="color:#ff4d6d;"></i>@branch?.Address</div>
-                <div><i class="fas fa-clock" style="color:#7a90a4;"></i>7:00 – 22:00 mỗi ngày</div>
-                <div><i class="fas fa-phone-alt" style="color:#ff2f5e;"></i>Hotline: 0123 456 789</div>
-            </div>
-
         </div>
     </div>
 
 
     <div class="container py-3">
 
-        <!-- BEST SELLER -->
-        <div class="section-title">🔥 Best Seller</div>
+        <div class="section-title">MÓN MỚI</div>
 
-        <div class="row g-3">
-            @foreach (var item in bestSeller)
-            {
-                <div class="col-6 col-md-4 col-lg-3 fixed-item">
-
-                    <div class="card h-100">
-
-                        @if (!string.IsNullOrEmpty(item.ImagePath))
-                        {
-                            <img src="@Url.Content(item.ImagePath)" class="card-img-top">
-                        }
-                        else
-                        {
-
-                            <div class="placeholder-img">IMG</div>
-                        }
-
-                        <div class="card-body d-flex flex-column text-center">
-
-                            <h6>@item.Name</h6>
-
-                            <div class="price-qty-row">
-                                <span class="price-label">@item.Price.ToString("N0") ₫</span>
-
-                                <div class="qty-box">
-                                    <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-secondary btn-sm">−</button>
-                                    <span id="qty-@item.MenuItemId">0</span>
-                                    <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-secondary btn-sm">+</button>
-                                </div>
-                            </div>
-
-                            <button class="btn btn-primary btn-add" onclick="addToCart(@item.MenuItemId)">Thêm</button>
-
-                        </div>
-                    </div>
-
-                </div>
-            }
-        </div>
-
-
-        <!-- NEW ITEMS -->
-        <div class="section-title mt-4">🆕 Món mới</div>
-
-        <div class="row g-3">
+        <div class="row g-4">
             @foreach (var item in newItems)
             {
-                <div class="col-6 col-md-4 col-lg-3 fixed-item">
+                <div class="col-6 col-md-4 col-lg-3">
 
                     <div class="card h-100">
 
@@ -314,7 +487,6 @@
                         }
                         else
                         {
-
                             <div class="placeholder-img">IMG</div>
                         }
 
@@ -327,12 +499,12 @@
 
                                 <div class="qty-box">
                                     <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-secondary btn-sm">−</button>
-                                    <span id="qty-@item.MenuItemId">0</span>
+                                    <span id="qty-new-@item.MenuItemId">0</span>
                                     <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-secondary btn-sm">+</button>
                                 </div>
                             </div>
 
-                            <button class="btn btn-primary btn-add" onclick="addToCart(@item.MenuItemId)">Thêm</button>
+                            <button class="btn btn-primary btn-add" onclick="addToCart(@item.MenuItemId, 'qty-new-')">Thêm</button>
 
                         </div>
                     </div>
@@ -342,10 +514,75 @@
         </div>
 
 
-        <!-- ALL ITEMS -->
-        <div class="section-title mt-4">📋 Tất cả món</div>
+        <div class="section-title">SỰ KHÁC BIỆT & CAM KẾT CHẤT LƯỢNG</div>
 
-        <!-- FILTER + SEARCH -->
+        <div class="row g-4">
+            <div class="col-12 col-md-4">
+                <div class="card promo-card" style="background-image: url('https://i.pinimg.com/736x/e9/22/a7/e922a748f29cddf163e9af2643a3243d.jpg');">
+                    <div class="card-content">
+                        <h5>NGUYÊN LIỆU THƯỢNG HẠNG</h5>
+                        <p>Cam kết sử dụng 100% hạt Arabica/Robusta chọn lọc và trà lá tươi, đảm bảo hương vị nguyên bản, tuyệt hảo.</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card promo-card" style="background-image: url('https://i.pinimg.com/736x/0f/0a/4f/0f0a4f02e88cb8a1a2397eff8ddb9b3e.jpg');">
+                    <div class="card-content">
+                        <h5>KHÁM PHÁ SIGNATURE</h5>
+                        <p>Đồ uống độc quyền làm nên thương hiệu của chúng tôi. Cà phê sữa - Bán chạy nhất tuần qua!</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card promo-card" style="background-image: url('https://i.pinimg.com/1200x/4c/5f/cd/4c5fcd7b72834dce31bcbe8545514d36.jpg');">
+                    <div class="card-content">
+                        <h5>PHA CHẾ TỪ TÂM</h5>
+                        <p>Mỗi ly đồ uống là một tác phẩm được pha chế tỉ mỉ bởi Barista chuyên nghiệp, vì trải nghiệm hoàn hảo của bạn.</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">MÓN BÁN CHẠY</div>
+
+        <div class="row g-4">
+            @foreach (var item in featuredItems)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <div class="card h-100 featured-item"
+                         style="background-image: url('@(string.IsNullOrEmpty(item.ImagePath) ? "" : Url.Content(item.ImagePath))');">
+
+                        <div class="card-img-overlay">
+                            <h6>@item.Name</h6>
+
+                            <div class="price-qty-row w-100 mt-2">
+                                <span class="price-label">@item.Price.ToString("N0") ₫</span>
+
+                                <div class="qty-box">
+                                    <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-light btn-sm">−</button>
+                                    <span id="qty-featured-@item.MenuItemId">0</span>
+                                    <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-light btn-sm">+</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-add" onclick="addToCart(@item.MenuItemId, 'qty-featured-')">Thêm vào giỏ</button>
+
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+
+
+        <div class="section-title mt-4">THỰC ĐƠN</div>
+
         <div class="filter-search-row">
 
             <div class="category-buttons d-flex gap-2 flex-wrap">
@@ -371,7 +608,7 @@
         </div>
 
 
-        <div class="row g-3">
+        <div class="row g-4" id="allItemsContainer">
             @foreach (var item in allItems)
             {
                 <div class="col-6 col-md-4 col-lg-3 menu-item"
@@ -399,13 +636,13 @@
 
                                 <div class="qty-box">
                                     <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-secondary btn-sm">−</button>
-                                    <span id="qty-@item.MenuItemId">0</span>
+                                    <span id="qty-all-@item.MenuItemId">0</span>
                                     <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-secondary btn-sm">+</button>
                                 </div>
                             </div>
 
                             <button class="btn btn-primary btn-add"
-                                    onclick="addToCart(@item.MenuItemId)">
+                                    onclick="addToCart(@item.MenuItemId, 'qty-all-')">
                                 Thêm
                             </button>
                         </div>
@@ -419,15 +656,23 @@
     </div>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function filterCategory(category, event) {
-
             document.querySelectorAll(".category-buttons .btn")
                 .forEach(b => b.classList.remove("active"));
-            event.target.classList.add("active");
 
-            // Chỉ lọc ALL ITEMS
-            document.querySelectorAll(".menu-item").forEach(item => {
+            if (event) {
+                event.target.classList.add("active");
+            } else {
+                if (category === 'all') {
+                    document.querySelector(".category-buttons .btn:first-child").classList.add("active");
+                } else {
+                    document.querySelector(`.category-buttons .btn[onclick*="'${category}'"]`).classList.add("active");
+                }
+            }
+
+            document.querySelectorAll("#allItemsContainer .menu-item").forEach(item => {
                 item.style.display =
                     (category === "all" || item.dataset.category === category)
                     ? "block"
@@ -438,20 +683,27 @@
         function searchMenu() {
             let text = document.getElementById("searchInput").value.toLowerCase();
 
-            document.querySelectorAll(".menu-item").forEach(item => {
+            document.querySelectorAll(".category-buttons .btn")
+                .forEach(b => b.classList.remove("active"));
+
+            document.querySelectorAll("#allItemsContainer .menu-item").forEach(item => {
                 item.style.display =
                     item.dataset.name.includes(text) ? "block" : "none";
             });
         }
 
         function updateQuantity(id, change) {
-            const el = document.getElementById("qty-" + id);
-            let value = parseInt(el.textContent);
-            el.textContent = Math.max(0, value + change);
+            document.querySelectorAll(`[id^='qty-'][id$='${id}']`).forEach(el => {
+                let value = parseInt(el.textContent);
+                let newValue = Math.max(0, value + change);
+                el.textContent = newValue;
+            });
         }
 
-        function addToCart(id) {
-            const qty = parseInt(document.getElementById("qty-" + id).textContent);
+        function addToCart(id, prefix = 'qty-all-') {
+            const qtyElement = document.getElementById(prefix + id);
+            const qty = parseInt(qtyElement.textContent);
+
             if (qty <= 0) return alert("Vui lòng chọn số lượng.");
 
             fetch('@Url.Action("AddToCart")', {
@@ -462,9 +714,15 @@
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById("qty-" + id).textContent = 0;
+                    document.querySelectorAll(`[id^='qty-'][id$='${id}']`).forEach(el => el.textContent = 0);
                     updateCartCount();
+                } else {
+                    alert(data.message || "Thêm vào giỏ hàng thất bại.");
                 }
+            })
+            .catch(error => {
+                 console.error('Error adding to cart:', error);
+                 alert("Lỗi kết nối hoặc xử lý. Vui lòng thử lại.");
             });
         }
 
@@ -472,6 +730,16 @@
             let badge = document.getElementById("cart-count");
             badge.textContent = (parseInt(badge.textContent) || 0) + 1;
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             document.getElementById("searchInput").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchMenu();
+                }
+            });
+        });
+
     </script>
 
 </body>

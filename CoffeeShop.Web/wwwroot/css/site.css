@@ -10,6 +10,11 @@ html {
         font-size: 16px;
     }
 }
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
 
 /* SỬA ĐỔI LỚN: Áp dụng Gradient từ TRẮNG TINH cho BODY */
 body {
@@ -21,6 +26,9 @@ body {
     min-height: 100vh;
     /* BÙ KHOẢNG TRỐNG: Khoảng trống để bù đắp cho header cố định */
     padding-top: 100px;
+    
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 /*---*/
 /* ---------------------------------------------------- */
@@ -250,24 +258,25 @@ header {
     width: 90%;
     max-width: 1400px;
     margin-top: 50px;
-    padding-bottom: 50px;
+    padding-bottom: 0;
     z-index: 10;
-    /* ĐẶT MÀU NỀN TRẮNG TINH */
     background-color: #FFFFFF;
+    border-top-left-radius: 70px;
+    border-top-right-radius: 70px;
+    overflow: hidden;
 }
 
 .dashboard-image {
     width: 100%;
     height: auto;
     display: block;
-    /* BO GÓC CHUNG */
-    border-radius: 20px;
-    /* BO GÓC LỚN ĐẶC TRƯNG CHO 2 GÓC DƯỚI */
-    border-bottom-left-radius: 50px;
-    border-bottom-right-radius: 50px;
-    /* Đổ bóng */
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    border-top-left-radius: 70px;
+    border-top-right-radius: 70px;
 }
+
+/* RESPONSIVE CSS */
+
 
 
 /* ==================================================== */
@@ -314,11 +323,10 @@ header {
 
 .problem-image {
     width: 100%;
-    height: auto;
-    display: block;
-    /* Tinh chỉnh để ảnh không bị biến dạng và trông sắc nét hơn */
+    height: 100%; /* sửa từ auto → 100% để ảnh full container */
     object-fit: cover;
-    border-radius: 12px;
+    display: block;
+    border-radius: 0; /* hoặc xoá hoàn toàn */
 }
 
 /* CỘT 2: DANH SÁCH & HỘP GIẢI PHÁP */
@@ -331,7 +339,7 @@ header {
 .problem-list {
     list-style: none;
     padding: 0;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 
 .problem-item {
@@ -421,149 +429,177 @@ header {
 
 
 /* ==================================================== */
-/* PHẦN SECTION 3: TÍNH NĂNG VÀ CTA PINPOS */
+/* FEATURE SECTION — FIXED BEAUTIFUL VERSION */
 /* ==================================================== */
 
 .features-section {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 80px 20px;
-    background-color: #f0f7ff; /* Nền xanh nhạt */
+    align-items: center; /* ⭐ GIỮ CHUẨN GIỮA */
+    justify-content: center; /* ⭐ GIỮ CHUẨN GIỮA */
+    padding: 90px 20px;
+    background-color: #f0f7ff;
 }
 
-/* Tiêu đề đen đậm, rõ */
 .section-title-pinpos {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 800;
-    color: #000; /* Đen đậm */
-    text-align: center;
-    max-width: 800px;
     margin-bottom: 50px;
+    text-align: center;
 }
 
-/* Khối chứa các tính năng */
+/* ==================================================== */
+/* GRID CHỨA 3 BOX */
+/* ==================================================== */
+
 .features-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 1200px;
     width: 100%;
-    gap: 30px;
+    max-width: 1050px; /* ⭐ CHUẨN */
+    margin: 0 auto; /* ⭐ TRUNG TÂM */
+    display: flex;
+    flex-direction: column;
+    gap: 55px;
 }
+
+/* ==================================================== */
+/* FEATURE BOX — CĂN ĐỀU + CHỮ GỌN + ẢNH ĐẸP */
+/* ==================================================== */
 
 .feature-box {
-    background-color: #FFFFFF;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    padding: 25px;
+    width: 100%;
+    background: #fff;
+    border-radius: 22px;
+    padding: 40px 40px; /* ⭐ GIẢM PADDING để không bị đẩy lệch */
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: center; /* ⭐ CANH ĐÚNG */
+    gap: 40px;
+    min-height: 260px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.08);
+    margin: 0 auto; /* ⭐ CỐ ĐỊNH CHÍNH GIỮA */
 }
 
-/* Khối lớn */
-.box-order-sync, .box-payment {
-    width: 100%;
-    max-width: 1000px;
+/* Khung 1 & 3: chữ trái – hình phải */
+.box-order-sync,
+.box-payment {
+    flex-direction: row;
 }
 
+/* Khung 2: hình trái – chữ phải */
 .box-analytics {
-    width: 100%;
-    max-width: 1000px;
     flex-direction: row-reverse;
 }
 
-/* Tiêu đề nhỏ của từng khối */
-.feature-box h3 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #000; /* Đen đậm */
-    margin-top: 0;
-    margin-bottom: 15px;
+/* ==================================================== */
+/* TEXT AREA */
+/* ==================================================== */
+
+.box-content {
+    flex: 1;
 }
 
-.feature-box ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.feature-box li {
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 10px;
-    line-height: 1.4;
-    position: relative;
-    padding-left: 20px;
-}
-
-    .feature-box li::before {
-        content: '•';
-        color: #007AFF; /* Xanh chủ đạo */
-        font-weight: 900;
-        display: inline-block;
-        width: 1em;
-        margin-left: -1em;
+    .box-content h3 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 15px;
     }
 
-/* Ảnh minh họa */
+    .box-content ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .box-content li {
+        margin-bottom: 12px;
+        padding-left: 26px;
+        font-size: 1.05rem;
+        color: #444;
+        position: relative;
+        line-height: 1.6;
+    }
+
+        .box-content li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #007aff;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+/* ==================================================== */
+/* IMAGE AREA — FIX ẢNH KHÔNG ĐỀU KÍCH THƯỚC */
+/* ==================================================== */
+
 .box-image {
-    flex-shrink: 0;
-    margin-left: 20px;
+    flex: 1; /* ⭐ GIẢI QUYẾT LỆCH */
+    display: flex;
+    justify-content: center; /* ⭐ KHÔNG ĐẨY SANG PHẢI */
+    align-items: center;
+    height: 230px;
 }
 
-.box-analytics .box-image {
-    margin-left: 0;
-    margin-right: 20px;
-}
+    .box-image img {
+        height: 100%;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+/* ==================================================== */
+/* CTA BUTTON */
+/* ==================================================== */
 
-.box-image img {
-    max-width: 250px;
-    height: auto;
-    display: block;
-}
-
-/* ===== Nút CTA (chính giữa, màu xanh chủ đạo) ===== */
 .cta-pinpos-btn {
-    background-color: #007AFF; /* Xanh chủ đạo */
-    color: white;
-    padding: 14px 40px;
+    margin-top: 55px;
+    background: #007aff;
+    color: #fff;
+    padding: 16px 45px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.2rem;
     border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
     cursor: pointer;
-    margin-top: 50px;
-    box-shadow: 0 6px 15px rgba(0, 122, 255, 0.4); /* bóng xanh nhẹ */
-    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 8px 18px rgba(0,122,255,0.35);
+    transition: 0.2s;
 }
 
     .cta-pinpos-btn:hover {
-        background-color: #005BB5; /* Xanh đậm hơn khi hover */
-        box-shadow: 0 8px 20px rgba(0, 91, 181, 0.5);
+        transform: translateY(-3px);
+        background: #005FCC;
     }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ==================================================== */
+/* RESPONSIVE */
+/* ==================================================== */
+
+@media (max-width: 850px) {
     .feature-box {
-        flex-direction: column;
+        flex-direction: column !important;
         text-align: center;
+        padding: 30px 25px;
+        min-height: auto;
     }
 
-    .box-analytics {
-        flex-direction: column;
+    .box-content {
+        width: 100%;
     }
 
     .box-image {
-        margin: 20px 0 0 0;
+        width: 100%;
+        height: 200px;
+        justify-content: center !important;
     }
 
-    .box-analytics .box-image {
-        order: -1;
-        margin: 0 0 20px 0;
-    }
+        .box-image img {
+            max-width: 300px;
+        }
 }
+
 
 
 
@@ -603,8 +639,9 @@ header {
 
 .logo-track {
     display: flex;
-    animation: scroll-logos 40s linear infinite; /* 40s tốc độ chạy */
+    animation: scroll-logos 15s linear infinite; /* 40s tốc độ chạy */
     padding-left: 100%; /* Bắt đầu từ ngoài cùng bên phải */
+    will-change: transform;
 }
 
     .logo-track img {
@@ -616,6 +653,8 @@ header {
         object-fit: contain;
         /* Logo không bị co lại khi hết chỗ */
         flex-shrink: 0;
+        width: 120px; /* hoặc width logo thật của bạn */
+        
     }
 
         .logo-track img:hover {
@@ -624,16 +663,15 @@ header {
 
 /* Keyframes cho hiệu ứng chạy từ phải sang trái */
 @keyframes scroll-logos {
-    from {
-        /* Bắt đầu ở vị trí 0% (phần tử lặp lại nằm ngoài cùng bên trái) */
+    from{
         transform: translateX(0);
     }
 
     to {
-        /* Chạy sang trái bằng đúng chiều dài của khối logo gốc */
-        transform: translateX(-50%);
+        transform: translateX(-1760px);
     }
 }
+
 
 
 
@@ -769,10 +807,13 @@ header {
 
 .cafe-image {
     width: 100%;
+    max-width: 350px; /* ⭐ chỉnh size ảnh tại đây */
     height: auto;
     display: block;
     border-radius: 12px;
+    object-fit: cover; /* Giữ đẹp ảnh */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    margin: 0 auto; /* ⭐ Căn giữa nếu cần */
 }
 
 .features-list-container {
@@ -1359,20 +1400,27 @@ footer.main-page-footer {
 }
 
 /* CỘT 2: KHUNG VIDEO */
-.works-video-container {
-    flex: 0 0 50%;
+.works-video-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
     position: relative;
-    padding-right: 0;
-    border-radius: 12px;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
-.works-video-thumbnail {
-    width: 100%;
-    height: auto;
-    display: block;
-}
+    .works-video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
 
 /* Responsive */
 @media (max-width: 992px) {

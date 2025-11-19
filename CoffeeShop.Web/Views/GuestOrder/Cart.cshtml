@@ -1,232 +1,358 @@
 ﻿@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
 @{
-    Layout = "_Layout";
+    Layout = null;
     ViewData["HideHeader"] = true;
-    ViewData["Title"] = "Cart";
+    ViewData["Title"] = "Giỏ hàng";
 
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
     var totalAmount = ViewBag.TotalAmount as decimal? ?? 0m;
 }
 
-<style>
-    body {
-        background: #e8f5ff;
-        font-family: 'Segoe UI', sans-serif;
-    }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
 
-    h2 {
-        font-size: 32px;
-        font-weight: 900;
-        color: #0d304a;
-    }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-    /* CART BOX */
-    .cart-box {
-        background: white;
-        padding: 24px;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        border: 1px solid #cfe8ff;
-    }
-
-    table thead th {
-        color: #154c74;
-        font-weight: 700;
-        border-bottom: 2px solid #b7dbff !important;
-        font-size: 16px;
-    }
-
-    table tbody td {
-        padding-top: 16px !important;
-        padding-bottom: 16px !important;
-        font-size: 16px;
-        color: #333;
-        vertical-align: middle;
-    }
-
-    .qty-btn-group button {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        padding: 0;
-    }
-
-    .qty-btn-group span {
-        width: 42px;
-        border-radius: 8px;
-        text-align: center;
-        padding: 5px 0;
-        background: #f3faff;
-        border: 1px solid #8fd1ff;
-        display: inline-block;
-    }
-
-    .total-display {
-        background: #dff1ff;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-size: 20px;
-        font-weight: 800;
-        color: #0d304a;
-        border: 1px solid #b7dbff;
-        text-align: right;
-    }
-
-    .btn-primary {
-        background: #38a4e0;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 18px;
-        font-weight: 700;
-        font-size: 17px;
-    }
-
-        .btn-primary:hover {
-            background: #1f8ac6;
+    <style>
+        /* BASE */
+        body {
+            background: #e8f5ff;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-    .btn-secondary {
-        border-radius: 12px;
-        padding: 12px 18px;
-        font-weight: 700;
-        font-size: 17px;
-    }
-
-    /* EMPTY CART */
-    .empty-cart {
-        background: white;
-        padding: 30px;
-        border-radius: 16px;
-        text-align: center;
-        border: 1px solid #cfe8ff;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-        .empty-cart h4 {
-            font-size: 26px;
-            font-weight: 800;
+        h2 {
+            font-size: 32px;
+            font-weight: 900;
             color: #0d304a;
         }
 
-</style>
+        /* CARD VÀ SHADOW */
+        .cart-box {
+            background: white;
+            padding: 24px;
+            border-radius: 18px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.10);
+            border: 1px solid #b7dbff;
+        }
+
+        /* TABLE HEADERS */
+        table thead th {
+            color: #154c74;
+            font-weight: 700;
+            border-bottom: 2px solid #8fd1ff !important;
+            font-size: 16px;
+        }
+
+        table tbody td {
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+            font-size: 16px;
+            color: #333;
+            vertical-align: middle;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* QUANTITY INPUT */
+        .qty-btn-group {
+            white-space: nowrap;
+        }
+
+            .qty-btn-group button {
+                width: 35px;
+                height: 35px;
+                border-radius: 10px;
+                padding: 0;
+                font-weight: 700;
+                font-size: 18px;
+                border-color: #8fd1ff !important;
+                color: #154c74 !important;
+                background: white;
+            }
+
+                .qty-btn-group button:hover {
+                    background: #f3faff;
+                }
+
+            .qty-btn-group span {
+                width: 45px;
+                border-radius: 10px;
+                text-align: center;
+                padding: 5px 0;
+                background: #f3faff;
+                border: 1px solid #8fd1ff;
+                display: inline-block;
+                font-weight: 600;
+                color: #0d304a;
+            }
+
+        /* TOTAL DISPLAY */
+        .total-display {
+            background: #dff1ff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #0d304a;
+            border: 1px solid #8fd1ff;
+            text-align: right;
+        }
+
+        /* CTA BUTTONS */
+        .btn-primary {
+            background: #8fd1ff; /* Xanh Pastel */
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 800;
+            font-size: 18px;
+            transition: .2s;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background: #5ea8e0;
+            }
+
+        .btn-secondary {
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 700;
+            font-size: 17px;
+            border-color: #cce5f7 !important;
+            color: #154c74 !important;
+            background: #f8f8f8;
+        }
+
+            .btn-secondary:hover {
+                background: #e0e0e0;
+            }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #ff4d6d; /* Màu đỏ nổi bật cho nút xóa */
+            font-size: 18px;
+            opacity: 0.8;
+            transition: .2s;
+            padding: 5px;
+        }
+
+            .btn-delete:hover {
+                opacity: 1;
+                transform: scale(1.1);
+                color: #ff2f5e;
+            }
+
+        /* EMPTY CART */
+        .empty-cart {
+            background: white;
+            padding: 40px;
+            border-radius: 18px;
+            text-align: center;
+            border: 1px solid #b7dbff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.10);
+        }
+
+            .empty-cart h4 {
+                font-size: 28px;
+                font-weight: 900;
+                color: #0d304a;
+            }
 
 
-<div class="container py-4">
+        @@media (max-width: 768px) {
+            h2
 
-    <h2 class="mb-4">Giỏ hàng – Bàn @table?.TableNumber</h2>
+        {
+            font-size: 26px;
+        }
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="cart-box mb-4">
+        .cart-box {
+            padding: 15px;
+        }
 
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Món</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                            <th>Tổng</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+        /* Ẩn cột Giá và Xóa trên mobile, chuyển sang chi tiết hàng */
+        .table thead th:nth-child(2),
+        .table tbody td:nth-child(2) {
+            display: none; /* Cột Giá */
+        }
 
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
+        /* Tinh chỉnh cột Xóa thành icon nhỏ gọn */
+        .table thead th:nth-child(5),
+        .table tbody td:nth-child(5) {
+            width: 10px;
+        }
+
+        /* Đảm bảo cột tên món chiếm đủ chỗ */
+        .table thead th:nth-child(1) {
+            width: 40%;
+        }
+
+        /* Group các nút hành động (Tiếp tục, Thanh toán) */
+        .d-flex.justify-content-between {
+            flex-direction: column-reverse;
+            gap: 15px;
+        }
+
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Tinh chỉnh tổng cộng trên mobile */
+        .total-display {
+            font-size: 18px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-4">
+
+        <h2 class="mb-4">Giỏ hàng – Bàn @table?.TableNumber</h2>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="cart-box mb-4">
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>@item.MenuItemName</td>
-                                <td>@item.UnitPrice.ToString("N0") ₫</td>
-
-                                <td>
-                                    <div class="qty-btn-group d-flex align-items-center gap-2">
-                                        <button class="btn btn-outline-secondary"
-                                                onclick="updateCartItem(@item.MenuItemId, @item.Quantity - 1)">
-                                            −
-                                        </button>
-
-                                        <span>@item.Quantity</span>
-
-                                        <button class="btn btn-outline-secondary"
-                                                onclick="updateCartItem(@item.MenuItemId, @item.Quantity + 1)">
-                                            +
-                                        </button>
-                                    </div>
-                                </td>
-
-                                <td>@item.TotalPrice.ToString("N0") ₫</td>
-
-                                <td>
-                                    <button class="btn btn-danger btn-sm" onclick="removeFromCart(@item.MenuItemId)">
-                                        Xoá
-                                    </button>
-                                </td>
+                                <th>Món</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
+                                <th></th>
                             </tr>
-                        }
-                    </tbody>
+                        </thead>
 
-                    <tfoot>
-                        <tr>
-                            <th colspan="5">
-                                <div class="total-display">
-                                    Tổng cộng: @totalAmount.ToString("N0") ₫
-                                </div>
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="align-middle">
+                                        <div class="d-flex flex-column">
+                                            <div class="fw-bold">@item.MenuItemName</div>
+                                            <div class="text-muted small d-block d-md-none">
+                                                @item.UnitPrice.ToString("N0") ₫ / món
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">@item.UnitPrice.ToString("N0") ₫</td>
+
+                                    <td class="align-middle">
+                                        <div class="qty-btn-group d-flex align-items-center gap-2">
+                                            <button class="btn btn-outline-secondary"
+                                                    onclick="updateCartItem(@item.MenuItemId, @item.Quantity - 1)">
+                                                −
+                                            </button>
+
+                                            <span>@item.Quantity</span>
+
+                                            <button class="btn btn-outline-secondary"
+                                                    onclick="updateCartItem(@item.MenuItemId, @item.Quantity + 1)">
+                                                +
+                                            </button>
+                                        </div>
+                                    </td>
+
+                                    <td class="align-middle fw-bold">@item.TotalPrice.ToString("N0") ₫</td>
+
+                                    <td class="align-middle text-center">
+                                        <button class="btn-delete" onclick="removeFromCart(@item.MenuItemId)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <th colspan="5" class="p-0 border-0">
+                                    <div class="total-display mt-3">
+                                        Tổng cộng: @totalAmount.ToString("N0") ₫
+                                    </div>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
             </div>
 
-        </div>
+            <!-- BUTTONS -->
+            <div class="d-flex justify-content-between">
+                <a href="@Url.Action("Index", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                   class="btn btn-secondary">
+                    ← Tiếp tục chọn món
+                </a>
 
-        <!-- BUTTONS -->
-        <div class="d-flex justify-content-between">
-            <a href="@Url.Action("Index", new { tableId = table?.TableId, branchId = branch?.BranchId })"
-               class="btn btn-secondary">
-                ← Tiếp tục chọn món
-            </a>
+                <a href="@Url.Action("Checkout", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                   class="btn btn-primary">
+                    Thanh toán →
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="empty-cart mt-4">
+                <h4>Giỏ hàng trống</h4>
+                <p>Chọn vài món ngon để bắt đầu bữa của bạn nhé!</p>
 
-            <a href="@Url.Action("Checkout", new { tableId = table?.TableId, branchId = branch?.BranchId })"
-               class="btn btn-primary">
-                Thanh toán →
-            </a>
-        </div>
-    }
-    else
-    {
-        <div class="empty-cart mt-4">
-            <h4>Giỏ hàng trống</h4>
-            <p>Chọn vài món ngon để bắt đầu bữa của bạn nhé!</p>
+                <a href="@Url.Action("Index", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                   class="btn btn-primary mt-3">
+                    Xem thực đơn
+                </a>
+            </div>
+        }
 
-            <a href="@Url.Action("Index", new { tableId = table?.TableId, branchId = branch?.BranchId })"
-               class="btn btn-primary mt-3">
-                Xem thực đơn
-            </a>
-        </div>
-    }
-
-</div>
+    </div>
 
 
-<script>
-    function updateCartItem(menuItemId, newQuantity) {
-        if (newQuantity < 0) return;
+    <script>
+        function updateCartItem(menuItemId, newQuantity) {
+            // Thay thế alert() bằng một modal/message box tùy chỉnh
+            if (newQuantity < 0) return;
 
-        fetch('@Url.Action("UpdateCart")', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `menuItemId=${menuItemId}&quantity=${newQuantity}&tableId=@table?.TableId&branchId=@branch?.BranchId`
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) location.reload();
-        });
-    }
+            fetch('@Url.Action("UpdateCart")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `menuItemId=${menuItemId}&quantity=${newQuantity}&tableId=@table?.TableId&branchId=@branch?.BranchId`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) location.reload();
+                 else console.error('Update failed:', data.message || 'Unknown error');
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+        }
 
-    function removeFromCart(menuItemId) {
-        updateCartItem(menuItemId, 0);
-    }
-</script>
+        function removeFromCart(menuItemId) {
+            // Yêu cầu xác nhận xóa - Tạm thời sử dụng confirm() vì không có modal tùy chỉnh.
+            // Cần thay thế bằng UI modal
+            if (confirm("Bạn có chắc chắn muốn xoá món này khỏi giỏ hàng?")) {
+                updateCartItem(menuItemId, 0);
+            }
+        }
+    </script>
+
+</body>
+</html>

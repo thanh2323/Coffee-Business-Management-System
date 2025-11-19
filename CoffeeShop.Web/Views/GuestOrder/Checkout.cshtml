@@ -1,195 +1,335 @@
 ﻿@model IEnumerable<CoffeeShop.Domain.Entities.TempOrderItem>
 @{
+    Layout = null;
     ViewData["HideHeader"] = true;
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Thanh toán";
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
     var totalAmount = (decimal)ViewBag.TotalAmount;
 }
 
-<style>
-    body {
-        background: #e8f5ff;
-        font-family: 'Segoe UI', sans-serif;
-    }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
 
-    h2, h4, h5 {
-        color: #0d304a;
-        font-weight: 800;
-    }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-    /* ORDER SUMMARY */
-    .order-box {
-        background: white;
-        border-radius: 14px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        border: 1px solid #cfe8ff;
-    }
-
-    table thead th {
-        color: #154c74;
-        font-weight: 700;
-        border-bottom: 2px solid #b7dbff !important;
-    }
-
-    table tbody td {
-        padding-top: 14px !important;
-        padding-bottom: 14px !important;
-        font-size: 16px;
-        color: #333;
-    }
-
-    tfoot th {
-        font-size: 18px;
-        color: #0d304a;
-        border-top: 2px solid #b7dbff !important;
-        padding-top: 14px !important;
-    }
-
-    /* RIGHT FORM */
-    .checkout-card {
-        background: white;
-        border-radius: 14px;
-        padding: 22px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        border: 1px solid #cfe8ff;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #154c74;
-    }
-
-    .form-control, .form-select {
-        border-radius: 10px;
-        border: 1px solid #8fd1ff;
-        padding: 10px 14px;
-    }
-
-    .form-check-label {
-        color: #154c74;
-    }
-
-    .btn-pay {
-        background: #38a4e0;
-        border: none;
-        border-radius: 12px;
-        padding: 14px 0;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-        .btn-pay:hover {
-            background: #1f8ac6;
+    <style>
+        /* BASE */
+        body {
+            background: #e8f5ff;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-    .total-display {
-        background: #dff1ff;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-size: 20px;
-        text-align: right;
-        font-weight: 800;
-        color: #0d304a;
-        border: 1px solid #b7dbff;
-    }
-</style>
+        h2 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0d304a;
+        }
+
+        h4, h5 {
+            color: #0d304a;
+            font-weight: 800;
+            font-size: 24px;
+        }
+
+        /* ORDER SUMMARY CARD (LEFT) */
+        .order-box {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.10);
+            border: 1px solid #b7dbff;
+            min-height: 100%;
+        }
+
+        /* TABLE STYLING */
+        table thead th {
+            color: #154c74;
+            font-weight: 700;
+            border-bottom: 2px solid #8fd1ff !important;
+            font-size: 16px;
+        }
+
+        table tbody td {
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        tfoot th {
+            font-size: 18px;
+            color: #0d304a;
+            border-top: none !important;
+            padding: 0 !important;
+        }
+
+        /* TOTAL DISPLAY */
+        .total-display {
+            background: #dff1ff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #0d304a;
+            border: 1px solid #8fd1ff;
+            text-align: right;
+        }
+
+        /* CHECKOUT FORM CARD (RIGHT) */
+        .checkout-card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.10);
+            border: 1px solid #b7dbff;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: #154c74;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #cce5f7;
+            padding: 12px 14px;
+            transition: border-color .2s;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #8fd1ff;
+                box-shadow: 0 0 0 3px rgba(143, 209, 255, 0.25);
+                outline: none;
+            }
+
+        .form-check-label {
+            color: #0d304a;
+            font-weight: 600;
+        }
+
+        /* PAY BUTTON */
+        .btn-pay {
+            background: #8fd1ff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            transition: .2s;
+        }
+
+            .btn-pay:hover {
+                background: #5ea8e0;
+            }
+
+        /* BACK BUTTON */
+        .btn-back {
+            color: #154c74;
+            font-weight: 700;
+            font-size: 17px;
+            text-decoration: none;
+            transition: color .2s;
+            padding: 8px 0;
+        }
+
+            .btn-back:hover {
+                color: #0d304a;
+                text-decoration: underline;
+            }
+
+        /* NEW: 2-COLUMN FORM LAYOUT (CHỈ TRÊN DESKTOP) */
+        @@media (min-width: 992px) {
+            .form-two-cols {
+                display: flex;
+                gap: 15px;
+            }
+
+                .form-two-cols > div {
+                    flex: 1 1 50%;
+                    /* Đảm bảo margin bottom chỉ áp dụng cho div cha (mb-4) */
+                    margin-bottom: 0 !important;
+                }
+                /* Thêm khoảng cách riêng cho form-text */
+                .form-two-cols .form-text {
+                    margin-top: 0.5rem;
+                }
+        }
 
 
-<div class="container py-4">
+        @@media (max-width: 768px) {
+            h2 {
+                font-size: 26px;
+            }
 
-    <h2 class="mb-4">Checkout – Bàn @table?.TableNumber</h2>
+            h4, h5 {
+                font-size: 22px;
+            }
 
-    <div class="row gy-4">
+            .order-box, .checkout-card {
+                padding: 15px;
+            }
+            /* Ẩn cột Giá và Số lượng trên mobile để giữ bố cục */
+            .table thead th:nth-child(2),
+            .table tbody td:nth-child(2),
+            .table thead th:nth-child(3),
+            .table tbody td:nth-child(3) {
+                display: none;
+            }
+            /* Đảm bảo tên món và tổng vẫn hiển thị */
+            .table thead th:nth-child(1) {
+                width: 50%;
+            }
 
-        <!-- LEFT: ORDER SUMMARY -->
-        <div class="col-md-8">
-            <div class="order-box">
-                <h4 class="mb-3">🧾 Order Summary</h4>
+            .table thead th:nth-child(4) {
+                text-align: right;
+            }
 
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Món</th>
-                                <th>Giá</th>
-                                <th>Số lượng</th>
-                                <th>Tổng</th>
-                            </tr>
-                        </thead>
+            .total-display {
+                font-size: 18px;
+            }
+            /* SỬA LỖI: Buộc các trường trong form 2 cột phải xếp chồng trên mobile */
+            .form-two-cols {
+                /* Gỡ bỏ flex trên mobile nếu có */
+                display: block;
+            }
+                /* Thêm margin-bottom cho từng trường input trên mobile */
+                .form-two-cols > div {
+                    margin-bottom: 1.5rem !important;
+                }
+        }
+    </style>
+</head>
 
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
+<body>
+
+    <div class="container py-4">
+
+        <h2 class="mb-4">Thanh toán – Bàn @table?.TableNumber</h2>
+
+        <!-- ĐÃ CẬP NHẬT: Chia thành col-md-6 và col-md-6 -->
+        <div class="row gy-4">
+
+            <!-- LEFT: ORDER SUMMARY (col-md-6) -->
+            <div class="col-md-6">
+                <div class="order-box">
+                    <h4 class="mb-4">🧾 Tóm tắt đơn hàng</h4>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td>@item.MenuItemName</td>
-                                    <td>@item.UnitPrice.ToString("N0") ₫</td>
-                                    <td>@item.Quantity</td>
-                                    <td>@item.TotalPrice.ToString("N0") ₫</td>
+                                    <th>Món</th>
+                                    <th>Giá</th>
+                                    <th>SL</th>
+                                    <th class="text-end">Tổng</th>
                                 </tr>
-                            }
-                        </tbody>
+                            </thead>
 
-                        <tfoot>
-                            <tr>
-                                <th colspan="4">
-                                    <div class="total-display">
-                                        Tổng cộng: @totalAmount.ToString("N0") ₫
-                                    </div>
-                                </th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">@item.MenuItemName</div>
+                                            <div class="text-muted small d-block d-sm-none">
+                                                (@item.Quantity x @item.UnitPrice.ToString("N0") ₫)
+                                            </div>
+                                        </td>
+                                        <td class="align-middle">@item.UnitPrice.ToString("N0") ₫</td>
+                                        <td class="align-middle">@item.Quantity</td>
+                                        <td class="align-middle fw-bold text-end">@item.TotalPrice.ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="p-0">
+                                        <div class="total-display mt-3">
+                                            Tổng cộng: @totalAmount.ToString("N0") ₫
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-block d-md-none text-center mt-3">
+                    <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                       class="btn-back">
+                        ← Quay lại Giỏ hàng
+                    </a>
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT: CUSTOMER FORM (col-md-6) -->
+            <div class="col-md-6">
+                <div class="checkout-card">
+
+                    <h5 class="mb-4">👤 Thông tin thanh toán</h5>
+
+                    <form asp-action="Checkout" method="post">
+
+                        <input type="hidden" name="tableId" value="@table?.TableId" />
+                        <input type="hidden" name="branchId" value="@branch?.BranchId" />
+
+                        <!-- SỬA LỖI: Thêm class mb-3 vào div cha để áp dụng margin-bottom -->
+                        <div class="form-two-cols mb-3">
+                            <div>
+                                <label class="form-label">Tên khách *</label>
+                                <input type="text" name="customerName" required class="form-control" placeholder="Nhập tên khách">
+                            </div>
+
+                            <div>
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="tel" name="customerPhone" class="form-control" placeholder="Ví dụ: 0903 123 456" />
+                                <div class="form-text">Nhập SĐT để tích điểm</div>
+                            </div>
+                        </div>
+                        <!-- END 2-COLUMN GROUP -->
+
+                        <div class="mb-4">
+                            <label class="form-label">Phương thức *</label>
+                            <select class="form-select" name="gateway" required>
+                                <option value="">-- Chọn phương thức --</option>
+                                <option value="1">VNPay</option>
+                                <option value="2">MoMo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="isTakeAway">
+                            <label class="form-check-label" for="isTakeAway">Mang đi</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-pay w-100">
+                            Thanh toán @totalAmount.ToString("N0") ₫ & Hoàn tất
+                        </button>
+
+                        <div class="d-none d-md-block text-center mt-3">
+                            <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })"
+                               class="btn-back">
+                                ← Quay lại Giỏ hàng
+                            </a>
+                        </div>
+
+                    </form>
+
                 </div>
             </div>
+
         </div>
-
-
-        <!-- RIGHT: CUSTOMER FORM -->
-        <div class="col-md-4">
-            <div class="checkout-card">
-
-                <h5 class="mb-3">👤 Thông tin khách hàng</h5>
-
-                <form asp-action="Checkout" method="post">
-
-                    <input type="hidden" name="tableId" value="@table?.TableId" />
-                    <input type="hidden" name="branchId" value="@branch?.BranchId" />
-
-                    <div class="mb-3">
-                        <label class="form-label">Tên khách *</label>
-                        <input type="text" name="customerName" required class="form-control" placeholder="Nhập tên khách">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Số điện thoại (tuỳ chọn)</label>
-                        <input type="tel" name="customerPhone" class="form-control" placeholder="Ví dụ: 0903 123 456" />
-                        <div class="form-text">Nhập số điện thoại để tích điểm thành viên</div>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="isTakeAway">
-                        <label class="form-check-label" for="isTakeAway">Mang đi</label>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Phương thức thanh toán</label>
-                        <select class="form-select" name="gateway" required>
-                            <option value="">-- Chọn phương thức --</option>
-                            <option value="1">VNPay</option>
-                            <option value="2">MoMo</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-pay w-100">
-                        Thanh toán & Hoàn tất đơn
-                    </button>
-
-                </form>
-
-            </div>
-        </div>
-
     </div>
-</div>
+</body>
+</html>
