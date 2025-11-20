@@ -12,163 +12,695 @@
 }
 
 <style>
-    /* CSS Tùy chỉnh để giống trang Menu */
-    .menu-item-card {
-        border: none;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        border-radius: 15px;
-        overflow: hidden;
-        transition: transform 0.2s ease;
+    /* ===== GLOBAL ===== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-        .menu-item-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .menu-item-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-    .filter-buttons .btn-group {
-        flex-wrap: wrap; /* Cho phép các nút xuống dòng trên di động */
+    body {
+        background-color: #f5f7fb;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #1f2933;
     }
 
-    /* Đảm bảo cột tóm tắt đơn hàng cuộn độc lập */
-    .order-summary-container {
+    a {
+        text-decoration: none;
+    }
+
+    /* ===== COLOR SYSTEM ===== */
+    :root {
+        --primary: #2563eb; /* blue */
+        --primary-soft: #eff6ff; /* soft blue bg */
+        --border-soft: #e5e7eb; /* light gray border */
+        --text-main: #111827;
+        --text-muted: #6b7280;
+        --bg-card: #ffffff;
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 16px 0;
+        margin: -20px -15px 24px -15px;
+    }
+
+    .page-title {
+        color: var(--text-main);
+        font-size: 24px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+    /* ===== CARD ===== */
+    .modern-card {
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 20px 22px;
+        border: 1px solid var(--border-soft);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+        margin-bottom: 18px;
+    }
+
+        .modern-card:hover {
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+        }
+
+    .card-header-modern {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .card-header-modern i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+    /* ===== FORM ===== */
+    .form-group-modern {
+        margin-bottom: 16px;
+    }
+
+    .form-label-modern {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-input-modern {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border-soft);
+        font-size: 14px;
+        background-color: #f9fafb;
+        transition: all 0.2s ease;
+    }
+
+        .form-input-modern::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-input-modern:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+        }
+
+    /* ===== SWITCH ===== */
+    .switch-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background-color: #f9fafb;
+        border-radius: 12px;
+        margin-top: 4px;
+    }
+
+    .switch-modern {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 24px;
+    }
+
+        .switch-modern input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider-modern {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #d1d5db;
+        transition: 0.2s;
+        border-radius: 999px;
+    }
+
+        .slider-modern:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #ffffff;
+            transition: 0.2s;
+            border-radius: 999px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+        }
+
+    input:checked + .slider-modern {
+        background-color: var(--primary);
+    }
+
+        input:checked + .slider-modern:before {
+            transform: translateX(20px);
+        }
+
+    .switch-label {
+        font-size: 14px;
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    /* ===== STICKY SIDEBAR ===== */
+    .sticky-sidebar {
         position: sticky;
-        top: 20px; /* Khoảng cách từ lề trên */
+        top: 20px;
     }
 
-    .summary-table-container {
-        max-height: 400px;
+    /* ===== SUMMARY TABLE ===== */
+    .summary-scroll {
+        max-height: 320px;
         overflow-y: auto;
+        margin: 0 -22px;
+        padding: 0 22px;
     }
 
-    .menu-items-container {
-        max-height: 80vh; /* Giới hạn chiều cao và cho phép cuộn */
-        overflow-y: auto;
+        .summary-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .summary-scroll::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        .summary-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+    .summary-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 6px;
     }
 
+        .summary-table thead th {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 8px 6px;
+            border: none;
+            background: transparent;
+        }
+
+        .summary-table tbody tr {
+            background-color: #f9fafb;
+            transition: background-color 0.15s ease, transform 0.15s ease;
+        }
+
+            .summary-table tbody tr:hover {
+                background-color: #eef2f7;
+            }
+
+        .summary-table tbody td {
+            padding: 10px 8px;
+            border: none;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .summary-table tbody tr td:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .summary-table tbody tr td:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+    .summary-item-name {
+        font-weight: 600;
+        color: var(--text-main);
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .summary-item-price {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .qty-input-modern {
+        width: 60px;
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 1px solid var(--border-soft);
+        font-size: 13px;
+        text-align: center;
+        transition: all 0.15s ease;
+    }
+
+        .qty-input-modern:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+        }
+
+    .remove-btn-modern {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        border: none;
+        background-color: #fee2e2;
+        color: #b91c1c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+        .remove-btn-modern:hover {
+            background-color: #dc2626;
+            color: #ffffff;
+        }
+
+    /* ===== TOTAL & SUBMIT ===== */
+    .total-section {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .total-label {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .total-amount {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .submit-btn-modern {
+        width: 100%;
+        margin-top: 14px;
+        padding: 12px 16px;
+        border-radius: 999px;
+        border: none;
+        background-color: var(--primary);
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+        .submit-btn-modern:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+        }
+
+        .submit-btn-modern:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+        }
+
+    /* ===== FILTER ===== */
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .filter-btn-modern {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--border-soft);
+        background-color: #ffffff;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+        .filter-btn-modern:hover {
+            border-color: var(--primary);
+            color: #1f2933;
+            background-color: #e5f0ff;
+        }
+
+        .filter-btn-modern.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+    /* ===== MENU ITEM ===== */
+    .menu-item-modern {
+        background-color: #ffffff;
+        border-radius: 14px;
+        border: 1px solid var(--border-soft);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.15s ease, transform 0.12s ease;
+    }
+
+        .menu-item-modern:hover {
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+            transform: translateY(-3px);
+        }
+
+    .menu-item-image {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        background-color: #e5e7eb;
+    }
+
+    .menu-item-content {
+        padding: 12px 14px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .menu-item-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .menu-item-price {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 6px;
+    }
+
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 4px;
+        margin-bottom: 8px;
+    }
+
+    .qty-btn-modern {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 1px solid var(--border-soft);
+        background-color: #ffffff;
+        color: var(--primary);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.12s ease;
+    }
+
+        .qty-btn-modern:hover {
+            border-color: var(--primary);
+            background-color: #e5f0ff;
+        }
+
+    .qty-display {
+        min-width: 40px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border-soft);
+        background-color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .add-to-cart-btn {
+        margin-top: 4px;
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: none;
+        background-color: #111827;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+        box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2);
+    }
+
+        .add-to-cart-btn:hover {
+            background-color: #020617;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3);
+        }
+
+        .add-to-cart-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+        }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 30px 10px;
+        color: var(--text-muted);
+    }
+
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+
+    .empty-state-text {
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 991px) {
+        .sticky-sidebar
+
+    {
+        position: static;
+    }
+
+    .page-header {
+        margin: -20px -15px 16px -15px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .modern-card
+
+    {
+        padding: 16px;
+    }
+
+    .page-title {
+        font-size: 18px;
+    }
+
+    .total-amount {
+        font-size: 18px;
+    }
+
+    }
 </style>
 
-<div class="container-fluid">
-    <h2 class="mb-4">Tạo đơn hàng mới</h2>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+    <div class="container-fluid">
+        <h1 class="page-title">
+            <i class="fas fa-shopping-cart"></i>
+            Tạo đơn hàng mới
+        </h1>
+    </div>
+</div>
 
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-4 col-md-12 mb-3">
-            <div class="order-summary-container">
-                <div class="card mb-3 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <i class="fas fa-user me-2"></i>Thông tin khách hàng
+
+        <!-- LEFT: CUSTOMER + SUMMARY -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <div class="sticky-sidebar">
+
+                <div class="modern-card">
+                    <div class="card-header-modern">
+                        <i class="fas fa-user-circle"></i>
+                        Thông tin khách hàng
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label>Tên <span class="text-danger">*</span></label>
-                            <input type="text" id="customerName" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label>Số điện thoại</label>
-                            <input type="tel" id="customerPhone" class="form-control" placeholder="Không bắt buộc">
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="isTakeAway" style="width: 3em; height: 1.5em;">
-                                <label class="form-check-label ms-2" for="isTakeAway">Mang đi</label>
-                            </div>
-                        </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Tên khách hàng *</label>
+                        <input type="text" id="customerName" class="form-input-modern" placeholder="Nhập tên khách" required />
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Số điện thoại</label>
+                        <input type="tel" id="customerPhone" class="form-input-modern" placeholder="Nhập số điện thoại (tùy chọn)" />
+                    </div>
+
+                    <div class="switch-container">
+                        <label class="switch-modern">
+                            <input type="checkbox" id="isTakeAway">
+                            <span class="slider-modern"></span>
+                        </label>
+                        <span class="switch-label">Đơn hàng mang đi</span>
                     </div>
                 </div>
 
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-info text-white">
-                        <i class="fas fa-list-alt me-2"></i>Tóm tắt đơn hàng
+                <div class="modern-card">
+                    <div class="card-header-modern">
+                        <i class="fas fa-receipt"></i>
+                        Tóm tắt đơn hàng
                     </div>
-                    <div class="card-body">
-                        <div class="summary-table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Món</th>
-                                        <th>SL</th>
-                                        <th>Thành tiền</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="orderSummary">
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted">Chưa có món nào</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <hr />
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="fw-bold mb-0">Tổng cộng:</h4>
-                            <h4 id="totalAmount" class="fw-bold text-success mb-0">0 đ</h4>
-                        </div>
-                        <button class="btn btn-success btn-lg w-100 mt-3" onclick="submitOrder()">
-                            <i class="fas fa-check me-2"></i>Tạo đơn hàng
-                        </button>
+
+                    <div class="summary-scroll">
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Món</th>
+                                    <th style="text-align:center;">SL</th>
+                                    <th style="text-align:right;">Tiền</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderSummary">
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <i class="fas fa-shopping-basket"></i>
+                                            <div class="empty-state-text">Chưa có món nào trong giỏ</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+
+                    <div class="total-section">
+                        <div class="total-label">Tổng cộng</div>
+                        <div id="totalAmount" class="total-amount">0đ</div>
+                    </div>
+
+                    <button class="submit-btn-modern" onclick="submitOrder()">
+                        <i class="fas fa-check-circle me-1"></i>
+                        Xác nhận đơn hàng
+                    </button>
                 </div>
             </div>
         </div>
 
+        <!-- RIGHT: MENU & FILTER -->
         <div class="col-lg-8 col-md-12">
-            <div class="card mb-3 shadow-sm border-0 filter-buttons">
-                <div class="card-body d-flex flex-wrap gap-2 align-items-center py-2">
-                    <strong class="text-muted me-2">Lọc theo:</strong>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button class="btn btn-primary" onclick="filterCategory('all', this)">Tất cả</button>
-                        @foreach (var cat in categories)
-                        {
-                            <button class="btn btn-outline-primary" onclick="filterCategory('@cat', this)">@cat</button>
-                        }
-                    </div>
+
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <i class="fas fa-filter"></i>
+                    Danh mục món
+                </div>
+
+                <div class="filter-container">
+                    <button class="filter-btn-modern active" onclick="filterCategory('all', this)">Tất cả</button>
+                    @foreach (var cat in categories)
+                    {
+                        <button class="filter-btn-modern" onclick="filterCategory('@cat', this)">@cat</button>
+                    }
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-success text-white">
-                    <i class="fas fa-utensils me-2"></i>Danh sách món
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <i class="fas fa-coffee"></i>
+                    Danh sách món
                 </div>
-                <div class="card-body menu-items-container">
-                    <div class="row">
-                        @foreach (var item in menuItems)
-                        {
-                            <div class="col-lg-4 col-md-6 col-sm-6 mb-3 menu-item" data-category="@item.Category">
-                                <div class="card h-100 menu-item-card">
-                                    <img src="@Url.Content(item.ImagePath)" alt="@item.Name" class="card-img-top" onerror="this.src='/images/no-image.png';" />
-                                    <div class="card-body text-center d-flex flex-column justify-content-between">
-                                        <div>
-                                            <h6>@item.Name</h6>
-                                            <p class="text-primary fw-bold">@item.Price.ToString("N0") đ</p>
+
+                <div class="row">
+                    @foreach (var item in menuItems)
+                    {
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4 menu-item" data-category="@item.Category">
+                            <div class="menu-item-modern">
+                                <img class="menu-item-image"
+                                     src="@Url.Content(item.ImagePath)"
+                                     onerror="this.src='/images/no-image.png';"
+                                     alt="@item.Name" />
+                                <div class="menu-item-content">
+                                    <div class="menu-item-name">@item.Name</div>
+                                    <div class="menu-item-price">@item.Price.ToString("N0") đ</div>
+
+                                    <div class="mt-auto">
+                                        <div class="qty-controls">
+                                            <button class="qty-btn-modern" onclick="updateItemQuantity(@item.MenuItemId, -1)">−</button>
+                                            <div id="qty-@item.MenuItemId" class="qty-display">0</div>
+                                            <button class="qty-btn-modern" onclick="updateItemQuantity(@item.MenuItemId, 1)">+</button>
                                         </div>
-                                        <div class="mt-2">
-                                            <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-outline-secondary btn-sm"
-                                                        onclick="updateItemQuantity(@item.MenuItemId, -1)">
-                                                    −
-                                                </button>
-                                                <span id="qty-@item.MenuItemId" class="btn btn-outline-secondary btn-sm" style="width: 40px;">0</span>
-                                                <button type="button" class="btn btn-outline-secondary btn-sm"
-                                                        onclick="updateItemQuantity(@item.MenuItemId, 1)">
-                                                    +
-                                                </button>
-                                            </div>
-                                            <button class="btn btn-sm btn-success w-100 mt-2"
-                                                    onclick="addItem(@item.MenuItemId, '@item.Name', @item.Price)">
-                                                <i class="fas fa-plus me-1"></i>Thêm
-                                            </button>
-                                        </div>
+
+                                        <button class="add-to-cart-btn"
+                                                onclick="addItem(@item.MenuItemId, '@item.Name', @item.Price)">
+                                            <i class="fas fa-plus me-1"></i> Thêm vào giỏ
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        }
-                    </div>
+                        </div>
+                    }
                 </div>
+
             </div>
         </div>
     </div>
@@ -179,35 +711,32 @@
         const branchId = @branchId;
         let selectedItems = [];
 
-        // Hàm lọc danh mục
+        // Lọc danh mục
         function filterCategory(category, btn) {
             const allItems = document.querySelectorAll('.menu-item');
-            const buttons = document.querySelectorAll('.filter-buttons .btn-group button');
+            const buttons = document.querySelectorAll('.filter-btn-modern');
 
-            buttons.forEach(b => {
-                b.classList.remove('btn-primary');
-                b.classList.add('btn-outline-primary');
-            });
-
-            btn.classList.add('btn-primary');
-            btn.classList.remove('btn-outline-primary');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
             allItems.forEach(item => {
-                if (category === 'all' || item.dataset.category === category)
+                if (category === 'all' || item.dataset.category === category) {
                     item.style.display = 'block';
-                else
+                } else {
                     item.style.display = 'none';
+                }
             });
         }
 
-        // Cập nhật số lượng trên thẻ món ăn
+        // Cập nhật số lượng trên thẻ món
         function updateItemQuantity(menuItemId, change) {
             const qtyElement = document.getElementById('qty-' + menuItemId);
             let currentQty = parseInt(qtyElement.textContent) || 0;
-            qtyElement.textContent = Math.max(0, currentQty + change);
+            const newQty = Math.max(0, currentQty + change);
+            qtyElement.textContent = newQty;
         }
 
-        // Thêm món vào mảng selectedItems
+        // Thêm món vào giỏ
         function addItem(menuItemId, name, price) {
             const qtyElement = document.getElementById('qty-' + menuItemId);
             const quantity = parseInt(qtyElement.textContent) || 0;
@@ -221,43 +750,54 @@
             if (existing) {
                 existing.quantity += quantity;
             } else {
-                selectedItems.push({ menuItemId, name, price, quantity: quantity });
+                selectedItems.push({ menuItemId, name, price, quantity });
             }
 
-            // Reset số lượng trên thẻ về 0
             qtyElement.textContent = '0';
-
             updateSummary();
         }
 
-        // Cập nhật số lượng từ bảng tóm tắt
+        // Cập nhật số lượng trong tóm tắt
         function updateQuantity(menuItemId, qty) {
             const item = selectedItems.find(i => i.menuItemId === menuItemId);
             if (item) {
                 item.quantity = parseInt(qty);
-                if (item.quantity <= 0) removeItem(menuItemId);
-                else updateSummary();
+                if (item.quantity <= 0) {
+                    removeItem(menuItemId);
+                } else {
+                    updateSummary();
+                }
             }
         }
 
-        // Xóa món khỏi bảng tóm tắt
+        // Xóa món khỏi giỏ
         function removeItem(menuItemId) {
             selectedItems = selectedItems.filter(i => i.menuItemId !== menuItemId);
             updateSummary();
         }
 
-        // Vẽ lại bảng tóm tắt
+        // Vẽ lại tóm tắt đơn hàng
         function updateSummary() {
             const tbody = $('#orderSummary');
             tbody.empty();
 
             if (selectedItems.length === 0) {
-                tbody.append('<tr><td colspan="4" class="text-center text-muted">Chưa có món nào</td></tr>');
-                $('#totalAmount').text('0 đ');
+                tbody.append(`
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-basket"></i>
+                                <div class="empty-state-text">Chưa có món nào trong giỏ</div>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                $('#totalAmount').text('0đ');
                 return;
             }
 
             let total = 0;
+
             selectedItems.forEach(item => {
                 const subtotal = item.price * item.quantity;
                 total += subtotal;
@@ -265,23 +805,27 @@
                 tbody.append(`
                     <tr>
                         <td>
-                            <div classs="fw-bold">${item.name}</div>
-                            <small class="text-muted">${item.price.toLocaleString('vi-VN')} đ</small>
+                            <span class="summary-item-name">${item.name}</span>
+                            <span class="summary-item-price">${item.price.toLocaleString('vi-VN')} đ</span>
                         </td>
-                        <td>
+                        <td style="text-align:center;">
                             <input type="number" min="1" value="${item.quantity}"
                                    onchange="updateQuantity(${item.menuItemId}, this.value)"
-                                   class="form-control form-control-sm" style="width:60px;">
+                                   class="qty-input-modern" />
                         </td>
-                        <td class="fw-bold">${subtotal.toLocaleString('vi-VN')} đ</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-danger" onclick="removeItem(${item.menuItemId})">×</button>
+                        <td style="text-align:right;">
+                            <strong>${subtotal.toLocaleString('vi-VN')} đ</strong>
+                        </td>
+                        <td style="text-align:center;">
+                            <button class="remove-btn-modern" onclick="removeItem(${item.menuItemId})">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                 `);
             });
 
-            $('#totalAmount').text(total.toLocaleString('vi-VN') + ' đ');
+            $('#totalAmount').text(total.toLocaleString('vi-VN') + 'đ');
         }
 
         // Gửi đơn hàng
@@ -318,16 +862,16 @@
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(orderData),
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
-                        alert('Đã tạo đơn hàng!');
+                        alert('Đã tạo đơn hàng thành công!');
                         window.location.href = `/Order/Index?branchId=${branchId}`;
                     } else {
                         alert(response.message);
                     }
                 },
-                error: function() {
-                    alert('Đã xảy ra lỗi');
+                error: function () {
+                    alert('Đã xảy ra lỗi khi tạo đơn hàng');
                 }
             });
         }

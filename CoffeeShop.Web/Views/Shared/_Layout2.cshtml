@@ -15,7 +15,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <style>
         :root {
             --blue: #007AFF;
@@ -252,7 +252,7 @@
             <div class="top-nav">
                 <div class="brand">☕ Café</div>
                 <div class="nav-actions">
-                    <i class="bi bi-bell fs-5"></i>
+                    @* <i class="bi bi-bell fs-5"></i> *@
                     <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
                     <span>@User.Identity.Name</span>
                 </div>
@@ -296,7 +296,7 @@
             <div class="top-nav">
                 <div class="brand">☕ Café</div>
                 <div class="nav-actions">
-                    <i class="bi bi-bell fs-5"></i>
+                    @* <i class="bi bi-bell fs-5"></i> *@
                     <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
                 </div>
             </div>
@@ -341,7 +341,7 @@
                 <div class="top-nav">
                     <div class="brand">☕ Café</div>
                     <div class="nav-actions">
-                        <i class="bi bi-bell fs-5"></i>
+                        @* <i class="bi bi-bell fs-5"></i> *@
                         <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
                     </div>
                 </div>
@@ -365,7 +365,7 @@
                         <div id="settingsPopupStaff" class="settings-popup">
                             <ul class="list-unstyled mb-0">
                                 <li><a href="/Auth/Profile" class="dropdown-item-custom"><i class="bi bi-person-circle me-2"></i> Tài khoản</a></li>
-                                <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li>
+                                @* <li><a href="/Notifications" class="dropdown-item-custom"><i class="bi bi-bell me-2"></i> Thông báo</a></li> *@
                                 <li>
                                     <form id="logoutFormStaff" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;"></form>
                                     <a href="#" class="dropdown-item-custom border-top mt-1 pt-2 text-danger"
@@ -381,7 +381,7 @@
                 <div class="top-nav">
                     <div class="brand">☕ Café</div>
                     <div class="nav-actions">
-                        <i class="bi bi-bell fs-5"></i>
+                        @* <i class="bi bi-bell fs-5"></i> *@
                         <img src="https://i.pravatar.cc/40" class="user-avatar" id="avatarProfile" />
                     </div>
                 </div>
@@ -391,47 +391,85 @@
 
     <div class="main-content">
         @RenderBody()
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        
 
     </div>
-
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(function () {
-            // highlight link
+                    $(function () {
+
+            // ==========================
+            // SIDEBAR HIGHLIGHT (Ưu tiên đường dẫn dài nhất)
+            // ==========================
             const path = window.location.pathname.toLowerCase();
+
+            $(".sidebar a").removeClass("active");
+
+            let $best = null;
+            let bestLen = -1;
+
             $(".sidebar a").each(function () {
-                const href = $(this).attr("href");
-                if (href && path.startsWith(href.toLowerCase())) {
-                    $(this).addClass("active");
+                let href = $(this).attr("href");
+                if (!href) return;
+
+                href = href.split("#")[0].split("?")[0].toLowerCase();
+
+                const exact = (path === href);
+                const isPrefix = (path.startsWith(href + "/"));
+
+                if (exact || isPrefix) {
+                    if (href.length > bestLen) {
+                        bestLen = href.length;
+                        $best = $(this);
+                    }
                 }
             });
 
-            // toggle settings
+            // highlight link đúng nhất
+            if ($best) {
+                $best.addClass("active");
+            } else {
+                // Nếu đang ở trang Profile → highlight menu Cài đặt
+                if (path.startsWith("/auth/profile")) {
+                    $("[id^='settingsBtn']").addClass("active");
+                }
+            }
+
+
+            // ==========================
+            // SETTINGS POPUP
+            // ==========================
             const pairs = [
                 { btn: "#settingsBtnOwner", popup: "#settingsPopupOwner" },
                 { btn: "#settingsBtnAdmin", popup: "#settingsPopupAdmin" },
                 { btn: "#settingsBtnStaff", popup: "#settingsPopupStaff" }
             ];
+
             pairs.forEach(({ btn, popup }) => {
-                const popupEl = $(popup);
+                const $popup = $(popup);
                 $(btn).on("click", function (e) {
                     e.preventDefault();
-                    $(".settings-popup").not(popupEl).fadeOut(100);
-                    popupEl.fadeToggle(120);
+                    $(".settings-popup").not($popup).fadeOut(100);
+                    $popup.fadeToggle(120);
                 });
             });
 
+            // đóng popup khi click ra ngoài
             $(document).on("click", function (e) {
                 if (!$(e.target).closest(".settings-popup, [id^='settingsBtn']").length) {
                     $(".settings-popup").fadeOut(100);
                 }
             });
 
-            // avatar click → Auth/Profile
+
+            // ==========================
+            // AVATAR → PROFILE
+            // ==========================
             $("#avatarProfile").on("click", function () {
                 window.location.href = "/Auth/Profile";
             });
+
         });
     </script>
 

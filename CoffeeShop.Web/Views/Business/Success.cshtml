@@ -1,22 +1,147 @@
-@{
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
     ViewData["Title"] = "Business Created";
 }
 
-<div class="container mt-5 text-center">
-    <div class="alert alert-info">
-        <h4>Your business has been created.</h4>
-        <p>Please proceed to payment to activate your business.</p>
+<style>
+    body {
+        background: #e8f5ff;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .success-wrapper {
+        max-width: 600px;
+        margin: 60px auto;
+        background: #ffffff;
+        padding: 40px 35px;
+        border-radius: 18px;
+        border: 1px solid #d6eaff;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+        text-align: center;
+        animation: fadeIn 0.4s ease;
+    }
+
+    /* ICON SUCCESS */
+    .success-icon {
+        width: 85px;
+        height: 85px;
+        border-radius: 50%;
+        background: #d4f8e8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 20px auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+        .success-icon i {
+            font-size: 46px;
+            color: #1fbf62;
+        }
+
+    /* TITLE */
+    .success-title {
+        font-size: 30px;
+        font-weight: 900;
+        color: #0d304a;
+        margin-bottom: 10px;
+    }
+
+    .success-desc {
+        font-size: 17px;
+        color: #3d5464;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+
+    /* SELECT DROPDOWN */
+    .form-select {
+        border-radius: 12px;
+        border: 1px solid #8fd1ff;
+        padding: 10px 14px;
+        font-size: 16px;
+    }
+
+        .form-select:focus {
+            border-color: #38a4e0;
+            box-shadow: 0 0 0 3px rgba(56,164,224,0.25);
+        }
+
+    /* BUTTONS */
+    .btn-pay {
+        background: #38a4e0;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-size: 17px;
+        color: white;
+        font-weight: 700;
+        width: 100%;
+    }
+
+        .btn-pay:hover {
+            background: #1f8ac6;
+        }
+
+    .btn-back {
+        margin-top: 12px;
+        padding: 12px 20px;
+        font-size: 17px;
+        font-weight: 700;
+        border-radius: 12px;
+        width: 100%;
+    }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+</style>
+
+
+<div class="container">
+
+    <div class="success-wrapper">
+
+        <!-- SUCCESS ICON -->
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <!-- TEXT -->
+        <div class="success-title">Doanh nghiệp đã được tạo thành công!</div>
+        <div class="success-desc">
+            Mọi thứ đã sẵn sàng! Vui lòng tiến hành thanh toán để kích hoạt
+            và bắt đầu sử dụng hệ thống quản lý doanh nghiệp của bạn.
+        </div>
+
+        <!-- PAYMENT FORM -->
+        <form method="post" asp-controller="Business" asp-action="Pay">
+            <input type="hidden" name="businessId" value="@ViewBag.BusinessId" />
+
+            <select name="gateway" class="form-select mb-3">
+                <option value="VNPay">Thanh toán qua VNPay</option>
+                <option value="MoMo">Thanh toán qua MoMo</option>
+            </select>
+
+            <button type="submit" class="btn btn-pay">Tiến hành thanh toán</button>
+        </form>
+
+        <a asp-controller="Business" asp-action="My" class="btn btn-secondary btn-back">
+            Quay lại
+        </a>
+
+
     </div>
-    <form method="post" asp-controller="Business" asp-action="Pay" class="d-inline">
-        <input type="hidden" name="businessId" value="@ViewBag.BusinessId" />
-        <select name="gateway" class="form-select d-inline w-auto me-2">
-            <option value="VNPay">VNPay</option>
-            <option value="MoMo">MoMo</option>
-        </select>
-        <button type="submit" class="btn btn-success">Pay Now</button>
-    </form>
-    <a class="btn btn-secondary ms-2" href="/">Back to Home</a>
-    
+
 </div>
-
-

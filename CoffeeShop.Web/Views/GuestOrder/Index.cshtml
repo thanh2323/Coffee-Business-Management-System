@@ -1,9 +1,19 @@
 ﻿@model IEnumerable<CoffeeShop.Domain.Entities.MenuItem>
 @{
-    Layout = null; // Disable default layout
+    Layout = null;
     ViewData["Title"] = "Thực đơn";
+
     var table = ViewBag.Table as CoffeeShop.Domain.Entities.CafeTable;
     var branch = ViewBag.Branch as CoffeeShop.Domain.Entities.Branch;
+
+    var allItems = Model.ToList();
+    // Giữ 4 món nổi bật (Featured)
+    var featuredItems = allItems.Take(4).ToList();
+    // 4 món mới
+    var newItems = allItems.TakeLast(4).ToList();
+    var categories = allItems.Select(m => m.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct();
+
+    // ĐÃ BỎ: var branchImagePath KHÔNG CÒN TỒN TẠI
 }
 
 <!DOCTYPE html>
@@ -12,89 +22,414 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
+        /* BASE */
         body {
-            background-color: #f9f9f9;
+            background: #e8f5ff;
             font-family: 'Segoe UI', sans-serif;
         }
 
+        /* HEADER */
         .menu-header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
-            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #cce5f7;
+            padding: 18px 22px;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 1020;
         }
 
             .menu-header h2 {
-                margin: 0;
-                font-weight: 600;
-                font-size: 1.5rem;
+                font-weight: 700;
+                font-size: 22px;
+                color: #154c74;
             }
 
-        .cart-btn {
+        /* Nút Giỏ Hàng - Xanh Pastel */
+        .btn-pastel-blue {
+            background-color: #8fd1ff !important; /* Xanh Pastel */
+            border-color: #8fd1ff !important;
+            color: white !important;
+            font-weight: 700 !important;
+        }
+
+            .btn-pastel-blue:hover {
+                background-color: #5ea8e0 !important; /* Xanh đậm hơn khi hover */
+                border-color: #5ea8e0 !important;
+            }
+
+        /* BANNER / INTRO: SỬ DỤNG THẺ IMG - ĐÃ KHÔI PHỤC CHIỀU CAO */
+        .branch-banner {
+            position: relative;
+            height: 335px; /* KHÔI PHỤC: Chiều cao cố định của banner */
+            overflow: hidden;
+            background-color: #154c74;
+        }
+
+            /* Thẻ IMG bên trong banner */
+            .branch-banner img {
+                width: 100%;
+                height: 100%; /* ĐÃ SỬA: Chiếm 100% chiều cao của div cha */
+                object-fit: cover;
+                /* ĐÃ SỬA: Dùng absolute để ảnh không chiếm không gian và bị lớp phủ bao phủ */
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+            }
+
+            /* Overlay và Nội dung */
+            .branch-banner .banner-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                padding: 40px 20px;
+                color: white;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+                z-index: 2;
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .branch-banner h1 {
+                font-size: 44px;
+                font-weight: 900;
+                margin-bottom: 12px;
+            }
+
+            .branch-banner .slogan {
+                font-size: 16px;
+                line-height: 1.6;
+                color: #e0f0ff;
+                max-width: 780px;
+                margin: 0 0 20px 0;
+            }
+
+            .branch-banner .info {
+                font-size: 17px;
+                line-height: 1.9;
+            }
+
+                .branch-banner .info i {
+                    margin-right: 8px;
+                }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #154c74;
+            margin: 32px 0 16px;
+            text-align: center;
+        }
+
+        /* ======================================= */
+        /* START: GIAO DIỆN TÌM KIẾM MỚI */
+        /* ======================================= */
+
+        .filter-search-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 4px;
+            margin-bottom: 18px;
+            gap: 15px;
+        }
+
+        /* FILTER BUTTONS: Ưu tiên nằm bên trái và chiếm nhiều không gian hơn */
+        .category-buttons {
+            order: 1; /* Nằm bên trái */
+            flex-grow: 1; /* Chiếm hết không gian có thể */
+            min-width: 50%;
+        }
+
+            .category-buttons .btn {
+                border-radius: 25px;
+                border-color: #cce5f7;
+                color: #154c74;
+                font-size: 15px;
+                padding: 8px 16px;
+                background: white;
+                font-weight: 600;
+                transition: .2s;
+            }
+
+                .category-buttons .btn.active,
+                .category-buttons .btn:hover {
+                    background: #8fd1ff;
+                    border-color: #8fd1ff;
+                    color: white;
+                }
+
+        /* SEARCH BAR: Nằm bên phải và bị thu ngắn */
+        .search-wrapper {
+            position: relative;
+            flex-grow: 0; /* KHÔNG chiếm hết không gian */
+            width: 180px; /* Chiều rộng cố định, ngắn hơn */
+            order: 2; /* Nằm bên phải */
+        }
+
+            .search-wrapper i {
+                position: absolute;
+                top: 50%;
+                left: 14px;
+                transform: translateY(-50%);
+                color: #7aa7c7;
+                font-size: 16px;
+            }
+
+            .search-wrapper input {
+                width: 100%;
+                padding: 10px 15px 10px 40px;
+                border-radius: 25px;
+                border: 1px solid #cce5f7;
+                background: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                font-size: 15px;
+                transition: .2s;
+            }
+
+                .search-wrapper input:focus {
+                    border-color: #8fd1ff;
+                    box-shadow: 0 0 0 3px rgba(143, 209, 255, 0.5);
+                    outline: none;
+                }
+
+        /* END: GIAO DIỆN TÌM KIẾM MỚI */
+        /* ======================================= */
+        /* CARD CHUNG */
+        .card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+            background: white;
+            transition: .2s;
+        }
+
+        /* Khôi phục style cho nội dung card thông thường (New & All Items) */
+        .placeholder-img {
+            height: 170px;
+            background: #dff1ff;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #7aa7c7;
+            font-size: 22px;
+            overflow: hidden;
+        }
+
+        .card img.card-img-top {
+            height: 170px;
+            object-fit: cover;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+        }
+
+        .card h6 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            height: 2.5em;
+            overflow: hidden;
+        }
+
+        .price-label {
+            color: #666;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .price-qty-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .qty-box {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+            .qty-box span {
+                width: 40px;
+                border-radius: 8px;
+                text-align: center;
+                padding: 3px 0;
+                background: #f3faff;
+                border: 1px solid #8fd1ff;
+            }
+
+            .qty-box button {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                padding: 0;
+                font-size: 18px;
+            }
+
+
+        /* Nút Thêm (CTA) - Xanh Pastel thống nhất */
+        .btn-add {
+            width: 100%;
+            border-radius: 12px;
+            background: #8fd1ff; /* Xanh Pastel */
+            border: none;
+            padding: 8px 0;
+            font-weight: 700;
+            margin-top: 10px;
+            color: white;
+            transition: .2s;
+        }
+
+            .btn-add:hover {
+                background: #5ea8e0; /* Xanh đậm hơn khi hover */
+            }
+
+        /* Promotions / Services Card */
+        .card.promo-card {
+            padding-top: 100%;
+            min-height: 250px;
+            background-color: #154c74;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 0 !important;
+        }
+
+            .card.promo-card > .card-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: flex-start;
+                padding: 15px;
+                background-color: rgba(0, 0, 0, 0.4); /* Tối hơn chút để chữ nổi bật */
+                border-radius: 18px;
+                text-align: left;
+            }
+
+            .card.promo-card h5 {
+                color: white; /* Đảm bảo màu trắng */
+                font-size: 24px;
+                font-weight: 900;
+                text-shadow: 1px 1px 4px rgba(0, 0, 0, 1.0); /* Tăng độ đậm của shadow */
+                margin-bottom: 5px;
+            }
+
+            /* Chữ P */
+            .card.promo-card p {
+                color: #f0f0f0; /* Màu trắng nhạt hơn cho đoạn văn */
+                font-size: 14px;
+                line-height: 1.4;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8); /* Shadow cho đoạn văn */
+            }
+
+        /* Featured Items (Food Items) */
+        .card.featured-item {
+            min-height: 250px;
+            background-color: #154c74;
+            background-size: cover;
+            background-position: center;
             position: relative;
         }
 
-        .badge {
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
-
-            .card:hover {
-                transform: translateY(-4px);
+            .card.featured-item .card-img-overlay {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
+                padding: 15px;
+                background-color: rgba(0, 0, 0, 0.4);
+                border-radius: 18px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
             }
 
-        /* (MỚI) CSS cho hình ảnh placeholder */
-        .placeholder-img {
-            width: 100%;
-            height: 180px;
-            background-color: #e9ecef; /* Màu nền xám nhạt */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .placeholder-img i {
-                font-size: 4rem;
-                color: #adb5bd; /* Màu icon xám */
+            /* FIX: Đảm bảo số lượng và nút +/- hiển thị rõ trên nền ảnh */
+            .card.featured-item .qty-box button {
+                color: white;
+                border: 1px solid white;
+                background: rgba(255, 255, 255, 0.15);
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                padding: 0;
+                font-size: 18px;
             }
 
-        .card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
+            .card.featured-item .qty-box span {
+                color: white;
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid white;
+                width: 40px;
+                border-radius: 8px;
+                text-align: center;
+                padding: 3px 0;
+            }
 
-        .card-body {
-            padding: 15px;
-        }
+            .card.featured-item h6 {
+                color: white;
+                font-weight: 700;
+                height: auto;
+            }
 
-        .btn-group .btn {
-            min-width: 35px;
-        }
+            .card.featured-item .price-label {
+                color: #e0f0ff;
+            }
 
+            /* Cập nhật màu nút thêm trong Featured Item */
+            .card.featured-item .btn-add {
+                background: #8fd1ff; /* Xanh Pastel */
+            }
 
-        .menu-header h2 {
-            margin-bottom: 10px;
-        }
+                .card.featured-item .btn-add:hover {
+                    background: #5ea8e0; /* Xanh đậm hơn khi hover */
+                }
 
-        .filter-container {
-            padding: 10px 20px;
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
+            /* Ẩn các phần tử mặc định của card */
+            .card.featured-item img.card-img-top,
+            .card.featured-item .placeholder-img,
+            .card.promo-card img.card-img-top,
+            .card.promo-card .placeholder-img {
+                display: none !important;
+            }
+
+        /* MEDIA QUERIES */
+        @@media (max-width: 768px) {
+            .branch-banner h1 {
+                font-size: 38px;
+            }
+
+            .filter-search-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .card.promo-card {
+                padding-top: 50%;
+                min-height: 200px;
+            }
         }
     </style>
 </head>
@@ -102,139 +437,309 @@
 <body>
 
     <div class="menu-header d-flex justify-content-between align-items-center">
-        <h2>@branch?.Name - Bàn @table?.TableNumber</h2>
+        <h2>@branch?.Name — Bàn @table?.TableNumber</h2>
+
         <a href="@Url.Action("Cart", new { tableId = table?.TableId, branchId = branch?.BranchId })"
-           class="btn btn-primary cart-btn">
+           class="btn btn-pastel-blue position-relative">
             <i class="fas fa-shopping-cart me-1"></i>
             Giỏ hàng
-            <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                0
-            </span>
+            <span id="cart-count" class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">0</span>
         </a>
     </div>
 
-    <div class="container mt-3 filter-container">
-        <div class="btn-group flex-wrap" role="group">
-            <button class="btn btn-outline-primary active" onclick="filterCategory('all', event)">Tất cả</button>
-            @foreach (var cat in Model.Select(m => m.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct())
-            {
-                <button class="btn btn-outline-primary" onclick="filterCategory('@cat', event)">@cat</button>
-            }
+    <div class="branch-banner">
+        <img src="/images/anhquancaphe.jpg" alt="Ảnh quán cà phê" />
+
+        <div class="banner-content">
+            <div class="container">
+                <h1>@branch?.Name</h1>
+
+                <div class="slogan">
+                    “Không chỉ là quán cà phê, chúng tôi mong muốn trở thành nơi kết nối cảm xúc,
+                    tạo ra những khoảnh khắc đẹp trong ngày của bạn. Mỗi món nước, mỗi món ăn
+                    đều được chuẩn bị với sự tỉ mỉ, chất lượng và trái tim của người làm nghề.”
+                </div>
+
+                <div class="info">
+                    <div><i class="fas fa-map-pin" style="color:#ff4d6d;"></i>@branch?.Address</div>
+                    <div><i class="fas fa-clock" style="color:#7a90a4;"></i>7:00 – 22:00 mỗi ngày</div>
+                    <div><i class="fas fa-phone-alt" style="color:#ff2f5e;"></i>Hotline: 0123 456 789</div>
+                </div>
+            </div>
         </div>
     </div>
 
 
-    <div class="container py-4">
-        <div class="row g-3">
-            @foreach (var item in Model)
+    <div class="container py-3">
+
+        <div class="section-title">MÓN MỚI</div>
+
+        <div class="row g-4">
+            @foreach (var item in newItems)
             {
-                <div class="col-6 col-md-4 col-lg-3 menu-item" data-category="@item.Category">
+                <div class="col-6 col-md-4 col-lg-3">
+
                     <div class="card h-100">
+
                         @if (!string.IsNullOrEmpty(item.ImagePath))
                         {
-                            <img loading="lazy" src="@Url.Content(item.ImagePath)" alt="@item.Name"
-                                 onerror="this.outerHTML = '<div class=\'placeholder-img\'><i class=\'fas fa-mug-hot\'></i></div>';" />
+                            <img src="@Url.Content(item.ImagePath)" class="card-img-top">
                         }
                         else
                         {
-                            <div class="placeholder-img">
-                                <i class="fas fa-mug-hot"></i>
-                            </div>
+                            <div class="placeholder-img">IMG</div>
                         }
 
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                <h6 class="card-title fw-semibold">@item.Name</h6>
-                                <p class="text-muted mb-2">@item.Price.ToString("N0") ₫</p>
-                                @if (!string.IsNullOrEmpty(item.Category))
-                                {
-                                    <span class="badge bg-secondary">@item.Category</span>
-                                }
-                            </div>
+                        <div class="card-body d-flex flex-column text-center">
 
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm"
-                                            onclick="updateQuantity(@item.MenuItemId, -1)">
-                                        −
-                                    </button>
-                                    <span id="qty-@item.MenuItemId" class="btn btn-outline-secondary btn-sm" style="width: 40px;">0</span>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm"
-                                            onclick="updateQuantity(@item.MenuItemId, 1)">
-                                        +
-                                    </button>
+                            <h6>@item.Name</h6>
+
+                            <div class="price-qty-row">
+                                <span class="price-label">@item.Price.ToString("N0") ₫</span>
+
+                                <div class="qty-box">
+                                    <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-secondary btn-sm">−</button>
+                                    <span id="qty-new-@item.MenuItemId">0</span>
+                                    <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-secondary btn-sm">+</button>
                                 </div>
-
-                                <button type="button" class="btn btn-primary btn-sm"
-                                        onclick="addToCart(@item.MenuItemId)">
-                                    Thêm
-                                </button>
                             </div>
+
+                            <button class="btn btn-primary btn-add" onclick="addToCart(@item.MenuItemId, 'qty-new-')">Thêm</button>
+
                         </div>
                     </div>
+
                 </div>
             }
         </div>
+
+
+        <div class="section-title">SỰ KHÁC BIỆT & CAM KẾT CHẤT LƯỢNG</div>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-4">
+                <div class="card promo-card" style="background-image: url('https://i.pinimg.com/736x/e9/22/a7/e922a748f29cddf163e9af2643a3243d.jpg');">
+                    <div class="card-content">
+                        <h5>NGUYÊN LIỆU THƯỢNG HẠNG</h5>
+                        <p>Cam kết sử dụng 100% hạt Arabica/Robusta chọn lọc và trà lá tươi, đảm bảo hương vị nguyên bản, tuyệt hảo.</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card promo-card" style="background-image: url('https://i.pinimg.com/736x/0f/0a/4f/0f0a4f02e88cb8a1a2397eff8ddb9b3e.jpg');">
+                    <div class="card-content">
+                        <h5>KHÁM PHÁ SIGNATURE</h5>
+                        <p>Đồ uống độc quyền làm nên thương hiệu của chúng tôi. Cà phê sữa - Bán chạy nhất tuần qua!</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card promo-card" style="background-image: url('https://i.pinimg.com/1200x/4c/5f/cd/4c5fcd7b72834dce31bcbe8545514d36.jpg');">
+                    <div class="card-content">
+                        <h5>PHA CHẾ TỪ TÂM</h5>
+                        <p>Mỗi ly đồ uống là một tác phẩm được pha chế tỉ mỉ bởi Barista chuyên nghiệp, vì trải nghiệm hoàn hảo của bạn.</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">MÓN BÁN CHẠY</div>
+
+        <div class="row g-4">
+            @foreach (var item in featuredItems)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <div class="card h-100 featured-item"
+                         style="background-image: url('@(string.IsNullOrEmpty(item.ImagePath) ? "" : Url.Content(item.ImagePath))');">
+
+                        <div class="card-img-overlay">
+                            <h6>@item.Name</h6>
+
+                            <div class="price-qty-row w-100 mt-2">
+                                <span class="price-label">@item.Price.ToString("N0") ₫</span>
+
+                                <div class="qty-box">
+                                    <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-light btn-sm">−</button>
+                                    <span id="qty-featured-@item.MenuItemId">0</span>
+                                    <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-light btn-sm">+</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-add" onclick="addToCart(@item.MenuItemId, 'qty-featured-')">Thêm vào giỏ</button>
+
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+
+
+        <div class="section-title mt-4">THỰC ĐƠN</div>
+
+        <div class="filter-search-row">
+
+            <div class="category-buttons d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-primary active"
+                        onclick="filterCategory('all', event)">
+                    Tất cả
+                </button>
+
+                @foreach (var cat in categories)
+                {
+                    <button class="btn btn-outline-primary"
+                            onclick="filterCategory('@cat', event)">
+                        @cat
+                    </button>
+                }
+            </div>
+
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input id="searchInput" placeholder="Tìm..." onkeyup="searchMenu()">
+            </div>
+
+        </div>
+
+
+        <div class="row g-4" id="allItemsContainer">
+            @foreach (var item in allItems)
+            {
+                <div class="col-6 col-md-4 col-lg-3 menu-item"
+                     data-category="@item.Category"
+                     data-name="@item.Name.ToLower()">
+
+                    <div class="card h-100">
+
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@Url.Content(item.ImagePath)" class="card-img-top">
+                        }
+                        else
+                        {
+
+                            <div class="placeholder-img">IMG</div>
+                        }
+
+                        <div class="card-body d-flex flex-column text-center">
+
+                            <h6>@item.Name</h6>
+
+                            <div class="price-qty-row">
+                                <span class="price-label">@item.Price.ToString("N0") ₫</span>
+
+                                <div class="qty-box">
+                                    <button onclick="updateQuantity(@item.MenuItemId, -1)" class="btn btn-outline-secondary btn-sm">−</button>
+                                    <span id="qty-all-@item.MenuItemId">0</span>
+                                    <button onclick="updateQuantity(@item.MenuItemId, 1)" class="btn btn-outline-secondary btn-sm">+</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-add"
+                                    onclick="addToCart(@item.MenuItemId, 'qty-all-')">
+                                Thêm
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+        </div>
+
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-
         function filterCategory(category, event) {
-            const allItems = document.querySelectorAll('.menu-item');
-            const buttons = document.querySelectorAll('.filter-container .btn-group button');
+            document.querySelectorAll(".category-buttons .btn")
+                .forEach(b => b.classList.remove("active"));
 
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event) {
+                event.target.classList.add("active");
+            } else {
+                if (category === 'all') {
+                    document.querySelector(".category-buttons .btn:first-child").classList.add("active");
+                } else {
+                    document.querySelector(`.category-buttons .btn[onclick*="'${category}'"]`).classList.add("active");
+                }
+            }
 
-            allItems.forEach(item => {
-                if (category === 'all' || item.dataset.category === category)
-                    item.style.display = 'block';
-                else
-                    item.style.display = 'none';
+            document.querySelectorAll("#allItemsContainer .menu-item").forEach(item => {
+                item.style.display =
+                    (category === "all" || item.dataset.category === category)
+                    ? "block"
+                    : "none";
             });
         }
 
-        function updateQuantity(menuItemId, change) {
-            const qtyElement = document.getElementById('qty-' + menuItemId);
-            let currentQty = parseInt(qtyElement.textContent) || 0;
-            qtyElement.textContent = Math.max(0, currentQty + change);
+        function searchMenu() {
+            let text = document.getElementById("searchInput").value.toLowerCase();
+
+            document.querySelectorAll(".category-buttons .btn")
+                .forEach(b => b.classList.remove("active"));
+
+            document.querySelectorAll("#allItemsContainer .menu-item").forEach(item => {
+                item.style.display =
+                    item.dataset.name.includes(text) ? "block" : "none";
+            });
         }
 
-        function addToCart(menuItemId) {
-            const qtyElement = document.getElementById('qty-' + menuItemId);
-            const quantity = parseInt(qtyElement.textContent) || 0;
+        function updateQuantity(id, change) {
+            document.querySelectorAll(`[id^='qty-'][id$='${id}']`).forEach(el => {
+                let value = parseInt(el.textContent);
+                let newValue = Math.max(0, value + change);
+                el.textContent = newValue;
+            });
+        }
 
-            if (quantity <= 0) {
-                alert('Vui lòng chọn số lượng trước.');
-                return;
-            }
+        function addToCart(id, prefix = 'qty-all-') {
+            const qtyElement = document.getElementById(prefix + id);
+            const qty = parseInt(qtyElement.textContent);
+
+            if (qty <= 0) return alert("Vui lòng chọn số lượng.");
 
             fetch('@Url.Action("AddToCart")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-                },
-                body: `menuItemId=${menuItemId}&quantity=${quantity}&tableId=@table?.TableId&branchId=@branch?.BranchId`
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `menuItemId=${id}&quantity=${qty}&tableId=@table?.TableId&branchId=@branch?.BranchId`
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    qtyElement.textContent = '0';
+                    document.querySelectorAll(`[id^='qty-'][id$='${id}']`).forEach(el => el.textContent = 0);
                     updateCartCount();
                 } else {
-                    alert(data.message || 'Không thể thêm vào giỏ hàng.');
+                    alert(data.message || "Thêm vào giỏ hàng thất bại.");
                 }
+            })
+            .catch(error => {
+                 console.error('Error adding to cart:', error);
+                 alert("Lỗi kết nối hoặc xử lý. Vui lòng thử lại.");
             });
         }
 
         function updateCartCount() {
-            // Logic này có thể cần phức tạp hơn, ví dụ: lấy số lượng từ session/local storage
-            // Hiện tại, nó chỉ đếm số lần nhấn "Thêm"
-            const cartCount = document.getElementById('cart-count');
-            const current = parseInt(cartCount.textContent) || 0;
-            cartCount.textContent = current + 1;
+            let badge = document.getElementById("cart-count");
+            badge.textContent = (parseInt(badge.textContent) || 0) + 1;
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             document.getElementById("searchInput").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchMenu();
+                }
+            });
+        });
+
     </script>
 
 </body>
